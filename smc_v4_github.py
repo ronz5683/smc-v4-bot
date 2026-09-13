@@ -71,16 +71,17 @@ def detect_choch(candles):
     return {"choch": False, "reason": f"No ChoCh range {prev_low_close:.2f}-{prev_high_close:.2f} (H:{prev_high:.2f} L:{prev_low:.2f})"}
 
 def detect_zones(candles):
-    if len(candles) < 10: return None
+    if len(candles) < 20: return None
     zones = []
-    for i in range(len(candles)-6, len(candles)-1):
+    # V4.6: expand lookback 20 candles (was 6) biar zone tidak cepat hilang
+    for i in range(len(candles)-20, len(candles)-1):
         c = candles[i]
         nc = candles[i+1]
         if c['close'] < c['open'] and nc['close'] > nc['open'] and nc['close'] > c['high']:
             zones.append({"type": "OB", "subtype": "BULLISH_OB", "price": (c['high']+c['low'])/2, "high": c['high'], "low": c['low']})
         if c['close'] > c['open'] and nc['close'] < nc['open'] and nc['low'] < c['low']:
             zones.append({"type": "BREAKER", "subtype": "BULLISH_BREAKER", "price": (c['high']+c['low'])/2, "high": c['high'], "low": c['low']})
-    for i in range(len(candles)-4, len(candles)-1):
+    for i in range(len(candles)-20, len(candles)-1):
         c1 = candles[i]
         c3 = candles[i+2] if i+2 < len(candles) else None
         if not c3: continue
@@ -114,8 +115,11 @@ def analyze_symbol_real(symbol):
         return {**base,"status":"SKIP","reason":f"FVG conf {conf}<8 banned","filter":"setup_ban"}
     if 7<=hour_wib<=9:
         return {**base,"status":"SKIP","reason":f"Blacklist jam {hour_wib}:00 WIB","filter":"time"}
+    # V4.6: BREAKER_ONLY loosen - allow breaker distance <0.5% even without sweep+choch for tuning
     if not sweep['sweep'] and not choch['choch']:
-        if zone and zone['type']=="BREAKER" and dist<0.3 and conf>=6:
+        if zone and zone['type']=="BREAKER" and dist<0.5 and conf>=6:
+            pass
+        elif zone and zone['type']=="OB" and dist<0.3 and conf>=6:
             pass
         else:
             return {**base,"status":"SKIP","reason":f"{sweep['reason']} + {choch['reason']}","filter":"sweep"}
@@ -304,7 +308,7 @@ skip=[x for x in results if x['status']=="SKIP"]
 
 out={
     "last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),
-    "bot_version":"V4.5_LIMIT_GUARD",
+    "bot_version":"V4.6_EXPANDED_ZONE",
     "params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE,"MAX_POSITIONS":MAX_POSITIONS},
     "summary":{
         "total_scanned":len(results),
@@ -331,7 +335,7 @@ out={
     "running_positions":active_positions,
     "closed_positions":closed_positions[-20:],
     "stats":positions_data['stats'],
-    "tuning_notes":"V4.4 with position guard - koin dijaga sampai TP/SL"
+    "tuning_notes":"V4.6 expanded zone 20 candles + breaker 0.5% - koin dijaga sampai TP/SL"
 }
 
 with open("last_scan.json","w") as f:
