@@ -10,9 +10,12 @@ LIMIT = 100
 
 def get_klines(symbol, interval, limit=100):
     try:
-        url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval={interval}&limit={limit}"
+        url = f"https://data-api.binance.vision/api/v3/klines?symbol={symbol}&interval={interval}&limit={limit}"
         r = requests.get(url, timeout=10)
         data = r.json()
+        if isinstance(data, dict):
+            print(f"API returned dict for {symbol}: {data}")
+            return []
         return [{"open": float(x[1]), "high": float(x[2]), "low": float(x[3]), "close": float(x[4]), "volume": float(x[5])} for x in data]
     except Exception as e:
         print(f"Error klines {symbol} {interval}: {e}")
@@ -20,7 +23,7 @@ def get_klines(symbol, interval, limit=100):
 
 def get_current_price(symbol):
     try:
-        r = requests.get(f"https://api.binance.com/api/v3/ticker/price?symbol={symbol}", timeout=5)
+        r = requests.get(f"https://data-api.binance.vision/api/v3/ticker/price?symbol={symbol}", timeout=5)
         return float(r.json()['price'])
     except:
         return None
@@ -132,6 +135,6 @@ skip=[x for x in results if x['status']=="SKIP"]
 
 out={"last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),"bot_version":"V4_REAL_SMC_FULL","params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE},"summary":{"total_scanned":len(results),"valid":len(valid),"skip":len(skip),"by_filter":{"sweep":len([r for r in skip if r.get("filter")=="sweep"]),"choch":len([r for r in skip if r.get("filter")=="choch"]),"zone":len([r for r in skip if r.get("filter")=="zone"]),"distance":len([r for r in skip if r.get("filter")=="distance"]),"confidence":len([r for r in skip if r.get("filter")=="confidence"]),"time":len([r for r in skip if r.get("filter")=="time"]),"setup_ban":len([r for r in skip if r.get("filter")=="setup_ban"])}},"results":results,"valid_trades":valid,"watchlist":skip,"running_positions":[],"tuning_notes":"Full report for tuning"}
 
-with open("/mnt/data/last_scan.json","w") as f:
+with open("last_scan.json","w") as f:
     json.dump(out,f,indent=2)
 print("saved")
