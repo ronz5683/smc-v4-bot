@@ -1,35 +1,32 @@
-name: SMC V4 Live Bot
+name: SMC V4 Bot
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
-  workflow_dispatch:
+    - cron: '*/15 * * * *'  # tiap 15 menit
+  workflow_dispatch:  # biar bisa Run manual
 
 jobs:
-  run-bot:
+  scan:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.10'
 
-      - name: Install dependencies
-        run: |
-          pip install requests pandas
+      - name: Install requests
+        run: pip install requests
 
-      - name: Run SMC V4 Bot (single scan)
-        run: |
-          python smc_v4_github.py
+      - name: Run SMC Bot
+        run: python smc_v4_github.py
 
-      - name: Commit and push if changed
+      - name: Commit results
         run: |
-          git config --global user.name "SMC Bot"
-          git config --global user.email "bot@smc-v4.com"
-          git add -A
-          git diff --staged --quiet || (git commit -m "auto: scan $(date -u)" && git push)
+          git config --global user.name "smc-bot"
+          git config --global user.email "bot@smc.com"
+          git add last_scan.json positions.json
+          git commit -m "bot: update scan $(date -u +'%Y-%m-%dT%H:%M:%SZ')" || echo "no changes to commit"
+          git push
