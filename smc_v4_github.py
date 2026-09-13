@@ -1,12 +1,13 @@
-
-import requests, json, datetime, time
+import requests, json, datetime, time, os
 from datetime import timezone
-import os
 
+# === CONFIG ===
 SYMBOLS = ["BTCUSDT","ETHUSDT","SOLUSDT","XRPUSDT","BNBUSDT","ADAUSDT","DOGEUSDT","AVAXUSDT","LINKUSDT","OPUSDT","ARBUSDT","MATICUSDT"]
 MAX_DISTANCE_PCT = 0.5
-MIN_CONFIDENCE = 6  # lowered to 6 for tuning phase
+MIN_CONFIDENCE = 6
 LIMIT = 100
+MAX_POSITIONS = 5  # limit entry biar akun growth, tidak overtrade
+POSITIONS_FILE = "positions.json"  # file untuk jaga posisi sampai TP/SL
 
 def get_klines(symbol, interval, limit=100):
     try:
@@ -29,9 +30,7 @@ def get_current_price(symbol):
         return None
 
 def find_swings(candles, lookback=20):
-    # V4.2 FIX: exclude last 5 candles so sweep has room
     if len(candles) < lookback+10: return None, None
-    # swing from 20 candles before last 5
     slice_c = candles[-(lookback+5):-5]
     highs = [c['high'] for c in slice_c]
     lows = [c['low'] for c in slice_c]
@@ -43,7 +42,6 @@ def detect_sweep(candles):
     if not sh or not sl: return {"sweep": False, "reason": "No swing"}
     last5 = candles[-5:]
     for c in last5:
-        # V4.1: looser sweep 0.05% (was 0.2%) for ranging market
         if c['low'] < sl['price'] * 0.9995 and c['close'] > sl['price']:
             return {"sweep": True, "type": "BULLISH_SWEEP", "level": sl['price'], "reason": f"Wick {c['low']:.2f} below swing low {sl['price']:.2f} then close {c['close']:.2f} (0.05% sweep)"}
         if c['high'] > sh['price'] * 1.0005 and c['close'] < sh['price']:
@@ -52,7 +50,6 @@ def detect_sweep(candles):
 
 def detect_choch(candles):
     if len(candles) < 25: return {"choch": False, "reason": "short"}
-    # V4.3: check both close and high/low break
     closes = [c['close'] for c in candles[-20:]]
     highs = [c['high'] for c in candles[-20:]]
     lows = [c['low'] for c in candles[-20:]]
@@ -63,12 +60,10 @@ def detect_choch(candles):
     prev_low_close = min(closes[-11:-1])
     prev_high = max(highs[-11:-1])
     prev_low = min(lows[-11:-1])
-    # close break 0.03%
     if last_close > prev_high_close * 1.0003:
         return {"choch": True, "type": "BULLISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev high close {prev_high_close:.2f} (0.03%)"}
     if last_close < prev_low_close * 0.9997:
         return {"choch": True, "type": "BEARISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev low close {prev_low_close:.2f} (0.03%)"}
-    # high/low break (more sensitive)
     if last_high > prev_high * 1.0003:
         return {"choch": True, "type": "BULLISH_CHOCH", "reason": f"High {last_high:.2f} breaks prev high {prev_high:.2f} (0.03% high break)"}
     if last_low < prev_low * 0.9997:
@@ -119,10 +114,8 @@ def analyze_symbol_real(symbol):
         return {**base,"status":"SKIP","reason":f"FVG conf {conf}<8 banned","filter":"setup_ban"}
     if 7<=hour_wib<=9:
         return {**base,"status":"SKIP","reason":f"Blacklist jam {hour_wib}:00 WIB","filter":"time"}
-    # V4.3: BREAKER_ONLY mode for tuning - if breaker + distance <0.3% + conf>=6, allow even without sweep/choch
     if not sweep['sweep'] and not choch['choch']:
         if zone and zone['type']=="BREAKER" and dist<0.3 and conf>=6:
-            # allow as BREAKER_ONLY
             pass
         else:
             return {**base,"status":"SKIP","reason":f"{sweep['reason']} + {choch['reason']}","filter":"sweep"}
@@ -130,7 +123,6 @@ def analyze_symbol_real(symbol):
         if zone and zone['type']=="BREAKER" and dist<0.3 and conf>=6 and sweep['sweep']:
             pass
         elif zone and zone['type']=="BREAKER" and dist<0.15 and conf>=7:
-            # pure breaker only
             pass
         else:
             return {**base,"status":"SKIP","reason":choch['reason'],"filter":"choch"}
@@ -138,11 +130,9 @@ def analyze_symbol_real(symbol):
     if dist>MAX_DISTANCE_PCT: return {**base,"status":"SKIP","reason":f"Distance {dist:.2f}% > {MAX_DISTANCE_PCT}%","filter":"distance"}
     if conf<MIN_CONFIDENCE: return {**base,"status":"SKIP","reason":f"Confidence {conf}<{MIN_CONFIDENCE}","filter":"confidence"}
     entry=zone['price']
-    # Determine direction from sweep if exists, else from choch
     sweep_type = sweep.get('type','')
     choch_type = choch.get('type','')
     if not sweep['sweep']:
-        # CHOCH_ONLY mode
         if 'BULLISH' in choch_type:
             sweep_type = "BULLISH_SWEEP"
         elif 'BEARISH' in choch_type:
@@ -159,25 +149,160 @@ def analyze_symbol_real(symbol):
         tp1=entry-(sl-entry)*1.5
         tp2=entry-(sl-entry)*3
         direction="SHORT"
-    # Add sweep vs choch_only tag
     tag = "SWEEP+CHOCH" if sweep["sweep"] else "CHOCH_ONLY"
     return {**base,"status":"VALID","reason":f"{tag} {sweep_type}+{choch.get('type','NO_SWEEP')}+{zone['type']}","direction":direction,"entry":round(entry,4),"sl":round(sl,4),"tp1":round(tp1,4),"tp2":round(tp2,4),"rrr":round(abs(tp1-entry)/abs(entry-sl),2) if entry!=sl else 0,"order_type":"LIMIT","order_status":"WAITING_LIMIT","zone_price":round(zone['price'],4),"filter":"none"}
 
+# === POSITION MANAGER (NEW - untuk growth akun) ===
+def load_positions():
+    """Load posisi yang masih aktif dari file"""
+    if os.path.exists(POSITIONS_FILE):
+        try:
+            with open(POSITIONS_FILE,'r') as f:
+                return json.load(f)
+        except:
+            return {"active": [], "closed": [], "stats": {"wins":0,"losses":0,"total_pnl":0}}
+    return {"active": [], "closed": [], "stats": {"wins":0,"losses":0,"total_pnl":0}}
+
+def save_positions(data):
+    with open(POSITIONS_FILE,'w') as f:
+        json.dump(data,f,indent=2)
+
+def check_position_status(pos, current_price):
+    """Cek apakah posisi sudah TP/SL"""
+    if pos['direction']=="LONG":
+        if current_price <= pos['sl']:
+            return "SL_HIT", -1
+        if current_price >= pos['tp2']:
+            return "TP2_HIT", 3
+        if current_price >= pos['tp1']:
+            return "TP1_HIT", 1.5
+    else: # SHORT
+        if current_price >= pos['sl']:
+            return "SL_HIT", -1
+        if current_price <= pos['tp2']:
+            return "TP2_HIT", 3
+        if current_price <= pos['tp1']:
+            return "TP1_HIT", 1.5
+    return "ACTIVE", 0
+
+# === MAIN SCAN ===
+print(f"=== SMC V4.4 POSITION MANAGER | MAX {MAX_POSITIONS} POS ===")
+positions_data = load_positions()
+active_positions = positions_data.get("active", [])
+closed_positions = positions_data.get("closed", [])
+active_symbols = [p['symbol'] for p in active_positions]
+
+# 1. Update status posisi aktif
+print(f"Checking {len(active_positions)} active positions...")
+for pos in active_positions[:]:
+    curr = get_current_price(pos['symbol'])
+    if not curr:
+        continue
+    status, rrr = check_position_status(pos, curr)
+    pos['current_price'] = curr
+    pos['last_check'] = datetime.datetime.now(timezone.utc).isoformat()
+    if status != "ACTIVE":
+        pos['close_status'] = status
+        pos['close_price'] = curr
+        pos['pnl_rrr'] = rrr
+        pos['closed_at'] = datetime.datetime.now(timezone.utc).isoformat()
+        active_positions.remove(pos)
+        closed_positions.append(pos)
+        if rrr>0:
+            positions_data['stats']['wins']+=1
+        else:
+            positions_data['stats']['losses']+=1
+        positions_data['stats']['total_pnl']+=rrr
+        print(f"  CLOSED {pos['symbol']} {status} R:{rrr}")
+
+# 2. Scan baru hanya jika slot masih ada
+slots_left = MAX_POSITIONS - len(active_positions)
+print(f"Slots: {len(active_positions)}/{MAX_POSITIONS} active, {slots_left} slots left")
+
 results=[]
-for sym in SYMBOLS:
-    try:
-        r=analyze_symbol_real(sym)
-        results.append(r)
-        print(f"{sym}: {r['status']} - {r['reason'][:80]}")
-        time.sleep(0.4)
-    except Exception as e:
-        results.append({"symbol":sym,"status":"ERROR","reason":str(e)})
+valid_new=[]
+if slots_left>0:
+    for sym in SYMBOLS:
+        if sym in active_symbols:
+            print(f"{sym}: SKIP - already in active position (dijaga sampai TP/SL)")
+            results.append({"symbol":sym,"status":"SKIP","reason":f"Already in active position {sym} - dijaga sampai TP/SL","filter":"position_guard"})
+            continue
+        try:
+            r=analyze_symbol_real(sym)
+            results.append(r)
+            print(f"{sym}: {r['status']} - {r['reason'][:80]}")
+            if r['status']=="VALID" and len(valid_new)<slots_left:
+                # Buat posisi baru, dijaga sampai TP/SL
+                new_pos = {
+                    "symbol": sym,
+                    "direction": r['direction'],
+                    "entry": r['entry'],
+                    "sl": r['sl'],
+                    "tp1": r['tp1'],
+                    "tp2": r['tp2'],
+                    "rrr": r['rrr'],
+                    "zone_price": r['zone_price'],
+                    "confidence": r['confidence'],
+                    "reason": r['reason'],
+                    "open_price": r['price'],
+                    "open_time": datetime.datetime.now(timezone.utc).isoformat(),
+                    "status": "ACTIVE",
+                    "order_status": "WAITING_LIMIT"
+                }
+                valid_new.append(new_pos)
+                active_positions.append(new_pos)
+                print(f"  -> NEW POSITION OPEN {sym} {r['direction']} Entry {r['entry']}")
+            time.sleep(0.4)
+        except Exception as e:
+            results.append({"symbol":sym,"status":"ERROR","reason":str(e)})
+else:
+    print(f"MAX POSITIONS REACHED ({MAX_POSITIONS}) - skip new scan, jaga posisi existing")
+    for sym in SYMBOLS:
+        if sym not in active_symbols:
+            results.append({"symbol":sym,"status":"SKIP","reason":f"Max positions {MAX_POSITIONS} reached - guard mode","filter":"max_pos"})
+
+# 3. Save positions
+positions_data['active'] = active_positions
+positions_data['closed'] = closed_positions[-100:]  # keep last 100
+save_positions(positions_data)
 
 valid=[x for x in results if x['status']=="VALID"]
 skip=[x for x in results if x['status']=="SKIP"]
 
-out={"last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),"bot_version":"V4.3_BREAKER_ONLY","params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE},"summary":{"total_scanned":len(results),"valid":len(valid),"skip":len(skip),"by_filter":{"sweep":len([r for r in skip if r.get("filter")=="sweep"]),"choch":len([r for r in skip if r.get("filter")=="choch"]),"zone":len([r for r in skip if r.get("filter")=="zone"]),"distance":len([r for r in skip if r.get("filter")=="distance"]),"confidence":len([r for r in skip if r.get("filter")=="confidence"]),"time":len([r for r in skip if r.get("filter")=="time"]),"setup_ban":len([r for r in skip if r.get("filter")=="setup_ban"])}},"results":results,"valid_trades":valid,"watchlist":skip,"running_positions":[],"tuning_notes":"Full report for tuning"}
+out={
+    "last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),
+    "bot_version":"V4.4_POSITION_GUARD",
+    "params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE,"MAX_POSITIONS":MAX_POSITIONS},
+    "summary":{
+        "total_scanned":len(results),
+        "valid_new":len(valid_new),
+        "valid":len(valid),
+        "skip":len(skip),
+        "active_positions":len(active_positions),
+        "closed_today":len([c for c in closed_positions if c.get('closed_at','').startswith(datetime.datetime.now(timezone.utc).strftime('%Y-%m-%d'))]),
+        "by_filter":{
+            "sweep":len([r for r in skip if r.get("filter")=="sweep"]),
+            "choch":len([r for r in skip if r.get("filter")=="choch"]),
+            "zone":len([r for r in skip if r.get("filter")=="zone"]),
+            "distance":len([r for r in skip if r.get("filter")=="distance"]),
+            "confidence":len([r for r in skip if r.get("filter")=="confidence"]),
+            "time":len([r for r in skip if r.get("filter")=="time"]),
+            "setup_ban":len([r for r in skip if r.get("filter")=="setup_ban"]),
+            "position_guard":len([r for r in skip if r.get("filter")=="position_guard"]),
+            "max_pos":len([r for r in skip if r.get("filter")=="max_pos"])
+        }
+    },
+    "results":results,
+    "valid_trades":valid,
+    "valid_new_positions":valid_new,
+    "running_positions":active_positions,
+    "closed_positions":closed_positions[-20:],
+    "stats":positions_data['stats'],
+    "tuning_notes":"V4.4 with position guard - koin dijaga sampai TP/SL"
+}
 
 with open("last_scan.json","w") as f:
     json.dump(out,f,indent=2)
-print("saved")
+
+print(f"\nDONE: {len(valid_new)} NEW, {len(active_positions)} ACTIVE, {len(closed_positions)} CLOSED | PnL R:{positions_data['stats']['total_pnl']}")
+print("saved last_scan.json + positions.json")
