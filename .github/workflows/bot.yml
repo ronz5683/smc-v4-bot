@@ -1,9 +1,12 @@
-name: SMC V4 Bot
+name: scan
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # tiap 15 menit
-  workflow_dispatch:  # biar bisa Run manual
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   scan:
@@ -11,6 +14,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python
         uses: actions/setup-python@v4
