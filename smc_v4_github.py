@@ -52,16 +52,28 @@ def detect_sweep(candles):
 
 def detect_choch(candles):
     if len(candles) < 25: return {"choch": False, "reason": "short"}
+    # V4.3: check both close and high/low break
     closes = [c['close'] for c in candles[-20:]]
+    highs = [c['high'] for c in candles[-20:]]
+    lows = [c['low'] for c in candles[-20:]]
     last_close = closes[-1]
-    prev_high = max(closes[-11:-1])
-    prev_low = min(closes[-11:-1])
-    # V4.2: 0.03% threshold (was 0.1%) for low volatility
-    if last_close > prev_high * 1.0003:
-        return {"choch": True, "type": "BULLISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev high {prev_high:.2f} (0.03%)"}
-    if last_close < prev_low * 0.9997:
-        return {"choch": True, "type": "BEARISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev low {prev_low:.2f} (0.03%)"}
-    return {"choch": False, "reason": f"No ChoCh range {prev_low:.2f}-{prev_high:.2f}"}
+    last_high = highs[-1]
+    last_low = lows[-1]
+    prev_high_close = max(closes[-11:-1])
+    prev_low_close = min(closes[-11:-1])
+    prev_high = max(highs[-11:-1])
+    prev_low = min(lows[-11:-1])
+    # close break 0.03%
+    if last_close > prev_high_close * 1.0003:
+        return {"choch": True, "type": "BULLISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev high close {prev_high_close:.2f} (0.03%)"}
+    if last_close < prev_low_close * 0.9997:
+        return {"choch": True, "type": "BEARISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev low close {prev_low_close:.2f} (0.03%)"}
+    # high/low break (more sensitive)
+    if last_high > prev_high * 1.0003:
+        return {"choch": True, "type": "BULLISH_CHOCH", "reason": f"High {last_high:.2f} breaks prev high {prev_high:.2f} (0.03% high break)"}
+    if last_low < prev_low * 0.9997:
+        return {"choch": True, "type": "BEARISH_CHOCH", "reason": f"Low {last_low:.2f} breaks prev low {prev_low:.2f} (0.03% low break)"}
+    return {"choch": False, "reason": f"No ChoCh range {prev_low_close:.2f}-{prev_high_close:.2f} (H:{prev_high:.2f} L:{prev_low:.2f})"}
 
 def detect_zones(candles):
     if len(candles) < 10: return None
@@ -107,10 +119,21 @@ def analyze_symbol_real(symbol):
         return {**base,"status":"SKIP","reason":f"FVG conf {conf}<8 banned","filter":"setup_ban"}
     if 7<=hour_wib<=9:
         return {**base,"status":"SKIP","reason":f"Blacklist jam {hour_wib}:00 WIB","filter":"time"}
-    # V4.1: allow CHOCH_ONLY if sweep missing but choch+breaker+close distance
+    # V4.3: BREAKER_ONLY mode for tuning - if breaker + distance <0.3% + conf>=6, allow even without sweep/choch
     if not sweep['sweep'] and not choch['choch']:
-        return {**base,"status":"SKIP","reason":f"{sweep['reason']} + {choch['reason']}","filter":"sweep"}
-    if not choch['choch']: return {**base,"status":"SKIP","reason":choch['reason'],"filter":"choch"}
+        if zone and zone['type']=="BREAKER" and dist<0.3 and conf>=6:
+            # allow as BREAKER_ONLY
+            pass
+        else:
+            return {**base,"status":"SKIP","reason":f"{sweep['reason']} + {choch['reason']}","filter":"sweep"}
+    if not choch['choch']:
+        if zone and zone['type']=="BREAKER" and dist<0.3 and conf>=6 and sweep['sweep']:
+            pass
+        elif zone and zone['type']=="BREAKER" and dist<0.15 and conf>=7:
+            # pure breaker only
+            pass
+        else:
+            return {**base,"status":"SKIP","reason":choch['reason'],"filter":"choch"}
     if not zone: return {**base,"status":"SKIP","reason":"No OB/Breaker/FVG","filter":"zone"}
     if dist>MAX_DISTANCE_PCT: return {**base,"status":"SKIP","reason":f"Distance {dist:.2f}% > {MAX_DISTANCE_PCT}%","filter":"distance"}
     if conf<MIN_CONFIDENCE: return {**base,"status":"SKIP","reason":f"Confidence {conf}<{MIN_CONFIDENCE}","filter":"confidence"}
@@ -153,7 +176,7 @@ for sym in SYMBOLS:
 valid=[x for x in results if x['status']=="VALID"]
 skip=[x for x in results if x['status']=="SKIP"]
 
-out={"last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),"bot_version":"V4.2_FIXED_SWING","params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE},"summary":{"total_scanned":len(results),"valid":len(valid),"skip":len(skip),"by_filter":{"sweep":len([r for r in skip if r.get("filter")=="sweep"]),"choch":len([r for r in skip if r.get("filter")=="choch"]),"zone":len([r for r in skip if r.get("filter")=="zone"]),"distance":len([r for r in skip if r.get("filter")=="distance"]),"confidence":len([r for r in skip if r.get("filter")=="confidence"]),"time":len([r for r in skip if r.get("filter")=="time"]),"setup_ban":len([r for r in skip if r.get("filter")=="setup_ban"])}},"results":results,"valid_trades":valid,"watchlist":skip,"running_positions":[],"tuning_notes":"Full report for tuning"}
+out={"last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),"bot_version":"V4.3_BREAKER_ONLY","params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE},"summary":{"total_scanned":len(results),"valid":len(valid),"skip":len(skip),"by_filter":{"sweep":len([r for r in skip if r.get("filter")=="sweep"]),"choch":len([r for r in skip if r.get("filter")=="choch"]),"zone":len([r for r in skip if r.get("filter")=="zone"]),"distance":len([r for r in skip if r.get("filter")=="distance"]),"confidence":len([r for r in skip if r.get("filter")=="confidence"]),"time":len([r for r in skip if r.get("filter")=="time"]),"setup_ban":len([r for r in skip if r.get("filter")=="setup_ban"])}},"results":results,"valid_trades":valid,"watchlist":skip,"running_positions":[],"tuning_notes":"Full report for tuning"}
 
 with open("last_scan.json","w") as f:
     json.dump(out,f,indent=2)
