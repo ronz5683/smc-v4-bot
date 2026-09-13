@@ -1,82 +1,137 @@
-import requests, json, time, datetime
+
+import requests, json, datetime, time
 from datetime import timezone
+import os
 
 SYMBOLS = ["BTCUSDT","ETHUSDT","SOLUSDT","XRPUSDT","BNBUSDT","ADAUSDT","DOGEUSDT","AVAXUSDT","LINKUSDT","OPUSDT","ARBUSDT","MATICUSDT"]
-MAX_DISTANCE_PCT = 0.3
-MIN_CONFIDENCE = 8
+MAX_DISTANCE_PCT = 0.5
+MIN_CONFIDENCE = 7
+LIMIT = 100
 
-def get_price(symbol):
+def get_klines(symbol, interval, limit=100):
+    try:
+        url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval={interval}&limit={limit}"
+        r = requests.get(url, timeout=10)
+        data = r.json()
+        return [{"open": float(x[1]), "high": float(x[2]), "low": float(x[3]), "close": float(x[4]), "volume": float(x[5])} for x in data]
+    except Exception as e:
+        print(f"Error klines {symbol} {interval}: {e}")
+        return []
+
+def get_current_price(symbol):
     try:
         r = requests.get(f"https://api.binance.com/api/v3/ticker/price?symbol={symbol}", timeout=5)
         return float(r.json()['price'])
-    except: return None
+    except:
+        return None
 
-def analyze_symbol(symbol):
-    price = get_price(symbol)
-    if not price: return {"symbol":symbol,"status":"ERROR","reason":"Price fetch fail"}
+def find_swings(candles, lookback=20):
+    if len(candles) < lookback*2: return None, None
+    highs = [c['high'] for c in candles[-lookback:]]
+    lows = [c['low'] for c in candles[-lookback:]]
+    return {"price": max(highs)}, {"price": min(lows)}
 
-    # === INI OTAK DUMMY V4 ===
-    # Simulasi deteksi SMC (nanti kamu ganti dengan logic sweep+choch real kamu)
-    # Untuk sekarang kita buat logic dummy yang sama seperti di dashboard chat
-    import random
-    random.seed(hash(symbol+str(int(time.time()/900)))) # ganti tiap 15 menit
+def detect_sweep(candles):
+    if len(candles) < 30: return {"sweep": False, "reason": "Not enough candles"}
+    sh, sl = find_swings(candles, 20)
+    if not sh or not sl: return {"sweep": False, "reason": "No swing"}
+    last5 = candles[-5:]
+    for c in last5:
+        if c['low'] < sl['price'] * 0.998 and c['close'] > sl['price']:
+            return {"sweep": True, "type": "BULLISH_SWEEP", "level": sl['price'], "reason": f"Wick {c['low']:.2f} below swing low {sl['price']:.2f} then close {c['close']:.2f}"}
+        if c['high'] > sh['price'] * 1.002 and c['close'] < sh['price']:
+            return {"sweep": True, "type": "BEARISH_SWEEP", "level": sh['price'], "reason": f"Wick {c['high']:.2f} above swing high {sh['price']:.2f} then close {c['close']:.2f}"}
+    return {"sweep": False, "reason": f"No sweep H:{sh['price']:.2f} L:{sl['price']:.2f}"}
 
-    distance = round(random.uniform(0.05, 1.5), 2)
-    has_sweep = random.choice([True, False])
-    has_choch = random.choice([True, False])
-    zone_type = random.choice(["Breaker","OB+FVG","OB+FVG"]) # OB+FVG yang dulu WR 0% sudah di-ban di filter bawah
-    confidence = random.randint(5,10)
-    hour_wib = (datetime.datetime.now(timezone.utc).hour + 7) % 24
+def detect_choch(candles):
+    if len(candles) < 25: return {"choch": False, "reason": "short"}
+    closes = [c['close'] for c in candles[-20:]]
+    last_close = closes[-1]
+    prev_high = max(closes[-11:-1])
+    prev_low = min(closes[-11:-1])
+    if last_close > prev_high * 1.001:
+        return {"choch": True, "type": "BULLISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev high {prev_high:.2f}"}
+    if last_close < prev_low * 0.999:
+        return {"choch": True, "type": "BEARISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev low {prev_low:.2f}"}
+    return {"choch": False, "reason": f"No ChoCh range {prev_low:.2f}-{prev_high:.2f}"}
 
-    # === FILTER TUNING HASIL CSV KAMU ===
-    if zone_type == "OB+FVG":
-        return {"symbol":symbol,"status":"SKIP","reason":"Setup banned - OB+FVG WR 0% di data 25 trades","price":price,"distance":f"{distance}%","zone":zone_type,"confidence":confidence}
-    if 7 <= hour_wib <= 9:
-        return {"symbol":symbol,"status":"SKIP","reason":f"Blacklist jam {hour_wib}:00 WIB - likuiditas tipis","price":price,"distance":f"{distance}%","zone":zone_type,"confidence":confidence}
-    if confidence < MIN_CONFIDENCE:
-        return {"symbol":symbol,"status":"SKIP","reason":f"Confidence {confidence} < {MIN_CONFIDENCE} - WR rendah","price":price,"distance":f"{distance}%","zone":zone_type,"confidence":confidence}
-    if distance > MAX_DISTANCE_PCT:
-        return {"symbol":symbol,"status":"SKIP","reason":f"Distance {distance}% > {MAX_DISTANCE_PCT}% - terlalu jauh dari zona","price":price,"distance":f"{distance}%","zone":zone_type,"confidence":confidence}
-    if not (has_sweep and has_choch):
-        return {"symbol":symbol,"status":"SKIP","reason":f"No Sweep/ChoCh - sweep:{has_sweep} choch:{has_choch}","price":price,"distance":f"{distance}%","zone":zone_type,"confidence":confidence}
+def detect_zones(candles):
+    if len(candles) < 10: return None
+    zones = []
+    for i in range(len(candles)-6, len(candles)-1):
+        c = candles[i]
+        nc = candles[i+1]
+        if c['close'] < c['open'] and nc['close'] > nc['open'] and nc['close'] > c['high']:
+            zones.append({"type": "OB", "subtype": "BULLISH_OB", "price": (c['high']+c['low'])/2, "high": c['high'], "low": c['low']})
+        if c['close'] > c['open'] and nc['close'] < nc['open'] and nc['low'] < c['low']:
+            zones.append({"type": "BREAKER", "subtype": "BULLISH_BREAKER", "price": (c['high']+c['low'])/2, "high": c['high'], "low": c['low']})
+    for i in range(len(candles)-4, len(candles)-1):
+        c1 = candles[i]
+        c3 = candles[i+2] if i+2 < len(candles) else None
+        if not c3: continue
+        if c1['high'] < c3['low']:
+            zones.append({"type": "FVG", "subtype": "BULLISH_FVG", "price": (c1['high']+c3['low'])/2, "high": c3['low'], "low": c1['high']})
+        if c1['low'] > c3['high']:
+            zones.append({"type": "FVG", "subtype": "BEARISH_FVG", "price": (c1['low']+c3['high'])/2, "high": c1['low'], "low": c3['high']})
+    if not zones: return None
+    price = candles[-1]['close']
+    return min(zones, key=lambda z: abs(z['price']-price))
 
-    # VALID - hitung Entry SL TP seperti dummy
-    entry = round(price * (0.998 if random.choice([True]) else 1.002), 2)
-    sl = round(entry * 0.992, 2)
-    tp1 = round(entry * 1.015, 2)
-    tp2 = round(entry * 1.03, 2)
+def analyze_symbol_real(symbol):
+    price = get_current_price(symbol)
+    k15 = get_klines(symbol, "15m", LIMIT)
+    k1h = get_klines(symbol, "1h", LIMIT)
+    if not k15 or not k1h or not price:
+        return {"symbol": symbol, "status": "ERROR", "reason": "API fail", "price": price or 0}
+    htf = "NEUTRAL"
+    if k1h[-1]['close'] > k1h[-20]['close']*1.01: htf="BULLISH"
+    elif k1h[-1]['close'] < k1h[-20]['close']*0.99: htf="BEARISH"
+    sweep = detect_sweep(k15)
+    choch = detect_choch(k15)
+    zone = detect_zones(k15)
+    hour_wib = (datetime.datetime.now(timezone.utc).hour+7)%24
+    dist = 999
+    if zone: dist = abs(price-zone['price'])/price*100
+    conf = 5 + (2 if sweep['sweep'] else 0) + (2 if choch['choch'] else 0) + (1 if zone and zone['type']=="BREAKER" else 0) + (1 if htf!="NEUTRAL" else 0)
+    conf = min(10, conf)
+    base = {"symbol":symbol,"price":round(price,4),"htf_trend":htf,"sweep":sweep,"choch":choch,"zone":zone,"distance_pct":round(dist,3),"confidence":conf,"hour_wib":hour_wib,"timestamp":datetime.datetime.now(timezone.utc).isoformat()}
+    if zone and zone['type']=="FVG" and conf<8:
+        return {**base,"status":"SKIP","reason":f"FVG conf {conf}<8 banned","filter":"setup_ban"}
+    if 7<=hour_wib<=9:
+        return {**base,"status":"SKIP","reason":f"Blacklist jam {hour_wib}:00 WIB","filter":"time"}
+    if not sweep['sweep']: return {**base,"status":"SKIP","reason":sweep['reason'],"filter":"sweep"}
+    if not choch['choch']: return {**base,"status":"SKIP","reason":choch['reason'],"filter":"choch"}
+    if not zone: return {**base,"status":"SKIP","reason":"No OB/Breaker/FVG","filter":"zone"}
+    if dist>MAX_DISTANCE_PCT: return {**base,"status":"SKIP","reason":f"Distance {dist:.2f}% > {MAX_DISTANCE_PCT}%","filter":"distance"}
+    if conf<MIN_CONFIDENCE: return {**base,"status":"SKIP","reason":f"Confidence {conf}<{MIN_CONFIDENCE}","filter":"confidence"}
+    entry=zone['price']
+    if sweep['type']=="BULLISH_SWEEP":
+        sl=zone['low']*0.998
+        tp1=entry+(entry-sl)*1.5
+        tp2=entry+(entry-sl)*3
+        direction="LONG"
+    else:
+        sl=zone['high']*1.002
+        tp1=entry-(sl-entry)*1.5
+        tp2=entry-(sl-entry)*3
+        direction="SHORT"
+    return {**base,"status":"VALID","reason":f"{sweep['type']}+{choch['type']}+{zone['type']}","direction":direction,"entry":round(entry,4),"sl":round(sl,4),"tp1":round(tp1,4),"tp2":round(tp2,4),"rrr":round(abs(tp1-entry)/abs(entry-sl),2) if entry!=sl else 0,"order_type":"LIMIT","order_status":"WAITING_LIMIT","zone_price":round(zone['price'],4),"filter":"none"}
 
-    return {
-        "symbol":symbol,
-        "status":"VALID",
-        "reason":"Sweep+ChoCh+Breaker - VALID",
-        "price":price,
-        "entry":entry,
-        "sl":sl,
-        "tp1":tp1,
-        "tp2":tp2,
-        "distance":f"{distance}%",
-        "zone":zone_type,
-        "confidence":confidence,
-        "order_type":"LIMIT",
-        "order_status":"WAITING LIMIT"
-    }
+results=[]
+for sym in SYMBOLS:
+    try:
+        r=analyze_symbol_real(sym)
+        results.append(r)
+        print(f"{sym}: {r['status']} - {r['reason'][:80]}")
+        time.sleep(0.4)
+    except Exception as e:
+        results.append({"symbol":sym,"status":"ERROR","reason":str(e)})
 
-results = [analyze_symbol(s) for s in SYMBOLS]
-valid = [r for r in results if r['status']=="VALID"]
-skip = [r for r in results if r['status']=="SKIP"]
+valid=[x for x in results if x['status']=="VALID"]
+skip=[x for x in results if x['status']=="SKIP"]
 
-output = {
-    "last_scan_utc": datetime.datetime.now(timezone.utc).isoformat(),
-    "summary": {"total": len(results), "valid": len(valid), "skip": len(skip), "watchlist": len(results)},
-    "results": results,
-    "valid_trades": valid,
-    "watchlist": skip,
-    "running_positions": [], # nanti keisi kalau ada yang fill
-    "report_note": "Otak sama dengan dummy V4 Reset 0 - lengkap dengan alasan skip untuk tuning"
-}
+out={"last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),"bot_version":"V4_REAL_SMC_FULL","params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE},"summary":{"total_scanned":len(results),"valid":len(valid),"skip":len(skip),"by_filter":{"sweep":len([r for r in skip if r.get("filter")=="sweep"]),"choch":len([r for r in skip if r.get("filter")=="choch"]),"zone":len([r for r in skip if r.get("filter")=="zone"]),"distance":len([r for r in skip if r.get("filter")=="distance"]),"confidence":len([r for r in skip if r.get("filter")=="confidence"]),"time":len([r for r in skip if r.get("filter")=="time"]),"setup_ban":len([r for r in skip if r.get("filter")=="setup_ban"])}},"results":results,"valid_trades":valid,"watchlist":skip,"running_positions":[],"tuning_notes":"Full report for tuning"}
 
-with open("last_scan.json","w") as f:
-    json.dump(output, f, indent=2)
-
-print(f"Scan done: {len(valid)} VALID, {len(skip)} SKIP")
+with open("/mnt/data/last_scan.json","w") as f:
+    json.dump(out,f,indent=2)
+print("saved")
