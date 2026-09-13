@@ -29,9 +29,12 @@ def get_current_price(symbol):
         return None
 
 def find_swings(candles, lookback=20):
-    if len(candles) < lookback*2: return None, None
-    highs = [c['high'] for c in candles[-lookback:]]
-    lows = [c['low'] for c in candles[-lookback:]]
+    # V4.2 FIX: exclude last 5 candles so sweep has room
+    if len(candles) < lookback+10: return None, None
+    # swing from 20 candles before last 5
+    slice_c = candles[-(lookback+5):-5]
+    highs = [c['high'] for c in slice_c]
+    lows = [c['low'] for c in slice_c]
     return {"price": max(highs)}, {"price": min(lows)}
 
 def detect_sweep(candles):
@@ -53,10 +56,11 @@ def detect_choch(candles):
     last_close = closes[-1]
     prev_high = max(closes[-11:-1])
     prev_low = min(closes[-11:-1])
-    if last_close > prev_high * 1.001:
-        return {"choch": True, "type": "BULLISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev high {prev_high:.2f}"}
-    if last_close < prev_low * 0.999:
-        return {"choch": True, "type": "BEARISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev low {prev_low:.2f}"}
+    # V4.2: 0.03% threshold (was 0.1%) for low volatility
+    if last_close > prev_high * 1.0003:
+        return {"choch": True, "type": "BULLISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev high {prev_high:.2f} (0.03%)"}
+    if last_close < prev_low * 0.9997:
+        return {"choch": True, "type": "BEARISH_CHOCH", "reason": f"Close {last_close:.2f} breaks prev low {prev_low:.2f} (0.03%)"}
     return {"choch": False, "reason": f"No ChoCh range {prev_low:.2f}-{prev_high:.2f}"}
 
 def detect_zones(candles):
@@ -149,7 +153,7 @@ for sym in SYMBOLS:
 valid=[x for x in results if x['status']=="VALID"]
 skip=[x for x in results if x['status']=="SKIP"]
 
-out={"last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),"bot_version":"V4.1_TUNING_LOOSE","params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE},"summary":{"total_scanned":len(results),"valid":len(valid),"skip":len(skip),"by_filter":{"sweep":len([r for r in skip if r.get("filter")=="sweep"]),"choch":len([r for r in skip if r.get("filter")=="choch"]),"zone":len([r for r in skip if r.get("filter")=="zone"]),"distance":len([r for r in skip if r.get("filter")=="distance"]),"confidence":len([r for r in skip if r.get("filter")=="confidence"]),"time":len([r for r in skip if r.get("filter")=="time"]),"setup_ban":len([r for r in skip if r.get("filter")=="setup_ban"])}},"results":results,"valid_trades":valid,"watchlist":skip,"running_positions":[],"tuning_notes":"Full report for tuning"}
+out={"last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),"bot_version":"V4.2_FIXED_SWING","params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE},"summary":{"total_scanned":len(results),"valid":len(valid),"skip":len(skip),"by_filter":{"sweep":len([r for r in skip if r.get("filter")=="sweep"]),"choch":len([r for r in skip if r.get("filter")=="choch"]),"zone":len([r for r in skip if r.get("filter")=="zone"]),"distance":len([r for r in skip if r.get("filter")=="distance"]),"confidence":len([r for r in skip if r.get("filter")=="confidence"]),"time":len([r for r in skip if r.get("filter")=="time"]),"setup_ban":len([r for r in skip if r.get("filter")=="setup_ban"])}},"results":results,"valid_trades":valid,"watchlist":skip,"running_positions":[],"tuning_notes":"Full report for tuning"}
 
 with open("last_scan.json","w") as f:
     json.dump(out,f,indent=2)
