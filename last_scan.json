@@ -1,18 +1,18 @@
 {
-  "last_scan_utc": "2026-09-13T11:25:10.474920+00:00",
-  "bot_version": "V4.2_FIXED_SWING",
+  "last_scan_utc": "2026-09-13T11:27:06.947710+00:00",
+  "bot_version": "V4.3_BREAKER_ONLY",
   "params": {
     "MAX_DISTANCE_PCT": 0.5,
     "MIN_CONFIDENCE": 6
   },
   "summary": {
     "total_scanned": 12,
-    "valid": 0,
-    "skip": 12,
+    "valid": 3,
+    "skip": 9,
     "by_filter": {
-      "sweep": 9,
+      "sweep": 5,
       "choch": 2,
-      "zone": 0,
+      "zone": 1,
       "distance": 0,
       "confidence": 0,
       "time": 0,
@@ -30,20 +30,20 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 76533.29-76824.42"
+        "reason": "No ChoCh range 76533.29-76824.42 (H:76893.91 L:76500.00)"
       },
       "zone": null,
       "distance_pct": 999,
       "confidence": 5,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:42.883243+00:00",
+      "timestamp": "2026-09-13T11:26:46.374641+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:77325.82 L:76570.00 + No ChoCh range 76533.29-76824.42",
+      "reason": "No sweep H:77325.82 L:76570.00 + No ChoCh range 76533.29-76824.42 (H:76893.91 L:76500.00)",
       "filter": "sweep"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2475.82,
+      "price": 2475.69,
       "htf_trend": "BEARISH",
       "sweep": {
         "sweep": true,
@@ -53,15 +53,15 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 2469.83-2494.29"
+        "reason": "No ChoCh range 2469.83-2494.29 (H:2497.34 L:2467.50)"
       },
       "zone": null,
       "distance_pct": 999,
       "confidence": 8,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:45.274099+00:00",
+      "timestamp": "2026-09-13T11:26:48.299671+00:00",
       "status": "SKIP",
-      "reason": "No ChoCh range 2469.83-2494.29",
+      "reason": "No ChoCh range 2469.83-2494.29 (H:2497.34 L:2467.50)",
       "filter": "choch"
     },
     {
@@ -74,7 +74,7 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 99.55-100.05"
+        "reason": "No ChoCh range 99.55-100.05 (H:100.20 L:99.42)"
       },
       "zone": {
         "type": "BREAKER",
@@ -86,14 +86,23 @@
       "distance_pct": 0.09,
       "confidence": 7,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:47.710304+00:00",
-      "status": "SKIP",
-      "reason": "No sweep H:101.93 L:99.42 + No ChoCh range 99.55-100.05",
-      "filter": "sweep"
+      "timestamp": "2026-09-13T11:26:50.517558+00:00",
+      "status": "VALID",
+      "reason": "CHOCH_ONLY BULLISH_SWEEP+NO_SWEEP+BREAKER",
+      "direction": "LONG",
+      "entry": 99.85,
+      "sl": 99.5904,
+      "tp1": 100.2394,
+      "tp2": 100.6287,
+      "rrr": 1.5,
+      "order_type": "LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "zone_price": 99.85,
+      "filter": "none"
     },
     {
       "symbol": "XRPUSDT",
-      "price": 1.3421,
+      "price": 1.3424,
       "htf_trend": "BEARISH",
       "sweep": {
         "sweep": true,
@@ -103,20 +112,20 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 1.34-1.35"
+        "reason": "No ChoCh range 1.34-1.35 (H:1.35 L:1.34)"
       },
       "zone": null,
       "distance_pct": 999,
       "confidence": 8,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:50.237441+00:00",
+      "timestamp": "2026-09-13T11:26:52.187814+00:00",
       "status": "SKIP",
-      "reason": "No ChoCh range 1.34-1.35",
+      "reason": "No ChoCh range 1.34-1.35 (H:1.35 L:1.34)",
       "filter": "choch"
     },
     {
       "symbol": "BNBUSDT",
-      "price": 715.41,
+      "price": 715.45,
       "htf_trend": "BEARISH",
       "sweep": {
         "sweep": false,
@@ -124,7 +133,7 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 714.80-718.05"
+        "reason": "No ChoCh range 714.80-718.05 (H:719.00 L:714.05)"
       },
       "zone": {
         "type": "BREAKER",
@@ -133,13 +142,22 @@
         "high": 715.35,
         "low": 714.38
       },
-      "distance_pct": 0.076,
+      "distance_pct": 0.082,
       "confidence": 7,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:52.610689+00:00",
-      "status": "SKIP",
-      "reason": "No sweep H:726.52 L:714.34 + No ChoCh range 714.80-718.05",
-      "filter": "sweep"
+      "timestamp": "2026-09-13T11:26:54.118035+00:00",
+      "status": "VALID",
+      "reason": "CHOCH_ONLY BULLISH_SWEEP+NO_SWEEP+BREAKER",
+      "direction": "LONG",
+      "entry": 714.865,
+      "sl": 712.9512,
+      "tp1": 717.7356,
+      "tp2": 720.6063,
+      "rrr": 1.5,
+      "order_type": "LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "zone_price": 714.865,
+      "filter": "none"
     },
     {
       "symbol": "ADAUSDT",
@@ -151,15 +169,15 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 0.20-0.21"
+        "reason": "No ChoCh range 0.20-0.21 (H:0.21 L:0.20)"
       },
       "zone": null,
       "distance_pct": 999,
       "confidence": 6,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:55.269470+00:00",
+      "timestamp": "2026-09-13T11:26:55.818865+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:0.21 L:0.20 + No ChoCh range 0.20-0.21",
+      "reason": "No sweep H:0.21 L:0.20 + No ChoCh range 0.20-0.21 (H:0.21 L:0.20)",
       "filter": "sweep"
     },
     {
@@ -172,7 +190,7 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 0.08-0.08"
+        "reason": "No ChoCh range 0.08-0.08 (H:0.08 L:0.08)"
       },
       "zone": {
         "type": "BREAKER",
@@ -181,17 +199,26 @@
         "high": 0.08364,
         "low": 0.08355
       },
-      "distance_pct": 0.09,
+      "distance_pct": 0.066,
       "confidence": 7,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:57.699306+00:00",
-      "status": "SKIP",
-      "reason": "No sweep H:0.08 L:0.08 + No ChoCh range 0.08-0.08",
-      "filter": "sweep"
+      "timestamp": "2026-09-13T11:26:57.757245+00:00",
+      "status": "VALID",
+      "reason": "CHOCH_ONLY BULLISH_SWEEP+NO_SWEEP+BREAKER",
+      "direction": "LONG",
+      "entry": 0.0836,
+      "sl": 0.0834,
+      "tp1": 0.0839,
+      "tp2": 0.0842,
+      "rrr": 1.5,
+      "order_type": "LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "zone_price": 0.0836,
+      "filter": "none"
     },
     {
       "symbol": "AVAXUSDT",
-      "price": 7.309,
+      "price": 7.316,
       "htf_trend": "BEARISH",
       "sweep": {
         "sweep": false,
@@ -199,7 +226,7 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 7.30-7.34"
+        "reason": "No ChoCh range 7.30-7.34 (H:7.34 L:7.28)"
       },
       "zone": {
         "type": "OB",
@@ -208,12 +235,12 @@
         "high": 7.309,
         "low": 7.291
       },
-      "distance_pct": 0.123,
+      "distance_pct": 0.219,
       "confidence": 6,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:25:00.056464+00:00",
+      "timestamp": "2026-09-13T11:26:59.427841+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:7.46 L:7.28 + No ChoCh range 7.30-7.34",
+      "reason": "No sweep H:7.46 L:7.28 + No ChoCh range 7.30-7.34 (H:7.34 L:7.28)",
       "filter": "sweep"
     },
     {
@@ -226,15 +253,15 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 11.29-11.37"
+        "reason": "No ChoCh range 11.29-11.37 (H:11.37 L:11.25)"
       },
       "zone": null,
       "distance_pct": 999,
       "confidence": 6,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:25:02.978709+00:00",
+      "timestamp": "2026-09-13T11:27:01.136126+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:11.57 L:11.25 + No ChoCh range 11.29-11.37",
+      "reason": "No sweep H:11.57 L:11.25 + No ChoCh range 11.29-11.37 (H:11.37 L:11.25)",
       "filter": "sweep"
     },
     {
@@ -247,7 +274,7 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 0.09-0.10"
+        "reason": "No ChoCh range 0.09-0.10 (H:0.10 L:0.09)"
       },
       "zone": {
         "type": "BREAKER",
@@ -259,31 +286,32 @@
       "distance_pct": 0.421,
       "confidence": 7,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:25:05.338877+00:00",
+      "timestamp": "2026-09-13T11:27:02.817371+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:0.10 L:0.09 + No ChoCh range 0.09-0.10",
+      "reason": "No sweep H:0.10 L:0.09 + No ChoCh range 0.09-0.10 (H:0.10 L:0.09)",
       "filter": "sweep"
     },
     {
       "symbol": "ARBUSDT",
-      "price": 0.1382,
+      "price": 0.1383,
       "htf_trend": "BEARISH",
       "sweep": {
         "sweep": false,
         "reason": "No sweep H:0.14 L:0.13"
       },
       "choch": {
-        "choch": false,
-        "reason": "No ChoCh range 0.14-0.14"
+        "choch": true,
+        "type": "BULLISH_CHOCH",
+        "reason": "Close 0.14 breaks prev high close 0.14 (0.03%)"
       },
       "zone": null,
       "distance_pct": 999,
-      "confidence": 6,
+      "confidence": 8,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:25:07.712215+00:00",
+      "timestamp": "2026-09-13T11:27:04.519545+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:0.14 L:0.13 + No ChoCh range 0.14-0.14",
-      "filter": "sweep"
+      "reason": "No OB/Breaker/FVG",
+      "filter": "zone"
     },
     {
       "symbol": "MATICUSDT",
@@ -295,7 +323,7 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 0.38-0.38"
+        "reason": "No ChoCh range 0.38-0.38 (H:0.38 L:0.38)"
       },
       "zone": {
         "type": "FVG",
@@ -307,13 +335,122 @@
       "distance_pct": 0.105,
       "confidence": 5,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:25:10.074757+00:00",
+      "timestamp": "2026-09-13T11:27:06.547536+00:00",
       "status": "SKIP",
       "reason": "FVG conf 5<8 banned",
       "filter": "setup_ban"
     }
   ],
-  "valid_trades": [],
+  "valid_trades": [
+    {
+      "symbol": "SOLUSDT",
+      "price": 99.76,
+      "htf_trend": "BEARISH",
+      "sweep": {
+        "sweep": false,
+        "reason": "No sweep H:101.93 L:99.42"
+      },
+      "choch": {
+        "choch": false,
+        "reason": "No ChoCh range 99.55-100.05 (H:100.20 L:99.42)"
+      },
+      "zone": {
+        "type": "BREAKER",
+        "subtype": "BULLISH_BREAKER",
+        "price": 99.85,
+        "high": 99.91,
+        "low": 99.79
+      },
+      "distance_pct": 0.09,
+      "confidence": 7,
+      "hour_wib": 18,
+      "timestamp": "2026-09-13T11:26:50.517558+00:00",
+      "status": "VALID",
+      "reason": "CHOCH_ONLY BULLISH_SWEEP+NO_SWEEP+BREAKER",
+      "direction": "LONG",
+      "entry": 99.85,
+      "sl": 99.5904,
+      "tp1": 100.2394,
+      "tp2": 100.6287,
+      "rrr": 1.5,
+      "order_type": "LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "zone_price": 99.85,
+      "filter": "none"
+    },
+    {
+      "symbol": "BNBUSDT",
+      "price": 715.45,
+      "htf_trend": "BEARISH",
+      "sweep": {
+        "sweep": false,
+        "reason": "No sweep H:726.52 L:714.34"
+      },
+      "choch": {
+        "choch": false,
+        "reason": "No ChoCh range 714.80-718.05 (H:719.00 L:714.05)"
+      },
+      "zone": {
+        "type": "BREAKER",
+        "subtype": "BULLISH_BREAKER",
+        "price": 714.865,
+        "high": 715.35,
+        "low": 714.38
+      },
+      "distance_pct": 0.082,
+      "confidence": 7,
+      "hour_wib": 18,
+      "timestamp": "2026-09-13T11:26:54.118035+00:00",
+      "status": "VALID",
+      "reason": "CHOCH_ONLY BULLISH_SWEEP+NO_SWEEP+BREAKER",
+      "direction": "LONG",
+      "entry": 714.865,
+      "sl": 712.9512,
+      "tp1": 717.7356,
+      "tp2": 720.6063,
+      "rrr": 1.5,
+      "order_type": "LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "zone_price": 714.865,
+      "filter": "none"
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "price": 0.0835,
+      "htf_trend": "BEARISH",
+      "sweep": {
+        "sweep": false,
+        "reason": "No sweep H:0.08 L:0.08"
+      },
+      "choch": {
+        "choch": false,
+        "reason": "No ChoCh range 0.08-0.08 (H:0.08 L:0.08)"
+      },
+      "zone": {
+        "type": "BREAKER",
+        "subtype": "BULLISH_BREAKER",
+        "price": 0.083595,
+        "high": 0.08364,
+        "low": 0.08355
+      },
+      "distance_pct": 0.066,
+      "confidence": 7,
+      "hour_wib": 18,
+      "timestamp": "2026-09-13T11:26:57.757245+00:00",
+      "status": "VALID",
+      "reason": "CHOCH_ONLY BULLISH_SWEEP+NO_SWEEP+BREAKER",
+      "direction": "LONG",
+      "entry": 0.0836,
+      "sl": 0.0834,
+      "tp1": 0.0839,
+      "tp2": 0.0842,
+      "rrr": 1.5,
+      "order_type": "LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "zone_price": 0.0836,
+      "filter": "none"
+    }
+  ],
   "watchlist": [
     {
       "symbol": "BTCUSDT",
@@ -325,20 +462,20 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 76533.29-76824.42"
+        "reason": "No ChoCh range 76533.29-76824.42 (H:76893.91 L:76500.00)"
       },
       "zone": null,
       "distance_pct": 999,
       "confidence": 5,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:42.883243+00:00",
+      "timestamp": "2026-09-13T11:26:46.374641+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:77325.82 L:76570.00 + No ChoCh range 76533.29-76824.42",
+      "reason": "No sweep H:77325.82 L:76570.00 + No ChoCh range 76533.29-76824.42 (H:76893.91 L:76500.00)",
       "filter": "sweep"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2475.82,
+      "price": 2475.69,
       "htf_trend": "BEARISH",
       "sweep": {
         "sweep": true,
@@ -348,47 +485,20 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 2469.83-2494.29"
+        "reason": "No ChoCh range 2469.83-2494.29 (H:2497.34 L:2467.50)"
       },
       "zone": null,
       "distance_pct": 999,
       "confidence": 8,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:45.274099+00:00",
+      "timestamp": "2026-09-13T11:26:48.299671+00:00",
       "status": "SKIP",
-      "reason": "No ChoCh range 2469.83-2494.29",
+      "reason": "No ChoCh range 2469.83-2494.29 (H:2497.34 L:2467.50)",
       "filter": "choch"
     },
     {
-      "symbol": "SOLUSDT",
-      "price": 99.76,
-      "htf_trend": "BEARISH",
-      "sweep": {
-        "sweep": false,
-        "reason": "No sweep H:101.93 L:99.42"
-      },
-      "choch": {
-        "choch": false,
-        "reason": "No ChoCh range 99.55-100.05"
-      },
-      "zone": {
-        "type": "BREAKER",
-        "subtype": "BULLISH_BREAKER",
-        "price": 99.85,
-        "high": 99.91,
-        "low": 99.79
-      },
-      "distance_pct": 0.09,
-      "confidence": 7,
-      "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:47.710304+00:00",
-      "status": "SKIP",
-      "reason": "No sweep H:101.93 L:99.42 + No ChoCh range 99.55-100.05",
-      "filter": "sweep"
-    },
-    {
       "symbol": "XRPUSDT",
-      "price": 1.3421,
+      "price": 1.3424,
       "htf_trend": "BEARISH",
       "sweep": {
         "sweep": true,
@@ -398,43 +508,16 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 1.34-1.35"
+        "reason": "No ChoCh range 1.34-1.35 (H:1.35 L:1.34)"
       },
       "zone": null,
       "distance_pct": 999,
       "confidence": 8,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:50.237441+00:00",
+      "timestamp": "2026-09-13T11:26:52.187814+00:00",
       "status": "SKIP",
-      "reason": "No ChoCh range 1.34-1.35",
+      "reason": "No ChoCh range 1.34-1.35 (H:1.35 L:1.34)",
       "filter": "choch"
-    },
-    {
-      "symbol": "BNBUSDT",
-      "price": 715.41,
-      "htf_trend": "BEARISH",
-      "sweep": {
-        "sweep": false,
-        "reason": "No sweep H:726.52 L:714.34"
-      },
-      "choch": {
-        "choch": false,
-        "reason": "No ChoCh range 714.80-718.05"
-      },
-      "zone": {
-        "type": "BREAKER",
-        "subtype": "BULLISH_BREAKER",
-        "price": 714.865,
-        "high": 715.35,
-        "low": 714.38
-      },
-      "distance_pct": 0.076,
-      "confidence": 7,
-      "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:52.610689+00:00",
-      "status": "SKIP",
-      "reason": "No sweep H:726.52 L:714.34 + No ChoCh range 714.80-718.05",
-      "filter": "sweep"
     },
     {
       "symbol": "ADAUSDT",
@@ -446,47 +529,20 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 0.20-0.21"
+        "reason": "No ChoCh range 0.20-0.21 (H:0.21 L:0.20)"
       },
       "zone": null,
       "distance_pct": 999,
       "confidence": 6,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:55.269470+00:00",
+      "timestamp": "2026-09-13T11:26:55.818865+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:0.21 L:0.20 + No ChoCh range 0.20-0.21",
-      "filter": "sweep"
-    },
-    {
-      "symbol": "DOGEUSDT",
-      "price": 0.0835,
-      "htf_trend": "BEARISH",
-      "sweep": {
-        "sweep": false,
-        "reason": "No sweep H:0.08 L:0.08"
-      },
-      "choch": {
-        "choch": false,
-        "reason": "No ChoCh range 0.08-0.08"
-      },
-      "zone": {
-        "type": "BREAKER",
-        "subtype": "BULLISH_BREAKER",
-        "price": 0.083595,
-        "high": 0.08364,
-        "low": 0.08355
-      },
-      "distance_pct": 0.09,
-      "confidence": 7,
-      "hour_wib": 18,
-      "timestamp": "2026-09-13T11:24:57.699306+00:00",
-      "status": "SKIP",
-      "reason": "No sweep H:0.08 L:0.08 + No ChoCh range 0.08-0.08",
+      "reason": "No sweep H:0.21 L:0.20 + No ChoCh range 0.20-0.21 (H:0.21 L:0.20)",
       "filter": "sweep"
     },
     {
       "symbol": "AVAXUSDT",
-      "price": 7.309,
+      "price": 7.316,
       "htf_trend": "BEARISH",
       "sweep": {
         "sweep": false,
@@ -494,7 +550,7 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 7.30-7.34"
+        "reason": "No ChoCh range 7.30-7.34 (H:7.34 L:7.28)"
       },
       "zone": {
         "type": "OB",
@@ -503,12 +559,12 @@
         "high": 7.309,
         "low": 7.291
       },
-      "distance_pct": 0.123,
+      "distance_pct": 0.219,
       "confidence": 6,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:25:00.056464+00:00",
+      "timestamp": "2026-09-13T11:26:59.427841+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:7.46 L:7.28 + No ChoCh range 7.30-7.34",
+      "reason": "No sweep H:7.46 L:7.28 + No ChoCh range 7.30-7.34 (H:7.34 L:7.28)",
       "filter": "sweep"
     },
     {
@@ -521,15 +577,15 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 11.29-11.37"
+        "reason": "No ChoCh range 11.29-11.37 (H:11.37 L:11.25)"
       },
       "zone": null,
       "distance_pct": 999,
       "confidence": 6,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:25:02.978709+00:00",
+      "timestamp": "2026-09-13T11:27:01.136126+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:11.57 L:11.25 + No ChoCh range 11.29-11.37",
+      "reason": "No sweep H:11.57 L:11.25 + No ChoCh range 11.29-11.37 (H:11.37 L:11.25)",
       "filter": "sweep"
     },
     {
@@ -542,7 +598,7 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 0.09-0.10"
+        "reason": "No ChoCh range 0.09-0.10 (H:0.10 L:0.09)"
       },
       "zone": {
         "type": "BREAKER",
@@ -554,31 +610,32 @@
       "distance_pct": 0.421,
       "confidence": 7,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:25:05.338877+00:00",
+      "timestamp": "2026-09-13T11:27:02.817371+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:0.10 L:0.09 + No ChoCh range 0.09-0.10",
+      "reason": "No sweep H:0.10 L:0.09 + No ChoCh range 0.09-0.10 (H:0.10 L:0.09)",
       "filter": "sweep"
     },
     {
       "symbol": "ARBUSDT",
-      "price": 0.1382,
+      "price": 0.1383,
       "htf_trend": "BEARISH",
       "sweep": {
         "sweep": false,
         "reason": "No sweep H:0.14 L:0.13"
       },
       "choch": {
-        "choch": false,
-        "reason": "No ChoCh range 0.14-0.14"
+        "choch": true,
+        "type": "BULLISH_CHOCH",
+        "reason": "Close 0.14 breaks prev high close 0.14 (0.03%)"
       },
       "zone": null,
       "distance_pct": 999,
-      "confidence": 6,
+      "confidence": 8,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:25:07.712215+00:00",
+      "timestamp": "2026-09-13T11:27:04.519545+00:00",
       "status": "SKIP",
-      "reason": "No sweep H:0.14 L:0.13 + No ChoCh range 0.14-0.14",
-      "filter": "sweep"
+      "reason": "No OB/Breaker/FVG",
+      "filter": "zone"
     },
     {
       "symbol": "MATICUSDT",
@@ -590,7 +647,7 @@
       },
       "choch": {
         "choch": false,
-        "reason": "No ChoCh range 0.38-0.38"
+        "reason": "No ChoCh range 0.38-0.38 (H:0.38 L:0.38)"
       },
       "zone": {
         "type": "FVG",
@@ -602,7 +659,7 @@
       "distance_pct": 0.105,
       "confidence": 5,
       "hour_wib": 18,
-      "timestamp": "2026-09-13T11:25:10.074757+00:00",
+      "timestamp": "2026-09-13T11:27:06.547536+00:00",
       "status": "SKIP",
       "reason": "FVG conf 5<8 banned",
       "filter": "setup_ban"
