@@ -2,12 +2,14 @@ name: SMC V4 Live Bot
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # Jalan tiap 15 menit
-  workflow_dispatch:  # Bisa di-run manual juga
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -25,11 +27,9 @@ jobs:
         run: |
           python smc_v4_github.py
 
-      - name: Commit and push CSV if changed
+      - name: Commit and push if changed
         run: |
           git config --global user.name "SMC Bot"
           git config --global user.email "bot@smc-v4.com"
-          git add smc_v4_live_trades.csv
-          git add last_scan.json || true
-          git diff --staged --quiet || git commit -m "auto: scan $(date -u)"
-          git push
+          git add -A
+          git diff --staged --quiet || (git commit -m "auto: scan $(date -u)" && git push)
