@@ -167,8 +167,34 @@ def save_positions(data):
     with open(POSITIONS_FILE,'w') as f:
         json.dump(data,f,indent=2)
 
-def check_position_status(pos, current_price):
-    """Cek apakah posisi sudah TP/SL"""
+def check_position_status(pos, current_price, klines_15m=None):
+    """V4.5 LIMIT GUARD: cek apakah limit kena, expired, atau missed"""
+    # 1. Jika masih WAITING_LIMIT, cek apakah entry pernah tersentuh
+    if pos.get('order_status') == "WAITING_LIMIT":
+        if klines_15m:
+            # cek apakah ada candle yang high>=entry>=low
+            touched = any(c['low'] <= pos['entry'] <= c['high'] for c in klines_15m[-12:])  # cek 12 candle terakhir (3 jam)
+            if touched:
+                pos['order_status'] = "FILLED"
+                pos['filled_at'] = datetime.datetime.now(timezone.utc).isoformat()
+                pos['filled_price'] = pos['entry']
+                print(f"  FILLED {pos['symbol']} at {pos['entry']}")
+            else:
+                # belum tersentuh - cek apakah sudah lewat TP tanpa fill (missed) atau expired
+                age_candles = len(klines_15m)  # simplifikasi
+                open_time = datetime.datetime.fromisoformat(pos['open_time'].replace('Z','+00:00')) if 'T' in pos.get('open_time','') else datetime.datetime.now(timezone.utc)
+                age_hours = (datetime.datetime.now(timezone.utc) - open_time).total_seconds()/3600
+                # Jika sudah 4 jam belum fill
+                if age_hours > 4:
+                    return "EXPIRED", 0
+                # Jika harga sudah lewat TP1 tanpa fill (missed opportunity)
+                if pos['direction']=="LONG" and current_price >= pos['tp1'] * 0.999:
+                    return "MISSED_TP", 0
+                if pos['direction']=="SHORT" and current_price <= pos['tp1'] * 1.001:
+                    return "MISSED_TP", 0
+                return "WAITING_LIMIT", 0
+    
+    # 2. Jika sudah FILLED / ACTIVE, baru cek TP/SL
     if pos['direction']=="LONG":
         if current_price <= pos['sl']:
             return "SL_HIT", -1
@@ -186,19 +212,26 @@ def check_position_status(pos, current_price):
     return "ACTIVE", 0
 
 # === MAIN SCAN ===
-print(f"=== SMC V4.4 POSITION MANAGER | MAX {MAX_POSITIONS} POS ===")
+print(f"=== SMC V4.5 LIMIT GUARD + POSITION MANAGER | MAX {MAX_POSITIONS} POS ===")
 positions_data = load_positions()
 active_positions = positions_data.get("active", [])
 closed_positions = positions_data.get("closed", [])
 active_symbols = [p['symbol'] for p in active_positions]
 
-# 1. Update status posisi aktif
+# 1. Update status posisi aktif - V4.5 with klines check
 print(f"Checking {len(active_positions)} active positions...")
 for pos in active_positions[:]:
     curr = get_current_price(pos['symbol'])
     if not curr:
         continue
-    status, rrr = check_position_status(pos, curr)
+    klines = get_klines(pos['symbol'], "15m", 50)
+    status, rrr = check_position_status(pos, curr, klines)
+    # WAITING_LIMIT tetap dijaga, jangan close
+    if status == "WAITING_LIMIT":
+        pos['current_price'] = curr
+        pos['last_check'] = datetime.datetime.now(timezone.utc).isoformat()
+        print(f"  WAITING {pos['symbol']} Entry {pos['entry']} Current {curr} (limit belum kena)")
+        continue
     pos['current_price'] = curr
     pos['last_check'] = datetime.datetime.now(timezone.utc).isoformat()
     if status != "ACTIVE":
@@ -271,7 +304,7 @@ skip=[x for x in results if x['status']=="SKIP"]
 
 out={
     "last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),
-    "bot_version":"V4.4_POSITION_GUARD",
+    "bot_version":"V4.5_LIMIT_GUARD",
     "params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE,"MAX_POSITIONS":MAX_POSITIONS},
     "summary":{
         "total_scanned":len(results),
