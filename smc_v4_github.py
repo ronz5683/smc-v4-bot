@@ -5,7 +5,7 @@ import os
 
 SYMBOLS = ["BTCUSDT","ETHUSDT","SOLUSDT","XRPUSDT","BNBUSDT","ADAUSDT","DOGEUSDT","AVAXUSDT","LINKUSDT","OPUSDT","ARBUSDT","MATICUSDT"]
 MAX_DISTANCE_PCT = 0.5
-MIN_CONFIDENCE = 7
+MIN_CONFIDENCE = 6  # lowered to 6 for tuning phase
 LIMIT = 100
 
 def get_klines(symbol, interval, limit=100):
@@ -40,10 +40,11 @@ def detect_sweep(candles):
     if not sh or not sl: return {"sweep": False, "reason": "No swing"}
     last5 = candles[-5:]
     for c in last5:
-        if c['low'] < sl['price'] * 0.998 and c['close'] > sl['price']:
-            return {"sweep": True, "type": "BULLISH_SWEEP", "level": sl['price'], "reason": f"Wick {c['low']:.2f} below swing low {sl['price']:.2f} then close {c['close']:.2f}"}
-        if c['high'] > sh['price'] * 1.002 and c['close'] < sh['price']:
-            return {"sweep": True, "type": "BEARISH_SWEEP", "level": sh['price'], "reason": f"Wick {c['high']:.2f} above swing high {sh['price']:.2f} then close {c['close']:.2f}"}
+        # V4.1: looser sweep 0.05% (was 0.2%) for ranging market
+        if c['low'] < sl['price'] * 0.9995 and c['close'] > sl['price']:
+            return {"sweep": True, "type": "BULLISH_SWEEP", "level": sl['price'], "reason": f"Wick {c['low']:.2f} below swing low {sl['price']:.2f} then close {c['close']:.2f} (0.05% sweep)"}
+        if c['high'] > sh['price'] * 1.0005 and c['close'] < sh['price']:
+            return {"sweep": True, "type": "BEARISH_SWEEP", "level": sh['price'], "reason": f"Wick {c['high']:.2f} above swing high {sh['price']:.2f} then close {c['close']:.2f} (0.05% sweep)"}
     return {"sweep": False, "reason": f"No sweep H:{sh['price']:.2f} L:{sl['price']:.2f}"}
 
 def detect_choch(candles):
@@ -102,13 +103,26 @@ def analyze_symbol_real(symbol):
         return {**base,"status":"SKIP","reason":f"FVG conf {conf}<8 banned","filter":"setup_ban"}
     if 7<=hour_wib<=9:
         return {**base,"status":"SKIP","reason":f"Blacklist jam {hour_wib}:00 WIB","filter":"time"}
-    if not sweep['sweep']: return {**base,"status":"SKIP","reason":sweep['reason'],"filter":"sweep"}
+    # V4.1: allow CHOCH_ONLY if sweep missing but choch+breaker+close distance
+    if not sweep['sweep'] and not choch['choch']:
+        return {**base,"status":"SKIP","reason":f"{sweep['reason']} + {choch['reason']}","filter":"sweep"}
     if not choch['choch']: return {**base,"status":"SKIP","reason":choch['reason'],"filter":"choch"}
     if not zone: return {**base,"status":"SKIP","reason":"No OB/Breaker/FVG","filter":"zone"}
     if dist>MAX_DISTANCE_PCT: return {**base,"status":"SKIP","reason":f"Distance {dist:.2f}% > {MAX_DISTANCE_PCT}%","filter":"distance"}
     if conf<MIN_CONFIDENCE: return {**base,"status":"SKIP","reason":f"Confidence {conf}<{MIN_CONFIDENCE}","filter":"confidence"}
     entry=zone['price']
-    if sweep['type']=="BULLISH_SWEEP":
+    # Determine direction from sweep if exists, else from choch
+    sweep_type = sweep.get('type','')
+    choch_type = choch.get('type','')
+    if not sweep['sweep']:
+        # CHOCH_ONLY mode
+        if 'BULLISH' in choch_type:
+            sweep_type = "BULLISH_SWEEP"
+        elif 'BEARISH' in choch_type:
+            sweep_type = "BEARISH_SWEEP"
+        else:
+            sweep_type = "BULLISH_SWEEP"
+    if sweep_type=="BULLISH_SWEEP":
         sl=zone['low']*0.998
         tp1=entry+(entry-sl)*1.5
         tp2=entry+(entry-sl)*3
@@ -118,7 +132,9 @@ def analyze_symbol_real(symbol):
         tp1=entry-(sl-entry)*1.5
         tp2=entry-(sl-entry)*3
         direction="SHORT"
-    return {**base,"status":"VALID","reason":f"{sweep['type']}+{choch['type']}+{zone['type']}","direction":direction,"entry":round(entry,4),"sl":round(sl,4),"tp1":round(tp1,4),"tp2":round(tp2,4),"rrr":round(abs(tp1-entry)/abs(entry-sl),2) if entry!=sl else 0,"order_type":"LIMIT","order_status":"WAITING_LIMIT","zone_price":round(zone['price'],4),"filter":"none"}
+    # Add sweep vs choch_only tag
+    tag = "SWEEP+CHOCH" if sweep["sweep"] else "CHOCH_ONLY"
+    return {**base,"status":"VALID","reason":f"{tag} {sweep_type}+{choch.get('type','NO_SWEEP')}+{zone['type']}","direction":direction,"entry":round(entry,4),"sl":round(sl,4),"tp1":round(tp1,4),"tp2":round(tp2,4),"rrr":round(abs(tp1-entry)/abs(entry-sl),2) if entry!=sl else 0,"order_type":"LIMIT","order_status":"WAITING_LIMIT","zone_price":round(zone['price'],4),"filter":"none"}
 
 results=[]
 for sym in SYMBOLS:
@@ -133,7 +149,7 @@ for sym in SYMBOLS:
 valid=[x for x in results if x['status']=="VALID"]
 skip=[x for x in results if x['status']=="SKIP"]
 
-out={"last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),"bot_version":"V4_REAL_SMC_FULL","params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE},"summary":{"total_scanned":len(results),"valid":len(valid),"skip":len(skip),"by_filter":{"sweep":len([r for r in skip if r.get("filter")=="sweep"]),"choch":len([r for r in skip if r.get("filter")=="choch"]),"zone":len([r for r in skip if r.get("filter")=="zone"]),"distance":len([r for r in skip if r.get("filter")=="distance"]),"confidence":len([r for r in skip if r.get("filter")=="confidence"]),"time":len([r for r in skip if r.get("filter")=="time"]),"setup_ban":len([r for r in skip if r.get("filter")=="setup_ban"])}},"results":results,"valid_trades":valid,"watchlist":skip,"running_positions":[],"tuning_notes":"Full report for tuning"}
+out={"last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),"bot_version":"V4.1_TUNING_LOOSE","params":{"MAX_DISTANCE_PCT":MAX_DISTANCE_PCT,"MIN_CONFIDENCE":MIN_CONFIDENCE},"summary":{"total_scanned":len(results),"valid":len(valid),"skip":len(skip),"by_filter":{"sweep":len([r for r in skip if r.get("filter")=="sweep"]),"choch":len([r for r in skip if r.get("filter")=="choch"]),"zone":len([r for r in skip if r.get("filter")=="zone"]),"distance":len([r for r in skip if r.get("filter")=="distance"]),"confidence":len([r for r in skip if r.get("filter")=="confidence"]),"time":len([r for r in skip if r.get("filter")=="time"]),"setup_ban":len([r for r in skip if r.get("filter")=="setup_ban"])}},"results":results,"valid_trades":valid,"watchlist":skip,"running_positions":[],"tuning_notes":"Full report for tuning"}
 
 with open("last_scan.json","w") as f:
     json.dump(out,f,indent=2)
