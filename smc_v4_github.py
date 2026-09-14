@@ -213,8 +213,19 @@ def analyze_symbol_multi(symbol):
 def load_positions():
     if os.path.exists(POSITIONS_FILE):
         try:
-            with open(POSITIONS_FILE,'r') as f: return json.load(f)
-        except: pass
+            with open(POSITIONS_FILE,'r') as f:
+                data = json.load(f)
+                # backward compat V4.6 -> V5
+                if 'stats' not in data: data['stats'] = {}
+                data['stats'].setdefault('wins',0)
+                data['stats'].setdefault('losses',0)
+                data['stats'].setdefault('total_pnl',0)
+                data['stats'].setdefault('paper_trades',0)
+                data.setdefault('active', [])
+                data.setdefault('closed', [])
+                return data
+        except Exception as e:
+            print(f"load_positions error {e}")
     return {"active": [], "closed": [], "stats": {"wins":0,"losses":0,"total_pnl":0,"paper_trades":0}}
 
 def save_positions(data):
@@ -275,6 +286,10 @@ for pos in active_positions[:]:
         pos['closed_at'] = datetime.datetime.now(timezone.utc).isoformat()
         active_positions.remove(pos)
         closed_positions.append(pos)
+        positions_data['stats'].setdefault('wins',0)
+        positions_data['stats'].setdefault('losses',0)
+        positions_data['stats'].setdefault('total_pnl',0)
+        positions_data['stats'].setdefault('paper_trades',0)
         if rrr>0: positions_data['stats']['wins']+=1
         else: positions_data['stats']['losses']+=1
         positions_data['stats']['total_pnl']+=rrr
