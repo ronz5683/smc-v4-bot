@@ -1,19 +1,41 @@
 import requests, json, datetime, time, os
 from datetime import timezone
 
-# === CONFIG V5 MULTI-CONFLUENCE ===
+# === CONFIG V6 FINAL - REAL IDENTICAL ===
 SYMBOLS = ["BTCUSDT","ETHUSDT","SOLUSDT","XRPUSDT","BNBUSDT","ADAUSDT","DOGEUSDT","AVAXUSDT","LINKUSDT","OPUSDT","ARBUSDT","MATICUSDT"]
 MAX_DISTANCE_PCT = 0.5
-MIN_CONFLUENCE_SCORE = 6  # dari 10, minimal 6 baru VALID
+MIN_CONFLUENCE_SCORE = 6
 LIMIT = 100
-MAX_POSITIONS = 5
+MAX_POSITIONS = 3  # untuk $20, max 3 posisi bareng biar tidak overtrade
 POSITIONS_FILE = "positions.json"
-PAPER_TRADE = True  # V5: mode paper trading 1 bulan
+PAPER_TRADE = True
 
-# === PAPER TRADING SIMULATION - SINGLE MODAL $20 ===
-PAPER_START_CAPITAL = 20.0  # ganti ke 50.0 kalau $20 kekecilan
-PAPER_RISK_PCT = 0.10  # 10% risk per trade: -1R = -$2, TP1 +$3, TP2 +$6 untuk modal $20
+# === PAPER TRADING - REAL IDENTICAL LOGIC ===
+PAPER_START_CAPITAL = 20.0
+PAPER_RISK_USD = 2.0  # risk $2 fix per trade, belum fee
+PAPER_RISK_PCT = 0.10
 PAPER_FILE = "paper_trading.json"
+
+# === LEVERAGE CONFIG - ALWAYS MAX ===
+# Sesuai request: always max leverage, sizing yang atur $2 SL
+MAX_LEVERAGE = {
+    "BTCUSDT": 100,
+    "ETHUSDT": 100,
+    "SOLUSDT": 50,
+    "BNBUSDT": 50,
+    "XRPUSDT": 50,
+    "ADAUSDT": 50,
+    "DOGEUSDT": 50,
+    "AVAXUSDT": 50,
+    "LINKUSDT": 50,
+    "OPUSDT": 20,
+    "ARBUSDT": 20,
+    "MATICUSDT": 20,
+}
+DEFAULT_MAX_LEV = 50
+BUFFER_PCT = 0.0015  # 0.15% buffer anti liquidity hunter
+MIN_SL_PCT = 0.0015  # min SL 0.15% biar tidak kesweep wick
+MAX_SL_PCT = 0.012   # max SL 1.2% biar margin $20 cukup
 
 def get_klines(symbol, interval, limit=100):
     try:
@@ -74,7 +96,6 @@ def detect_zones(candles):
             zones.append({"type": "OB", "subtype": "BEARISH_OB", "price": (c['high']+c['low'])/2, "high": c['high'], "low": c['low'], "score":1.5})
         if c['close'] < c['open'] and nc['close'] > nc['open'] and nc['low'] > c['high']:
             zones.append({"type": "BREAKER", "subtype": "BEARISH_BREAKER", "price": (c['high']+c['low'])/2, "high": c['high'], "low": c['low'], "score":2})
-    # FVG
     for i in range(len(candles)-20, len(candles)-2):
         c1 = candles[i]
         c3 = candles[i+2]
@@ -109,7 +130,6 @@ def detect_volume(candles):
     return {"score":0}
 
 def detect_rsi_filter(candles):
-    # simple RSI check tanpa library
     if len(candles) < 14: return {"score":0}
     closes = [c['close'] for c in candles[-15:]]
     gains = [max(0, closes[i]-closes[i-1]) for i in range(1,len(closes))]
@@ -142,10 +162,8 @@ def analyze_symbol_multi(symbol):
     dist = 999
     if best_zone: dist = abs(price-best_zone['price'])/price*100
     
-    # CONFLUENCE SCORING 0-10
     total_score = sweep['score'] + choch['score'] + zone_data['score'] + htf['score'] + vol['score'] + rsi['score']
     
-    # Details
     confluences = []
     if sweep['sweep']: confluences.append(f"SWEEP({sweep['score']})")
     if choch['choch']: confluences.append(f"CHOCH({choch['score']})")
@@ -170,7 +188,6 @@ def analyze_symbol_multi(symbol):
         "timestamp": datetime.datetime.now(timezone.utc).isoformat()
     }
     
-    # FILTERS
     hour_wib = (datetime.datetime.now(timezone.utc).hour+7)%24
     if 7 <= hour_wib <= 9:
         return {**base,"status":"SKIP","reason":f"Blacklist jam {hour_wib}","filter":"time"}
@@ -181,46 +198,95 @@ def analyze_symbol_multi(symbol):
     if total_score < MIN_CONFLUENCE_SCORE:
         return {**base,"status":"SKIP","reason":f"Confluence {total_score} < {MIN_CONFLUENCE_SCORE} need more TA","filter":"confluence","confluence_details":confluences}
     
-    # VALID - tentukan direction dari zone + choch
     direction = "LONG"
     if best_zone['type'] in ["BREAKER","OB"] and "BEARISH" in best_zone['subtype']:
         direction = "SHORT"
     elif choch.get('type') == "BEARISH_CHOCH":
         direction = "SHORT"
     
-    # Risk
+    # === SL STRUKTUR + BUFFER ANTI HUNTER 0.15% ===
     entry = best_zone['price']
+    zone_low = best_zone.get('low', entry*0.996)
+    zone_high = best_zone.get('high', entry*1.004)
+    sweep_level = sweep.get('level') if sweep.get('sweep') else None
+    
     if direction=="LONG":
-        sl = entry - (entry * 0.004)  # 0.4% SL
-        tp1 = entry + (entry - sl)*1.5
-        tp2 = entry + (entry - sl)*3
+        struct_sl = zone_low * (1 - BUFFER_PCT)  # 0.15% di bawah zone low
+        if sweep_level and sweep['type']=="BULLISH_SWEEP":
+            struct_sl = min(struct_sl, sweep_level * (1 - BUFFER_PCT))  # di bawah sweep low + buffer
+        # filter min/max SL
+        sl_pct_check = abs(entry - struct_sl)/entry
+        if sl_pct_check < MIN_SL_PCT:
+            return {**base,"status":"SKIP","reason":f"SL too narrow {sl_pct_check*100:.3f}% < {MIN_SL_PCT*100}% rawan wick","filter":"sl_narrow"}
+        if sl_pct_check > MAX_SL_PCT:
+            return {**base,"status":"SKIP","reason":f"SL too wide {sl_pct_check*100:.3f}% > {MAX_SL_PCT*100}% butuh margin besar","filter":"sl_wide"}
+        sl = struct_sl
+        tp = entry + (entry - sl)*2.0
     else:
-        sl = entry + (entry * 0.004)
-        tp1 = entry - (sl-entry)*1.5
-        tp2 = entry - (sl-entry)*3
+        struct_sl = zone_high * (1 + BUFFER_PCT)
+        if sweep_level and sweep['type']=="BEARISH_SWEEP":
+            struct_sl = max(struct_sl, sweep_level * (1 + BUFFER_PCT))
+        sl_pct_check = abs(sl - entry)/entry if 'sl' in locals() else abs(struct_sl - entry)/entry
+        sl_pct_check = abs(struct_sl - entry)/entry
+        if sl_pct_check < MIN_SL_PCT:
+            return {**base,"status":"SKIP","reason":f"SL too narrow {sl_pct_check*100:.3f}% < {MIN_SL_PCT*100}%","filter":"sl_narrow"}
+        if sl_pct_check > MAX_SL_PCT:
+            return {**base,"status":"SKIP","reason":f"SL too wide {sl_pct_check*100:.3f}% > {MAX_SL_PCT*100}%","filter":"sl_wide"}
+        sl = struct_sl
+        tp = entry - (sl-entry)*2.0
+    
+    # === POSITION SIZING - ALWAYS MAX LEVERAGE, RISK $2 FIX ===
+    sl_pct = abs(entry - sl)/entry
+    notional = PAPER_RISK_USD / sl_pct  # misal SL 0.5% => $2/0.005 = $400
+    qty = notional / entry
+    max_lev = MAX_LEVERAGE.get(symbol, DEFAULT_MAX_LEV)
+    margin_needed = notional / max_lev
+    leverage_used = max_lev  # always max
+    
+    # TP/SL RRR
+    tp_pct = abs(tp - entry)/entry
     
     return {
         **base,
         "status":"VALID",
-        "reason": f"SCORE {total_score}/10: {'+'.join(confluences)}",
+        "reason": f"SCORE {total_score}/10: {'+'.join(confluences)} | SL struktur {sl:.4f} (buffer {BUFFER_PCT*100}%) | TP 2R {tp:.4f} | Size ${notional:.0f} lev {leverage_used}x risk $2",
         "direction": direction,
         "entry": round(entry,4),
         "sl": round(sl,4),
-        "tp1": round(tp1,4),
-        "tp2": round(tp2,4),
-        "rrr": 1.5,
+        "tp": round(tp,4),
+        "tp1": round(tp,4),
+        "tp2": round(tp,4),
+        "rrr": 2.0,
+        "sl_type": "STRUCTURE_BUFFER",
+        "sl_pct": round(sl_pct*100,4),
+        "tp_pct": round(tp_pct*100,4),
+        "buffer_pct": BUFFER_PCT*100,
+        "sl_zone_low": round(zone_low,4),
+        "sl_zone_high": round(zone_high,4),
+        # sizing info - identik real
+        "sizing": {
+            "risk_usd": PAPER_RISK_USD,
+            "risk_note": "$2 fix belum fee/slippage/tax",
+            "sl_pct": round(sl_pct*100,4),
+            "notional_usd": round(notional,2),
+            "qty": round(qty,6),
+            "leverage": leverage_used,
+            "leverage_mode": "ALWAYS_MAX",
+            "margin_needed": round(margin_needed,2),
+            "tp_usd": round(PAPER_RISK_USD*2,2),
+            "tp_note": "$4 fix belum fee"
+        },
         "order_type":"LIMIT",
         "order_status":"WAITING_LIMIT",
         "filter":"none"
     }
 
-# === POSITION MANAGER V5 ===
+# === POSITION MANAGER V6 ===
 def load_positions():
     if os.path.exists(POSITIONS_FILE):
         try:
             with open(POSITIONS_FILE,'r') as f:
                 data = json.load(f)
-                # backward compat V4.6 -> V5
                 if 'stats' not in data: data['stats'] = {}
                 data['stats'].setdefault('wins',0)
                 data['stats'].setdefault('losses',0)
@@ -229,9 +295,8 @@ def load_positions():
                 data.setdefault('active', [])
                 data.setdefault('closed', [])
                 return data
-        except Exception as e:
-            print(f"load_positions error {e}")
-    return {"active": [], "closed": [], "stats": {"wins":0,"losses":0,"total_pnl":0,"paper_trades":0}}
+        except: pass
+    return {"active":[],"closed":[],"stats":{"wins":0,"losses":0,"total_pnl":0,"paper_trades":0}}
 
 def save_positions(data):
     with open(POSITIONS_FILE,'w') as f: json.dump(data,f,indent=2)
@@ -249,79 +314,86 @@ def check_position_status(pos, current_price, klines_15m=None):
                 age_hours = (datetime.datetime.now(timezone.utc) - open_time).total_seconds()/3600
                 if age_hours > 6:
                     return "EXPIRED", 0
-                if pos['direction']=="LONG" and current_price >= pos['tp1'] * 0.999:
+                tp_check = pos.get('tp', pos.get('tp1', 0))
+                if pos['direction']=="LONG" and current_price >= tp_check * 0.999:
                     return "MISSED_TP", 0
-                if pos['direction']=="SHORT" and current_price <= pos['tp1'] * 1.001:
+                if pos['direction']=="SHORT" and current_price <= tp_check * 1.001:
                     return "MISSED_TP", 0
                 return "WAITING_LIMIT", 0
+    tp_price = pos.get('tp', pos.get('tp1', pos.get('tp2', 0)))
     if pos['direction']=="LONG":
         if current_price <= pos['sl']: return "SL_HIT", -1
-        if current_price >= pos['tp2']: return "TP2_HIT", 3
-        if current_price >= pos['tp1']: return "TP1_HIT", 1.5
+        if current_price >= tp_price: return "TP_HIT", 2.0
     else:
         if current_price >= pos['sl']: return "SL_HIT", -1
-        if current_price <= pos['tp2']: return "TP2_HIT", 3
-        if current_price <= pos['tp1']: return "TP1_HIT", 1.5
+        if current_price <= tp_price: return "TP_HIT", 2.0
     return "ACTIVE", 0
 
 # === MAIN ===
-print(f"=== SMC V5 MULTI-CONFLUENCE | SCORE >= {MIN_CONFLUENCE_SCORE}/10 | PAPER={PAPER_TRADE} ===")
+print(f"=== SMC V6 FINAL | STRUCTURE SL + BUFFER {BUFFER_PCT*100}% | SINGLE TP 2R | MAX LEV | RISK $2 ===")
 positions_data = load_positions()
 active_positions = positions_data.get("active", [])
 closed_positions = positions_data.get("closed", [])
+valid_new = []
+results = []
+
+if active_positions:
+    symbols_to_check = set([p['symbol'] for p in active_positions] + SYMBOLS)
+else:
+    symbols_to_check = SYMBOLS
+
 active_symbols = [p['symbol'] for p in active_positions]
-
-print(f"Checking {len(active_positions)} active positions...")
-for pos in active_positions[:]:
-    curr = get_current_price(pos['symbol'])
-    if not curr: continue
-    klines = get_klines(pos['symbol'], "15m", 50)
-    status, rrr = check_position_status(pos, curr, klines)
-    if status == "WAITING_LIMIT":
-        pos['current_price'] = curr
-        pos['last_check'] = datetime.datetime.now(timezone.utc).isoformat()
-        print(f"  WAITING {pos['symbol']} {pos['entry']} -> {curr}")
-        continue
-    pos['current_price'] = curr
-    pos['last_check'] = datetime.datetime.now(timezone.utc).isoformat()
-    if status != "ACTIVE":
-        pos['close_status'] = status
-        pos['close_price'] = curr
-        pos['pnl_rrr'] = rrr
-        pos['closed_at'] = datetime.datetime.now(timezone.utc).isoformat()
-        active_positions.remove(pos)
-        closed_positions.append(pos)
-        positions_data['stats'].setdefault('wins',0)
-        positions_data['stats'].setdefault('losses',0)
-        positions_data['stats'].setdefault('total_pnl',0)
-        positions_data['stats'].setdefault('paper_trades',0)
-        if rrr>0: positions_data['stats']['wins']+=1
-        else: positions_data['stats']['losses']+=1
-        positions_data['stats']['total_pnl']+=rrr
-        positions_data['stats']['paper_trades']+=1
-        print(f"  CLOSED {pos['symbol']} {status} R:{rrr}")
-
 slots_left = MAX_POSITIONS - len(active_positions)
-print(f"Slots: {len(active_positions)}/{MAX_POSITIONS}, {slots_left} left")
 
-results=[]
-valid_new=[]
-if slots_left>0:
-    for sym in SYMBOLS:
-        if sym in active_symbols:
-            results.append({"symbol":sym,"status":"SKIP","reason":"Already active","filter":"position_guard","confluence_score":0})
+for pos in list(active_positions):
+    try:
+        cur_price = get_current_price(pos['symbol'])
+        k15 = get_klines(pos['symbol'], "15m", 50)
+        if cur_price is None:
+            results.append({"symbol":pos['symbol'],"status":"HOLD","reason":"price fail","confluence_score":pos.get('confluence_score',0)})
             continue
+        status, pnl_r = check_position_status(pos, cur_price, k15)
+        if status in ["SL_HIT","TP_HIT"]:
+            pos['close_status']=status
+            pos['pnl_rrr']=pnl_r
+            pos['closed_at']=datetime.datetime.now(timezone.utc).isoformat()
+            pos['close_price']=cur_price
+            closed_positions.append(pos)
+            active_positions.remove(pos)
+            if pnl_r>0: positions_data['stats']['wins']+=1
+            else: positions_data['stats']['losses']+=1
+            positions_data['stats']['total_pnl']+=pnl_r
+            print(f"CLOSED {pos['symbol']} {status} {pnl_r}R @ {cur_price}")
+            results.append({"symbol":pos['symbol'],"status":status,"reason":f"Closed {status} {pnl_r}R","confluence_score":pos.get('confluence_score',0)})
+        elif status in ["EXPIRED","MISSED_TP"]:
+            pos['close_status']=status
+            pos['pnl_rrr']=0
+            pos['closed_at']=datetime.datetime.now(timezone.utc).isoformat()
+            closed_positions.append(pos)
+            active_positions.remove(pos)
+            results.append({"symbol":pos['symbol'],"status":status,"reason":status,"confluence_score":0})
+        else:
+            results.append({"symbol":pos['symbol'],"status":"HOLD","reason":f"Holding {pos.get('direction')} {status}","confluence_score":pos.get('confluence_score',0)})
+    except Exception as e:
+        results.append({"symbol":pos['symbol'],"status":"ERROR","reason":str(e),"confluence_score":0})
+
+if slots_left > 0:
+    for sym in SYMBOLS:
+        if len(valid_new) >= slots_left: break
+        if sym in active_symbols: continue
         try:
             r=analyze_symbol_multi(sym)
             results.append(r)
-            print(f"{sym}: {r['status']} SCORE {r.get('confluence_score',0)} - {r['reason'][:100]}")
+            print(f"{sym}: {r['status']} SCORE {r.get('confluence_score',0)} - {r['reason'][:120]}")
             if r['status']=="VALID" and len(valid_new)<slots_left:
                 new_pos = {
                     "symbol": sym, "direction": r['direction'], "entry": r['entry'], "sl": r['sl'],
-                    "tp1": r['tp1'], "tp2": r['tp2'], "rrr": r['rrr'],
+                    "tp": r['tp'], "tp1": r['tp'], "tp2": r['tp'], "rrr": r['rrr'],
+                    "sl_pct": r['sl_pct'], "tp_pct": r['tp_pct'],
                     "zone_price": r['zone']['price'] if r['zone'] else r['entry'],
                     "confluence_score": r['confluence_score'],
                     "confluences": r['confluences'],
+                    "sizing": r['sizing'],
                     "reason": r['reason'],
                     "open_price": r['price'], "open_time": datetime.datetime.now(timezone.utc).isoformat(),
                     "status": "ACTIVE", "order_status": "WAITING_LIMIT",
@@ -329,7 +401,7 @@ if slots_left>0:
                 }
                 valid_new.append(new_pos)
                 active_positions.append(new_pos)
-                print(f"  -> NEW {sym} {r['direction']} SCORE {r['confluence_score']} Entry {r['entry']}")
+                print(f"  -> NEW {sym} {r['direction']} SCORE {r['confluence_score']} Entry {r['entry']} SL {r['sl']} TP {r['tp']} | Size ${r['sizing']['notional_usd']} Lev {r['sizing']['leverage']}x Margin ${r['sizing']['margin_needed']}")
             time.sleep(0.3)
         except Exception as e:
             results.append({"symbol":sym,"status":"ERROR","reason":str(e),"confluence_score":0})
@@ -342,7 +414,7 @@ positions_data['active'] = active_positions
 positions_data['closed'] = closed_positions[-200:]
 save_positions(positions_data)
 
-# === PAPER TRADING SIMULATION ===
+# === PAPER TRADING SIMULATION - REAL FEE INCLUDED ===
 def build_paper_trading():
     try:
         capital = PAPER_START_CAPITAL
@@ -350,8 +422,23 @@ def build_paper_trading():
         equity_curve = [capital]
         for pos in sorted(closed_positions, key=lambda x: x.get('closed_at','')):
             r = pos.get('pnl_rrr',0)
-            risk_usd = capital * PAPER_RISK_PCT
-            pnl_usd = risk_usd * r
+            # real risk $2 fix, TP $4 fix
+            if r > 0:
+                pnl_usd = PAPER_RISK_USD * r  # +$4
+                # fee 0.05% * 2 = 0.1% dari notional, simulasi
+                sizing = pos.get('sizing', {})
+                notional = sizing.get('notional_usd', 200)
+                fee = notional * 0.001  # 0.1% total fee
+                pnl_usd -= fee
+            elif r < 0:
+                pnl_usd = -PAPER_RISK_USD  # -$2
+                sizing = pos.get('sizing', {})
+                notional = sizing.get('notional_usd', 200)
+                fee = notional * 0.001
+                pnl_usd -= fee
+            else:
+                pnl_usd = 0
+            
             capital += pnl_usd
             capital = max(capital, 0.1)
             equity_curve.append(round(capital,2))
@@ -359,12 +446,14 @@ def build_paper_trading():
                 "symbol": pos.get('symbol'),
                 "direction": pos.get('direction'),
                 "entry": pos.get('entry'),
+                "sl": pos.get('sl'),
+                "tp": pos.get('tp'),
                 "close_status": pos.get('close_status'),
                 "pnl_r": r,
-                "risk_usd": round(risk_usd,4),
                 "pnl_usd": round(pnl_usd,4),
+                "sizing": pos.get('sizing', {}),
                 "capital_after": round(capital,4),
-                "confluence_score": pos.get('confluence_score', pos.get('confidence',0)),
+                "confluence_score": pos.get('confluence_score',0),
                 "confluences": pos.get('confluences',[]),
                 "closed_at": pos.get('closed_at','')[:19]
             })
@@ -373,11 +462,15 @@ def build_paper_trading():
         total_r = sum(h['pnl_r'] for h in history)
         paper_data = {
             "generated_at": datetime.datetime.now(timezone.utc).isoformat(),
-            "bot_version": "V5_PAPER",
+            "bot_version": "V6_FINAL_STRUCTURE_BUFFER_MAXLEV_RISK2",
             "config": {
                 "start_capital": PAPER_START_CAPITAL,
-                "risk_pct": PAPER_RISK_PCT,
-                "risk_desc": f"{PAPER_RISK_PCT*100}% per trade => -1R=-${PAPER_START_CAPITAL*PAPER_RISK_PCT}, TP1 +{PAPER_RISK_PCT*1.5*100}% (+${PAPER_START_CAPITAL*PAPER_RISK_PCT*1.5}), TP2 +{PAPER_RISK_PCT*3*100}% (+${PAPER_START_CAPITAL*PAPER_RISK_PCT*3})"
+                "risk_usd": PAPER_RISK_USD,
+                "risk_note": "Risk $2 fix per trade belum fee/slippage/tax - sizing auto, always max leverage",
+                "buffer": f"{BUFFER_PCT*100}% anti hunter",
+                "leverage": "ALWAYS_MAX 100/50/20",
+                "tp": "Single TP 2R",
+                "sl": "Structure SL (zone low/high + sweep + buffer 0.15%)"
             },
             "summary": {
                 "initial": PAPER_START_CAPITAL,
@@ -397,7 +490,7 @@ def build_paper_trading():
         }
         with open(PAPER_FILE,'w') as f:
             json.dump(paper_data,f,indent=2)
-        print(f"PAPER TRADING: ${PAPER_START_CAPITAL} -> ${capital:.2f} | PnL ${capital-PAPER_START_CAPITAL:.2f} ({(capital/PAPER_START_CAPITAL-1)*100:.1f}%) | {total_r}R | WR {wins}/{len(history)} | saved {PAPER_FILE}")
+        print(f"PAPER TRADING V6: ${PAPER_START_CAPITAL} -> ${capital:.2f} | PnL ${capital-PAPER_START_CAPITAL:.2f} | {total_r}R | WR {wins}/{len(history)} | saved {PAPER_FILE}")
     except Exception as e:
         print(f"Paper trading build error: {e}")
 
@@ -408,8 +501,8 @@ skip=[x for x in results if x['status']=="SKIP"]
 
 out={
     "last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),
-    "bot_version":"V5_MULTI_CONFLUENCE",
-    "params":{"MIN_CONFLUENCE_SCORE":MIN_CONFLUENCE_SCORE,"MAX_POSITIONS":MAX_POSITIONS,"PAPER_TRADE":PAPER_TRADE},
+    "bot_version":"V6_FINAL_STRUCTURE_BUFFER_MAXLEV_RISK2",
+    "params":{"MIN_CONFLUENCE_SCORE":MIN_CONFLUENCE_SCORE,"MAX_POSITIONS":MAX_POSITIONS,"BUFFER":BUFFER_PCT,"RISK_USD":PAPER_RISK_USD},
     "summary":{
         "total_scanned":len(results),
         "valid_new":len(valid_new),
@@ -423,6 +516,8 @@ out={
             "distance":len([r for r in skip if r.get("filter")=="distance"]),
             "zone":len([r for r in skip if r.get("filter")=="zone"]),
             "time":len([r for r in skip if r.get("filter")=="time"]),
+            "sl_narrow":len([r for r in skip if r.get("filter")=="sl_narrow"]),
+            "sl_wide":len([r for r in skip if r.get("filter")=="sl_wide"]),
             "position_guard":len([r for r in skip if r.get("filter")=="position_guard"]),
             "max_pos":len([r for r in skip if r.get("filter")=="max_pos"])
         }
@@ -433,11 +528,11 @@ out={
     "running_positions":active_positions,
     "closed_positions":closed_positions[-20:],
     "stats":positions_data['stats'],
-    "tuning_notes":"V5 multi-confluence: sweep(2)+choch(2)+breaker/ob(2)+fvg(1)+htf(1)+vol(1)+rsi(1)=10. High prob when 2 techniques at same point"
+    "tuning_notes":"V6 FINAL: SL struktur (zone low/high + sweep + buffer 0.15% anti hunter) + Single TP 2R + Always Max Lev 100/50/20 + Risk $2 fix sizing auto - identik real"
 }
 
 with open("last_scan.json","w") as f:
     json.dump(out,f,indent=2)
 
-print(f"\nDONE V5: {len(valid_new)} NEW, {len(active_positions)} ACTIVE, {len(closed_positions)} CLOSED | PnL R:{positions_data['stats']['total_pnl']} | Avg Score {out['summary']['avg_confluence']}")
-print("saved last_scan.json + positions.json - PAPER TRADE MODE")
+print(f"\nDONE V6 FINAL: {len(valid_new)} NEW, {len(active_positions)} ACTIVE, {len(closed_positions)} CLOSED | PnL R:{positions_data['stats']['total_pnl']} | Avg Score {out['summary']['avg_confluence']}")
+print("saved last_scan.json + positions.json - REAL IDENTICAL MODE")
