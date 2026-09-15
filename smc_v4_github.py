@@ -10,6 +10,11 @@ MAX_POSITIONS = 5
 POSITIONS_FILE = "positions.json"
 PAPER_TRADE = True  # V5: mode paper trading 1 bulan
 
+# === PAPER TRADING SIMULATION - SINGLE MODAL $20 ===
+PAPER_START_CAPITAL = 20.0  # ganti ke 50.0 kalau $20 kekecilan
+PAPER_RISK_PCT = 0.10  # 10% risk per trade: -1R = -$2, TP1 +$3, TP2 +$6 untuk modal $20
+PAPER_FILE = "paper_trading.json"
+
 def get_klines(symbol, interval, limit=100):
     try:
         url = f"https://data-api.binance.vision/api/v3/klines?symbol={symbol}&interval={interval}&limit={limit}"
@@ -336,6 +341,67 @@ else:
 positions_data['active'] = active_positions
 positions_data['closed'] = closed_positions[-200:]
 save_positions(positions_data)
+
+# === PAPER TRADING SIMULATION ===
+def build_paper_trading():
+    try:
+        capital = PAPER_START_CAPITAL
+        history = []
+        equity_curve = [capital]
+        for pos in sorted(closed_positions, key=lambda x: x.get('closed_at','')):
+            r = pos.get('pnl_rrr',0)
+            risk_usd = capital * PAPER_RISK_PCT
+            pnl_usd = risk_usd * r
+            capital += pnl_usd
+            capital = max(capital, 0.1)
+            equity_curve.append(round(capital,2))
+            history.append({
+                "symbol": pos.get('symbol'),
+                "direction": pos.get('direction'),
+                "entry": pos.get('entry'),
+                "close_status": pos.get('close_status'),
+                "pnl_r": r,
+                "risk_usd": round(risk_usd,4),
+                "pnl_usd": round(pnl_usd,4),
+                "capital_after": round(capital,4),
+                "confluence_score": pos.get('confluence_score', pos.get('confidence',0)),
+                "confluences": pos.get('confluences',[]),
+                "closed_at": pos.get('closed_at','')[:19]
+            })
+        wins = len([h for h in history if h['pnl_r']>0])
+        losses = len([h for h in history if h['pnl_r']<0])
+        total_r = sum(h['pnl_r'] for h in history)
+        paper_data = {
+            "generated_at": datetime.datetime.now(timezone.utc).isoformat(),
+            "bot_version": "V5_PAPER",
+            "config": {
+                "start_capital": PAPER_START_CAPITAL,
+                "risk_pct": PAPER_RISK_PCT,
+                "risk_desc": f"{PAPER_RISK_PCT*100}% per trade => -1R=-${PAPER_START_CAPITAL*PAPER_RISK_PCT}, TP1 +{PAPER_RISK_PCT*1.5*100}% (+${PAPER_START_CAPITAL*PAPER_RISK_PCT*1.5}), TP2 +{PAPER_RISK_PCT*3*100}% (+${PAPER_START_CAPITAL*PAPER_RISK_PCT*3})"
+            },
+            "summary": {
+                "initial": PAPER_START_CAPITAL,
+                "final": round(capital,2),
+                "pnl_usd": round(capital - PAPER_START_CAPITAL,2),
+                "pnl_pct": round((capital/PAPER_START_CAPITAL-1)*100,2),
+                "total_trades": len(history),
+                "wins": wins,
+                "losses": losses,
+                "win_rate": round(wins/len(history)*100,1) if history else 0,
+                "total_r": round(total_r,2),
+                "expectancy_r": round(total_r/len(history),3) if history else 0,
+                "equity_curve": equity_curve
+            },
+            "trades": history,
+            "active_positions": active_positions
+        }
+        with open(PAPER_FILE,'w') as f:
+            json.dump(paper_data,f,indent=2)
+        print(f"PAPER TRADING: ${PAPER_START_CAPITAL} -> ${capital:.2f} | PnL ${capital-PAPER_START_CAPITAL:.2f} ({(capital/PAPER_START_CAPITAL-1)*100:.1f}%) | {total_r}R | WR {wins}/{len(history)} | saved {PAPER_FILE}")
+    except Exception as e:
+        print(f"Paper trading build error: {e}")
+
+build_paper_trading()
 
 valid=[x for x in results if x['status']=="VALID"]
 skip=[x for x in results if x['status']=="SKIP"]
