@@ -35,9 +35,51 @@
       "open_price": 97.14,
       "open_time": "2026-09-16T05:02:28.730447+00:00",
       "status": "ACTIVE",
+      "order_status": "FILLED",
+      "paper_trade": true,
+      "filled_at": "2026-09-16T09:55:32.589611+00:00",
+      "filled_price": 97.16
+    },
+    {
+      "symbol": "ETHUSDT",
+      "direction": "LONG",
+      "entry": 2405.69,
+      "sl": 2400.3541,
+      "tp": 2416.3619,
+      "tp1": 2416.3619,
+      "tp2": 2416.3619,
+      "rrr": 2.0,
+      "sl_pct": 0.2218,
+      "tp_pct": 0.4436,
+      "zone_price": 2405.69,
+      "confluence_score": 6,
+      "confluences": [
+        "CHOCH(2)",
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "risk_note": "$2 fix belum fee/slippage/tax",
+        "sl_pct": 0.2218,
+        "notional_usd": 901.69,
+        "qty": 0.374817,
+        "leverage": 100,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 9.02,
+        "tp_usd": 4.0,
+        "tp_note": "$4 fix belum fee"
+      },
+      "reason": "SCORE 6/10: CHOCH(2)+BREAKER(2)+HTF(1)+RSI(1) | SL struktur 2400.3541 (buffer 0.15%) | TP 2R 2416.3619 | Size $902 lev 100x risk $2",
+      "open_price": 2405.91,
+      "open_time": "2026-09-16T09:55:38.992834+00:00",
+      "status": "ACTIVE",
       "order_status": "WAITING_LIMIT",
       "paper_trade": true
-    },
+    }
+  ],
+  "closed": [
     {
       "symbol": "ARBUSDT",
       "direction": "LONG",
@@ -73,15 +115,20 @@
       "open_price": 0.1527,
       "open_time": "2026-09-16T05:02:44.805328+00:00",
       "status": "ACTIVE",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true
+      "order_status": "FILLED",
+      "paper_trade": true,
+      "filled_at": "2026-09-16T09:55:34.037319+00:00",
+      "filled_price": 0.1525,
+      "close_status": "TP_HIT",
+      "pnl_rrr": 2.0,
+      "closed_at": "2026-09-16T09:55:34.037466+00:00",
+      "close_price": 0.1589
     }
   ],
-  "closed": [],
   "stats": {
-    "wins": 0,
+    "wins": 1,
     "losses": 0,
-    "total_pnl": 0,
+    "total_pnl": 2.0,
     "paper_trades": 0
   }
 }
