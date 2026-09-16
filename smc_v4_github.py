@@ -302,24 +302,27 @@ def save_positions(data):
     with open(POSITIONS_FILE,'w') as f: json.dump(data,f,indent=2)
 
 def check_position_status(pos, current_price, klines_15m=None):
+    # === WAITING_LIMIT = limit order belum ke-fill ===
     if pos.get('order_status') == "WAITING_LIMIT":
         if klines_15m:
-            touched = any(c['low'] <= pos['entry'] <= c['high'] for c in klines_15m[-12:])
+            touched = any(c['low'] <= pos['entry'] <= c['high'] for c in klines_15m[-48:])  # cek 12 jam terakhir (48 candle 15m)
             if touched:
                 pos['order_status'] = "FILLED"
                 pos['filled_at'] = datetime.datetime.now(timezone.utc).isoformat()
                 pos['filled_price'] = pos['entry']
+                # setelah FILLED, tidak return - lanjut ke pengecekan TP/SL di bawah
             else:
                 open_time = datetime.datetime.fromisoformat(pos['open_time'].replace('Z','+00:00')) if 'T' in pos.get('open_time','') else datetime.datetime.now(timezone.utc)
                 age_hours = (datetime.datetime.now(timezone.utc) - open_time).total_seconds()/3600
-                if age_hours > 6:
+                if age_hours > 24:  # 24 jam baru expired - HANYA untuk WAITING_LIMIT yang belum ke-fill
                     return "EXPIRED", 0
-                tp_check = pos.get('tp', pos.get('tp1', 0))
-                if pos['direction']=="LONG" and current_price >= tp_check * 0.999:
-                    return "MISSED_TP", 0
-                if pos['direction']=="SHORT" and current_price <= tp_check * 1.001:
-                    return "MISSED_TP", 0
                 return "WAITING_LIMIT", 0
+        else:
+            # kalau tidak ada klines, tetap WAITING_LIMIT
+            return "WAITING_LIMIT", 0
+    
+    # === FILLED / ACTIVE = sudah ke-fill, wajib sampai TP atau SL, tidak pakai waktu ===
+    # Tidak ada expiry time untuk posisi yang sudah FILLED
     tp_price = pos.get('tp', pos.get('tp1', pos.get('tp2', 0)))
     if pos['direction']=="LONG":
         if current_price <= pos['sl']: return "SL_HIT", -1
