@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T20:52:22.874002+00:00",
+  "generated_at": "2026-09-17T23:20:14.467268+00:00",
   "bot_version": "V6_FINAL_STRUCTURE_BUFFER_MAXLEV_RISK2",
   "config": {
     "start_capital": 20.0,
@@ -283,5 +283,83 @@
       "closed_at": "2026-09-17T13:47:09"
     }
   ],
-  "active_positions": []
+  "active_positions": [
+    {
+      "symbol": "DOGEUSDT",
+      "direction": "LONG",
+      "entry": 0.0818,
+      "sl": 0.0812,
+      "tp": 0.0829,
+      "tp1": 0.0829,
+      "tp2": 0.0829,
+      "rrr": 2.0,
+      "sl_pct": 0.6995,
+      "tp_pct": 1.399,
+      "zone_price": 0.08177000000000001,
+      "confluence_score": 6,
+      "confluences": [
+        "SWEEP(2)",
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "risk_note": "$2 fix belum fee/slippage/tax",
+        "sl_pct": 0.6995,
+        "notional_usd": 285.92,
+        "qty": 3496.625756,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 5.72,
+        "tp_usd": 4.0,
+        "tp_note": "$4 fix belum fee"
+      },
+      "reason": "SCORE 6/10: SWEEP(2)+BREAKER(2)+HTF(1)+RSI(1) | SL struktur 0.0812 (buffer 0.15%) | TP 2R 0.0829 | Size $286 lev 50x risk $2",
+      "open_price": 0.0817,
+      "open_time": "2026-09-17T23:20:03.482997+00:00",
+      "status": "ACTIVE",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true
+    },
+    {
+      "symbol": "LINKUSDT",
+      "direction": "LONG",
+      "entry": 11.3665,
+      "sl": 11.2651,
+      "tp": 11.5693,
+      "tp1": 11.5693,
+      "tp2": 11.5693,
+      "rrr": 2.0,
+      "sl_pct": 0.8923,
+      "tp_pct": 1.7846,
+      "zone_price": 11.3665,
+      "confluence_score": 8,
+      "confluences": [
+        "SWEEP(2)",
+        "CHOCH(2)",
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "risk_note": "$2 fix belum fee/slippage/tax",
+        "sl_pct": 0.8923,
+        "notional_usd": 224.14,
+        "qty": 19.719393,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 4.48,
+        "tp_usd": 4.0,
+        "tp_note": "$4 fix belum fee"
+      },
+      "reason": "SCORE 8/10: SWEEP(2)+CHOCH(2)+BREAKER(2)+HTF(1)+RSI(1) | SL struktur 11.2651 (buffer 0.15%) | TP 2R 11.5693 | Size $224 lev 50x risk $2",
+      "open_price": 11.386,
+      "open_time": "2026-09-17T23:20:07.728195+00:00",
+      "status": "ACTIVE",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true
+    }
+  ]
 }
