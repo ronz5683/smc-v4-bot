@@ -1,0 +1,192 @@
+{
+  "generated_at": "2026-09-17T01:33:18.116569+00:00",
+  "bot_version": "V6_FINAL_STRUCTURE_BUFFER_MAXLEV_RISK2",
+  "config": {
+    "start_capital": 20.0,
+    "risk_usd": 2.0,
+    "risk_note": "Risk $2 fix per trade belum fee/slippage/tax - sizing auto, always max leverage",
+    "buffer": "0.15% anti hunter",
+    "leverage": "ALWAYS_MAX 100/50/20",
+    "tp": "Single TP 2R",
+    "sl": "Structure SL (zone low/high + sweep + buffer 0.15%)"
+  },
+  "summary": {
+    "initial": 20.0,
+    "final": 31.58,
+    "pnl_usd": 11.58,
+    "pnl_pct": 57.89,
+    "total_trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "win_rate": 80.0,
+    "total_r": 7.0,
+    "expectancy_r": 1.4,
+    "equity_curve": [
+      20.0,
+      23.83,
+      20.93,
+      24.27,
+      27.92,
+      31.58
+    ]
+  },
+  "trades": [
+    {
+      "symbol": "ARBUSDT",
+      "direction": "LONG",
+      "entry": 0.1525,
+      "sl": 0.1507,
+      "tp": 0.156,
+      "close_status": "TP_HIT",
+      "pnl_r": 2.0,
+      "pnl_usd": 3.8284,
+      "sizing": {
+        "risk_usd": 2.0,
+        "risk_note": "$2 fix belum fee/slippage/tax",
+        "sl_pct": 1.1652,
+        "notional_usd": 171.64,
+        "qty": 1125.904242,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 8.58,
+        "tp_usd": 4.0,
+        "tp_note": "$4 fix belum fee"
+      },
+      "capital_after": 23.8284,
+      "confluence_score": 6,
+      "confluences": [
+        "SWEEP(2)",
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "closed_at": "2026-09-16T09:55:34"
+    },
+    {
+      "symbol": "ETHUSDT",
+      "direction": "LONG",
+      "entry": 2405.69,
+      "sl": 2400.3541,
+      "tp": 2416.3619,
+      "close_status": "SL_HIT",
+      "pnl_r": -1,
+      "pnl_usd": -2.9017,
+      "sizing": {
+        "risk_usd": 2.0,
+        "risk_note": "$2 fix belum fee/slippage/tax",
+        "sl_pct": 0.2218,
+        "notional_usd": 901.69,
+        "qty": 0.374817,
+        "leverage": 100,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 9.02,
+        "tp_usd": 4.0,
+        "tp_note": "$4 fix belum fee"
+      },
+      "capital_after": 20.9267,
+      "confluence_score": 6,
+      "confluences": [
+        "CHOCH(2)",
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "closed_at": "2026-09-16T14:33:40"
+    },
+    {
+      "symbol": "SOLUSDT",
+      "direction": "LONG",
+      "entry": 97.16,
+      "sl": 96.8645,
+      "tp": 97.751,
+      "close_status": "TP_HIT",
+      "pnl_r": 2.0,
+      "pnl_usd": 3.3424,
+      "sizing": {
+        "risk_usd": 2.0,
+        "risk_note": "$2 fix belum fee/slippage/tax",
+        "sl_pct": 0.3042,
+        "notional_usd": 657.56,
+        "qty": 6.767846,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 13.15,
+        "tp_usd": 4.0,
+        "tp_note": "$4 fix belum fee"
+      },
+      "capital_after": 24.2691,
+      "confluence_score": 6,
+      "confluences": [
+        "SWEEP(2)",
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "closed_at": "2026-09-16T18:26:04"
+    },
+    {
+      "symbol": "ADAUSDT",
+      "direction": "LONG",
+      "entry": 0.1923,
+      "sl": 0.1912,
+      "tp": 0.1945,
+      "close_status": "TP_HIT",
+      "pnl_r": 2.0,
+      "pnl_usd": 3.6463,
+      "sizing": {
+        "risk_usd": 2.0,
+        "risk_note": "$2 fix belum fee/slippage/tax",
+        "sl_pct": 0.5654,
+        "notional_usd": 353.74,
+        "qty": 1839.503334,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 7.07,
+        "tp_usd": 4.0,
+        "tp_note": "$4 fix belum fee"
+      },
+      "capital_after": 27.9154,
+      "confluence_score": 6,
+      "confluences": [
+        "SWEEP(2)",
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "closed_at": "2026-09-16T21:31:17"
+    },
+    {
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "entry": 75758.475,
+      "sl": 75309.9054,
+      "tp": 76655.6141,
+      "close_status": "TP_HIT",
+      "pnl_r": 2.0,
+      "pnl_usd": 3.6622,
+      "sizing": {
+        "risk_usd": 2.0,
+        "risk_note": "$2 fix belum fee/slippage/tax",
+        "sl_pct": 0.5921,
+        "notional_usd": 337.78,
+        "qty": 0.004459,
+        "leverage": 100,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 3.38,
+        "tp_usd": 4.0,
+        "tp_note": "$4 fix belum fee"
+      },
+      "capital_after": 31.5776,
+      "confluence_score": 8.5,
+      "confluences": [
+        "SWEEP(2)",
+        "CHOCH(2)",
+        "BREAKER(2)",
+        "VOL(1)",
+        "RSI(1)"
+      ],
+      "closed_at": "2026-09-17T01:32:59"
+    }
+  ],
+  "active_positions": []
+}
