@@ -32,6 +32,6 @@ jobs:
         run: |
           git config --global user.name "smc-bot"
           git config --global user.email "bot@smc.com"
-          git add last_scan.json positions.json
+          git add last_scan.json positions.json paper_trading.json
           git commit -m "bot: update scan $(date -u +'%Y-%m-%dT%H:%M:%SZ')" || echo "no changes to commit"
           git push
