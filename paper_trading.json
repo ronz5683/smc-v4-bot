@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T08:33:56.772639+00:00",
+  "generated_at": "2026-09-17T13:47:09.038281+00:00",
   "bot_version": "V6_FINAL_STRUCTURE_BUFFER_MAXLEV_RISK2",
   "config": {
     "start_capital": 20.0,
@@ -12,22 +12,25 @@
   },
   "summary": {
     "initial": 20.0,
-    "final": 31.58,
-    "pnl_usd": 11.58,
-    "pnl_pct": 57.89,
-    "total_trades": 5,
-    "wins": 4,
+    "final": 41.57,
+    "pnl_usd": 21.57,
+    "pnl_pct": 107.84,
+    "total_trades": 8,
+    "wins": 7,
     "losses": 1,
-    "win_rate": 80.0,
-    "total_r": 7.0,
-    "expectancy_r": 1.4,
+    "win_rate": 87.5,
+    "total_r": 13.0,
+    "expectancy_r": 1.625,
     "equity_curve": [
       20.0,
       23.83,
       20.93,
       24.27,
       27.92,
-      31.58
+      31.58,
+      35.01,
+      38.28,
+      41.57
     ]
   },
   "trades": [
@@ -186,27 +189,16 @@
         "RSI(1)"
       ],
       "closed_at": "2026-09-17T01:32:59"
-    }
-  ],
-  "active_positions": [
+    },
     {
       "symbol": "ADAUSDT",
       "direction": "LONG",
       "entry": 0.1987,
       "sl": 0.198,
       "tp": 0.2001,
-      "tp1": 0.2001,
-      "tp2": 0.2001,
-      "rrr": 2.0,
-      "sl_pct": 0.351,
-      "tp_pct": 0.702,
-      "zone_price": 0.1987,
-      "confluence_score": 6.5,
-      "confluences": [
-        "SWEEP(2)",
-        "CHOCH(2)",
-        "BREAKER(2)"
-      ],
+      "close_status": "TP_HIT",
+      "pnl_r": 2.0,
+      "pnl_usd": 3.4302,
       "sizing": {
         "risk_usd": 2.0,
         "risk_note": "$2 fix belum fee/slippage/tax",
@@ -219,12 +211,14 @@
         "tp_usd": 4.0,
         "tp_note": "$4 fix belum fee"
       },
-      "reason": "SCORE 6.5/10: SWEEP(2)+CHOCH(2)+BREAKER(2) | SL struktur 0.1980 (buffer 0.15%) | TP 2R 0.2001 | Size $570 lev 50x risk $2",
-      "open_price": 0.1995,
-      "open_time": "2026-09-17T08:33:51.354929+00:00",
-      "status": "ACTIVE",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true
+      "capital_after": 35.0078,
+      "confluence_score": 6.5,
+      "confluences": [
+        "SWEEP(2)",
+        "CHOCH(2)",
+        "BREAKER(2)"
+      ],
+      "closed_at": "2026-09-17T13:47:05"
     },
     {
       "symbol": "DOGEUSDT",
@@ -232,18 +226,9 @@
       "entry": 0.081,
       "sl": 0.0808,
       "tp": 0.0815,
-      "tp1": 0.0815,
-      "tp2": 0.0815,
-      "rrr": 2.0,
-      "sl_pct": 0.2732,
-      "tp_pct": 0.5464,
-      "zone_price": 0.08104,
-      "confluence_score": 6.0,
-      "confluences": [
-        "SWEEP(2)",
-        "CHOCH(2)",
-        "OB(1.5)"
-      ],
+      "close_status": "TP_HIT",
+      "pnl_r": 2.0,
+      "pnl_usd": 3.268,
       "sizing": {
         "risk_usd": 2.0,
         "risk_note": "$2 fix belum fee/slippage/tax",
@@ -256,12 +241,14 @@
         "tp_usd": 4.0,
         "tp_note": "$4 fix belum fee"
       },
-      "reason": "SCORE 6.0/10: SWEEP(2)+CHOCH(2)+OB(1.5) | SL struktur 0.0808 (buffer 0.15%) | TP 2R 0.0815 | Size $732 lev 50x risk $2",
-      "open_price": 0.0814,
-      "open_time": "2026-09-17T08:33:54.206580+00:00",
-      "status": "ACTIVE",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true
+      "capital_after": 38.2758,
+      "confluence_score": 6.0,
+      "confluences": [
+        "SWEEP(2)",
+        "CHOCH(2)",
+        "OB(1.5)"
+      ],
+      "closed_at": "2026-09-17T13:47:07"
     },
     {
       "symbol": "AVAXUSDT",
@@ -269,20 +256,9 @@
       "entry": 7.549,
       "sl": 7.5277,
       "tp": 7.5916,
-      "tp1": 7.5916,
-      "tp2": 7.5916,
-      "rrr": 2.0,
-      "sl_pct": 0.2823,
-      "tp_pct": 0.5645,
-      "zone_price": 7.5489999999999995,
-      "confluence_score": 7.5,
-      "confluences": [
-        "SWEEP(2)",
-        "CHOCH(2)",
-        "BREAKER(2)",
-        "HTF(1)",
-        "RSI(0.5)"
-      ],
+      "close_status": "TP_HIT",
+      "pnl_r": 2.0,
+      "pnl_usd": 3.2915,
       "sizing": {
         "risk_usd": 2.0,
         "risk_note": "$2 fix belum fee/slippage/tax",
@@ -295,12 +271,17 @@
         "tp_usd": 4.0,
         "tp_note": "$4 fix belum fee"
       },
-      "reason": "SCORE 7.5/10: SWEEP(2)+CHOCH(2)+BREAKER(2)+HTF(1)+RSI(0.5) | SL struktur 7.5277 (buffer 0.15%) | TP 2R 7.5916 | Size $709 lev 50x risk $2",
-      "open_price": 7.571,
-      "open_time": "2026-09-17T08:33:56.471052+00:00",
-      "status": "ACTIVE",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true
+      "capital_after": 41.5672,
+      "confluence_score": 7.5,
+      "confluences": [
+        "SWEEP(2)",
+        "CHOCH(2)",
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(0.5)"
+      ],
+      "closed_at": "2026-09-17T13:47:09"
     }
-  ]
+  ],
+  "active_positions": []
 }
