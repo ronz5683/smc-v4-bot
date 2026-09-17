@@ -1,7 +1,7 @@
 import requests, json, datetime, time, os
 from datetime import timezone
 
-# === CONFIG V6 FINAL - REAL IDENTICAL ===
+# === CONFIG V6.3 FIXED - OPSI B 24JAM + WICK CHECK ===
 SYMBOLS = ["BTCUSDT","ETHUSDT","SOLUSDT","XRPUSDT","BNBUSDT","ADAUSDT","DOGEUSDT","AVAXUSDT","LINKUSDT","OPUSDT","ARBUSDT","MATICUSDT"]
 MAX_DISTANCE_PCT = 0.5
 MIN_CONFLUENCE_SCORE = 6
@@ -302,38 +302,68 @@ def save_positions(data):
     with open(POSITIONS_FILE,'w') as f: json.dump(data,f,indent=2)
 
 def check_position_status(pos, current_price, klines_15m=None):
-    # === WAITING_LIMIT = limit order belum ke-fill ===
+    # === WAITING_LIMIT = limit order belum ke-fill - OPSI B 24 JAM ===
     if pos.get('order_status') == "WAITING_LIMIT":
+        # cek fill pakai wick high/low 15m - 96 candle = 24 jam (fix bug #1)
         if klines_15m:
-            touched = any(c['low'] <= pos['entry'] <= c['high'] for c in klines_15m[-48:])  # cek 12 jam terakhir (48 candle 15m)
+            touched = any(c['low'] <= pos['entry'] <= c['high'] for c in klines_15m[-96:])
             if touched:
                 pos['order_status'] = "FILLED"
                 pos['filled_at'] = datetime.datetime.now(timezone.utc).isoformat()
                 pos['filled_price'] = pos['entry']
-                # setelah FILLED, tidak return - lanjut ke pengecekan TP/SL di bawah
+                # setelah FILLED, lanjut ke pengecekan TP/SL di bawah
             else:
-                open_time = datetime.datetime.fromisoformat(pos['open_time'].replace('Z','+00:00')) if 'T' in pos.get('open_time','') else datetime.datetime.now(timezone.utc)
+                # belum ke-fill, cek expiry 24 jam
+                try:
+                    open_time = datetime.datetime.fromisoformat(pos['open_time'].replace('Z','+00:00'))
+                except:
+                    open_time = datetime.datetime.now(timezone.utc)
                 age_hours = (datetime.datetime.now(timezone.utc) - open_time).total_seconds()/3600
-                if age_hours > 24:  # 24 jam baru expired - HANYA untuk WAITING_LIMIT yang belum ke-fill
+                if age_hours > 24:
                     return "EXPIRED", 0
                 return "WAITING_LIMIT", 0
         else:
-            # kalau tidak ada klines, tetap WAITING_LIMIT
+            # bug #3 fix: kalau klines None, tetap cek expiry jangan nyangkut selamanya
+            try:
+                open_time = datetime.datetime.fromisoformat(pos['open_time'].replace('Z','+00:00'))
+            except:
+                open_time = datetime.datetime.now(timezone.utc)
+            age_hours = (datetime.datetime.now(timezone.utc) - open_time).total_seconds()/3600
+            if age_hours > 24:
+                return "EXPIRED", 0
             return "WAITING_LIMIT", 0
     
     # === FILLED / ACTIVE = sudah ke-fill, wajib sampai TP atau SL, tidak pakai waktu ===
-    # Tidak ada expiry time untuk posisi yang sudah FILLED
     tp_price = pos.get('tp', pos.get('tp1', pos.get('tp2', 0)))
+    sl_price = pos.get('sl', 0)
+
+    # bug #2 fix: cek wick high/low juga, bukan cuma current_price ticker
+    if klines_15m and len(klines_15m) > 0:
+        # cek candle terakhir dan beberapa candle setelah filled untuk wick
+        recent_klines = klines_15m[-4:]  # 1 jam terakhir
+        for c in recent_klines:
+            if pos['direction']=="LONG":
+                if c['low'] <= sl_price:
+                    return "SL_HIT", -1
+                if c['high'] >= tp_price:
+                    return "TP_HIT", 2.0
+            else:
+                if c['high'] >= sl_price:
+                    return "SL_HIT", -1
+                if c['low'] <= tp_price:
+                    return "TP_HIT", 2.0
+
+    # fallback cek current_price juga
     if pos['direction']=="LONG":
-        if current_price <= pos['sl']: return "SL_HIT", -1
+        if current_price <= sl_price: return "SL_HIT", -1
         if current_price >= tp_price: return "TP_HIT", 2.0
     else:
-        if current_price >= pos['sl']: return "SL_HIT", -1
+        if current_price >= sl_price: return "SL_HIT", -1
         if current_price <= tp_price: return "TP_HIT", 2.0
     return "ACTIVE", 0
 
 # === MAIN ===
-print(f"=== SMC V6 FINAL | STRUCTURE SL + BUFFER {BUFFER_PCT*100}% | SINGLE TP 2R | MAX LEV | RISK $2 ===")
+print(f"=== SMC V6.3 FIXED | OPSI B 24JAM | WICK TP/SL CHECK | STRUCTURE SL BUFFER {BUFFER_PCT*100}% | 2R ===")
 positions_data = load_positions()
 active_positions = positions_data.get("active", [])
 closed_positions = positions_data.get("closed", [])
@@ -360,15 +390,19 @@ for pos in list(active_positions):
             pos['close_status']=status
             pos['pnl_rrr']=pnl_r
             pos['closed_at']=datetime.datetime.now(timezone.utc).isoformat()
-            pos['close_price']=cur_price
+            # bug #4 fix: close_price harus TP/SL exact, bukan ticker cur_price
+            if status == "TP_HIT":
+                pos['close_price']=pos.get('tp', cur_price)
+            else:
+                pos['close_price']=pos.get('sl', cur_price)
             closed_positions.append(pos)
             active_positions.remove(pos)
             if pnl_r>0: positions_data['stats']['wins']+=1
             else: positions_data['stats']['losses']+=1
             positions_data['stats']['total_pnl']+=pnl_r
-            print(f"CLOSED {pos['symbol']} {status} {pnl_r}R @ {cur_price}")
+            print(f"CLOSED {pos['symbol']} {status} {pnl_r}R @ {pos['close_price']} (ticker {cur_price})")
             results.append({"symbol":pos['symbol'],"status":status,"reason":f"Closed {status} {pnl_r}R","confluence_score":pos.get('confluence_score',0)})
-        elif status in ["EXPIRED","MISSED_TP"]:
+        elif status in ["EXPIRED"]:
             pos['close_status']=status
             pos['pnl_rrr']=0
             pos['closed_at']=datetime.datetime.now(timezone.utc).isoformat()
