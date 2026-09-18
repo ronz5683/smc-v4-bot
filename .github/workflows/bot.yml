@@ -33,12 +33,22 @@ jobs:
           OKX_DEMO_API_KEY: ${{ secrets.OKX_DEMO_API_KEY }}
           OKX_DEMO_API_SECRET: ${{ secrets.OKX_DEMO_API_SECRET }}
           OKX_DEMO_PASSPHRASE: ${{ secrets.OKX_DEMO_PASSPHRASE }}
-        run: python smc_okx_demo.py
+        run: |
+          echo "Listing files:"
+          ls -la *.py || true
+          FILE=$(find . -maxdepth 1 -iname "*okx*demo*.py" | head -n 1)
+          if [ -n "$FILE" ]; then
+            echo "Found OKX file: $FILE - running..."
+            python "$FILE"
+          else
+            echo "smc_okx_demo.py not found - skip OKX demo (upload file dulu)"
+            echo '{"generated_at":"skip","status":"FILE_NOT_FOUND","trades":[]}' > okx_demo_log.json
+          fi
 
       - name: Commit results
         run: |
           git config --global user.name "smc-bot"
           git config --global user.email "bot@smc.com"
-          git add last_scan.json positions.json paper_trading.json okx_demo_log.json
+          git add last_scan.json positions.json paper_trading.json okx_demo_log.json || true
           git commit -m "bot: update scan $(date -u +'%Y-%m-%dT%H:%M:%SZ')" || echo "no changes to commit"
           git push
