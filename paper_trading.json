@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T21:07:11.030013+00:00",
+  "generated_at": "2026-09-18T23:17:20.974273+00:00",
   "bot_version": "V6_FINAL_STRUCTURE_BUFFER_MAXLEV_RISK2",
   "config": {
     "start_capital": 20.0,
@@ -444,5 +444,45 @@
       "closed_at": "2026-09-18T21:06:52"
     }
   ],
-  "active_positions": []
+  "active_positions": [
+    {
+      "symbol": "DOGEUSDT",
+      "direction": "SHORT",
+      "entry": 0.0879,
+      "sl": 0.0887,
+      "tp": 0.0865,
+      "tp1": 0.0865,
+      "tp2": 0.0865,
+      "rrr": 2.0,
+      "sl_pct": 0.8335,
+      "tp_pct": 1.6669,
+      "zone_price": 0.08792,
+      "confluence_score": 7.5,
+      "confluences": [
+        "SWEEP(2)",
+        "CHOCH(2)",
+        "OB(1.5)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "risk_note": "$2 fix belum fee/slippage/tax",
+        "sl_pct": 0.8335,
+        "notional_usd": 239.96,
+        "qty": 2729.332132,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 4.8,
+        "tp_usd": 4.0,
+        "tp_note": "$4 fix belum fee"
+      },
+      "reason": "SCORE 7.5/10: SWEEP(2)+CHOCH(2)+OB(1.5)+HTF(1)+RSI(1) | SL struktur 0.0887 (buffer 0.15%) | TP 2R 0.0865 | Size $240 lev 50x risk $2",
+      "open_price": 0.0879,
+      "open_time": "2026-09-18T23:17:12.121985+00:00",
+      "status": "ACTIVE",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true
+    }
+  ]
 }
