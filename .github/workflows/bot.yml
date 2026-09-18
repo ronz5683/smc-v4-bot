@@ -28,10 +28,17 @@ jobs:
       - name: Run SMC Bot
         run: python smc_v4_github.py
 
+      - name: Run OKX Demo Executor (auto entry real)
+        env:
+          OKX_DEMO_API_KEY: ${{ secrets.OKX_DEMO_API_KEY }}
+          OKX_DEMO_API_SECRET: ${{ secrets.OKX_DEMO_API_SECRET }}
+          OKX_DEMO_PASSPHRASE: ${{ secrets.OKX_DEMO_PASSPHRASE }}
+        run: python smc_okx_demo.py
+
       - name: Commit results
         run: |
           git config --global user.name "smc-bot"
           git config --global user.email "bot@smc.com"
-          git add last_scan.json positions.json paper_trading.json
+          git add last_scan.json positions.json paper_trading.json okx_demo_log.json
           git commit -m "bot: update scan $(date -u +'%Y-%m-%dT%H:%M:%SZ')" || echo "no changes to commit"
           git push
