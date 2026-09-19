@@ -41,7 +41,7 @@ jobs:
             echo "Found OKX file: $FILE - running..."
             python "$FILE"
           else
-            echo "smc_okx_demo.py not found - skip OKX demo (upload file dulu)"
+            echo "smc_okx_demo.py not found - skip OKX demo"
             echo '{"generated_at":"skip","status":"FILE_NOT_FOUND","trades":[]}' > okx_demo_log.json
           fi
 
