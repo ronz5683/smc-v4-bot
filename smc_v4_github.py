@@ -6,18 +6,15 @@ SYMBOLS = ["BTCUSDT","ETHUSDT","SOLUSDT","XRPUSDT","BNBUSDT","ADAUSDT","DOGEUSDT
 MAX_DISTANCE_PCT = 0.5
 MIN_CONFLUENCE_SCORE = 6
 LIMIT = 100
-MAX_POSITIONS = 3  # untuk $20, max 3 posisi bareng biar tidak overtrade
+MAX_POSITIONS = 3
 POSITIONS_FILE = "positions.json"
 PAPER_TRADE = True
 
-# === PAPER TRADING - REAL IDENTICAL LOGIC ===
 PAPER_START_CAPITAL = 20.0
-PAPER_RISK_USD = 2.0  # risk $2 fix per trade, belum fee
+PAPER_RISK_USD = 2.0
 PAPER_RISK_PCT = 0.10
 PAPER_FILE = "paper_trading.json"
 
-# === LEVERAGE CONFIG - ALWAYS MAX ===
-# Sesuai request: always max leverage, sizing yang atur $2 SL
 MAX_LEVERAGE = {
     "BTCUSDT": 100,
     "ETHUSDT": 100,
@@ -33,9 +30,9 @@ MAX_LEVERAGE = {
     "MATICUSDT": 20,
 }
 DEFAULT_MAX_LEV = 50
-BUFFER_PCT = 0.0015  # 0.15% buffer anti liquidity hunter
-MIN_SL_PCT = 0.0015  # min SL 0.15% biar tidak kesweep wick
-MAX_SL_PCT = 0.012   # max SL 1.2% biar margin $20 cukup
+BUFFER_PCT = 0.0015
+MIN_SL_PCT = 0.0015
+MAX_SL_PCT = 0.012
 
 def get_klines(symbol, interval, limit=100):
     try:
@@ -57,7 +54,6 @@ def find_swings(candles, lookback=20):
     slice_c = candles[-(lookback+5):-5]
     return {"price": max(c['high'] for c in slice_c)}, {"price": min(c['low'] for c in slice_c)}
 
-# === CONFLUENCE MODULES ===
 def detect_sweep(candles):
     if len(candles) < 30: return {"sweep": False, "score":0}
     sh, sl = find_swings(candles, 20)
@@ -132,326 +128,247 @@ def detect_volume(candles):
 def detect_rsi_filter(candles):
     if len(candles) < 14: return {"score":0}
     closes = [c['close'] for c in candles[-15:]]
-    gains = [max(0, closes[i]-closes[i-1]) for i in range(1,len(closes))]
-    losses = [max(0, closes[i-1]-closes[i]) for i in range(1,len(closes))]
-    avg_gain = sum(gains)/14
-    avg_loss = sum(losses)/14 if sum(losses)!=0 else 0.001
-    rs = avg_gain/avg_loss
+    gains = 0
+    losses = 0
+    for i in range(1,len(closes)):
+        diff = closes[i]-closes[i-1]
+        if diff>0: gains+=diff
+        else: losses+=-diff
+    if losses==0: return {"score":1, "reason":"RSI strong"}
+    rs = gains/losses
     rsi = 100 - (100/(1+rs))
-    if 35 < rsi < 65:
-        return {"score":1, "rsi": round(rsi,1), "reason": f"RSI healthy {rsi:.1f}"}
-    if rsi < 30 or rsi > 70:
-        return {"score":0, "rsi": round(rsi,1), "reason": f"RSI extreme {rsi:.1f} skip"}
-    return {"score":0.5, "rsi": round(rsi,1), "reason": f"RSI neutral {rsi:.1f}"}
+    if rsi>70 or rsi<30:
+        return {"score":0.5, "reason": f"RSI extreme {rsi:.1f}"}
+    return {"score":0}
 
-def analyze_symbol_multi(symbol):
-    price = get_current_price(symbol)
-    k15 = get_klines(symbol, "15m", LIMIT)
-    k1h = get_klines(symbol, "1h", LIMIT)
-    if not k15 or not k1h or not price:
-        return {"symbol": symbol, "status": "ERROR", "reason": "API fail", "price": price or 0, "confluence_score":0}
-    
-    sweep = detect_sweep(k15)
-    choch = detect_choch(k15)
-    zone_data = detect_zones(k15)
-    htf = detect_htf_trend(k1h)
-    vol = detect_volume(k15)
-    rsi = detect_rsi_filter(k15)
-    
-    best_zone = zone_data['best']
-    dist = 999
-    if best_zone: dist = abs(price-best_zone['price'])/price*100
-    
-    total_score = sweep['score'] + choch['score'] + zone_data['score'] + htf['score'] + vol['score'] + rsi['score']
-    
-    confluences = []
-    if sweep['sweep']: confluences.append(f"SWEEP({sweep['score']})")
-    if choch['choch']: confluences.append(f"CHOCH({choch['score']})")
-    if best_zone: confluences.append(f"{best_zone['type']}({zone_data['score']})")
-    if htf['score']>=1: confluences.append(f"HTF({htf['score']})")
-    if vol['score']>=0.5: confluences.append(f"VOL({vol['score']})")
-    if rsi['score']>=0.5: confluences.append(f"RSI({rsi['score']})")
-    
-    base = {
-        "symbol":symbol,
-        "price":round(price,4),
-        "confluence_score": round(total_score,1),
-        "confluences": confluences,
-        "sweep": sweep,
-        "choch": choch,
-        "zone": best_zone,
-        "zones_all": zone_data['zones'][:3],
-        "htf": htf,
-        "vol": vol,
-        "rsi": rsi,
-        "distance_pct": round(dist,3),
-        "timestamp": datetime.datetime.now(timezone.utc).isoformat()
-    }
-    
-    hour_wib = (datetime.datetime.now(timezone.utc).hour+7)%24
-    if 7 <= hour_wib <= 9:
-        return {**base,"status":"SKIP","reason":f"Blacklist jam {hour_wib}","filter":"time"}
-    if dist > MAX_DISTANCE_PCT:
-        return {**base,"status":"SKIP","reason":f"Distance {dist:.3f}% > {MAX_DISTANCE_PCT}%","filter":"distance"}
-    if not best_zone:
-        return {**base,"status":"SKIP","reason":"No zone","filter":"zone"}
-    if total_score < MIN_CONFLUENCE_SCORE:
-        return {**base,"status":"SKIP","reason":f"Confluence {total_score} < {MIN_CONFLUENCE_SCORE} need more TA","filter":"confluence","confluence_details":confluences}
-    
-    direction = "LONG"
-    if best_zone['type'] in ["BREAKER","OB"] and "BEARISH" in best_zone['subtype']:
-        direction = "SHORT"
-    elif choch.get('type') == "BEARISH_CHOCH":
-        direction = "SHORT"
-    
-    # === SL STRUKTUR + BUFFER ANTI HUNTER 0.15% ===
-    entry = best_zone['price']
-    zone_low = best_zone.get('low', entry*0.996)
-    zone_high = best_zone.get('high', entry*1.004)
-    sweep_level = sweep.get('level') if sweep.get('sweep') else None
-    
-    if direction=="LONG":
-        struct_sl = zone_low * (1 - BUFFER_PCT)  # 0.15% di bawah zone low
-        if sweep_level and sweep['type']=="BULLISH_SWEEP":
-            struct_sl = min(struct_sl, sweep_level * (1 - BUFFER_PCT))  # di bawah sweep low + buffer
-        # filter min/max SL
-        sl_pct_check = abs(entry - struct_sl)/entry
-        if sl_pct_check < MIN_SL_PCT:
-            return {**base,"status":"SKIP","reason":f"SL too narrow {sl_pct_check*100:.3f}% < {MIN_SL_PCT*100}% rawan wick","filter":"sl_narrow"}
-        if sl_pct_check > MAX_SL_PCT:
-            return {**base,"status":"SKIP","reason":f"SL too wide {sl_pct_check*100:.3f}% > {MAX_SL_PCT*100}% butuh margin besar","filter":"sl_wide"}
-        sl = struct_sl
-        tp = entry + (entry - sl)*2.0
-    else:
-        struct_sl = zone_high * (1 + BUFFER_PCT)
-        if sweep_level and sweep['type']=="BEARISH_SWEEP":
-            struct_sl = max(struct_sl, sweep_level * (1 + BUFFER_PCT))
-        sl_pct_check = abs(sl - entry)/entry if 'sl' in locals() else abs(struct_sl - entry)/entry
-        sl_pct_check = abs(struct_sl - entry)/entry
-        if sl_pct_check < MIN_SL_PCT:
-            return {**base,"status":"SKIP","reason":f"SL too narrow {sl_pct_check*100:.3f}% < {MIN_SL_PCT*100}%","filter":"sl_narrow"}
-        if sl_pct_check > MAX_SL_PCT:
-            return {**base,"status":"SKIP","reason":f"SL too wide {sl_pct_check*100:.3f}% > {MAX_SL_PCT*100}%","filter":"sl_wide"}
-        sl = struct_sl
-        tp = entry - (sl-entry)*2.0
-    
-    # === POSITION SIZING - ALWAYS MAX LEVERAGE, RISK $2 FIX ===
-    sl_pct = abs(entry - sl)/entry
-    notional = PAPER_RISK_USD / sl_pct  # misal SL 0.5% => $2/0.005 = $400
-    qty = notional / entry
-    max_lev = MAX_LEVERAGE.get(symbol, DEFAULT_MAX_LEV)
-    margin_needed = notional / max_lev
-    leverage_used = max_lev  # always max
-    
-    # TP/SL RRR
-    tp_pct = abs(tp - entry)/entry
-    
-    return {
-        **base,
-        "status":"VALID",
-        "reason": f"SCORE {total_score}/10: {'+'.join(confluences)} | SL struktur {sl:.4f} (buffer {BUFFER_PCT*100}%) | TP 2R {tp:.4f} | Size ${notional:.0f} lev {leverage_used}x risk $2",
-        "direction": direction,
-        "entry": round(entry,4),
-        "sl": round(sl,4),
-        "tp": round(tp,4),
-        "tp1": round(tp,4),
-        "tp2": round(tp,4),
-        "rrr": 2.0,
-        "sl_type": "STRUCTURE_BUFFER",
-        "sl_pct": round(sl_pct*100,4),
-        "tp_pct": round(tp_pct*100,4),
-        "buffer_pct": BUFFER_PCT*100,
-        "sl_zone_low": round(zone_low,4),
-        "sl_zone_high": round(zone_high,4),
-        # sizing info - identik real
-        "sizing": {
-            "risk_usd": PAPER_RISK_USD,
-            "risk_note": "$2 fix belum fee/slippage/tax",
-            "sl_pct": round(sl_pct*100,4),
-            "notional_usd": round(notional,2),
-            "qty": round(qty,6),
-            "leverage": leverage_used,
-            "leverage_mode": "ALWAYS_MAX",
-            "margin_needed": round(margin_needed,2),
-            "tp_usd": round(PAPER_RISK_USD*2,2),
-            "tp_note": "$4 fix belum fee"
-        },
-        "order_type":"LIMIT",
-        "order_status":"WAITING_LIMIT",
-        "filter":"none"
-    }
-
-# === POSITION MANAGER V6 ===
 def load_positions():
     if os.path.exists(POSITIONS_FILE):
         try:
-            with open(POSITIONS_FILE,'r') as f:
+            with open(POSITIONS_FILE) as f:
                 data = json.load(f)
-                if 'stats' not in data: data['stats'] = {}
-                data['stats'].setdefault('wins',0)
-                data['stats'].setdefault('losses',0)
-                data['stats'].setdefault('total_pnl',0)
-                data['stats'].setdefault('paper_trades',0)
-                data.setdefault('active', [])
-                data.setdefault('closed', [])
                 return data
         except: pass
     return {"active":[],"closed":[],"stats":{"wins":0,"losses":0,"total_pnl":0,"paper_trades":0}}
 
 def save_positions(data):
-    with open(POSITIONS_FILE,'w') as f: json.dump(data,f,indent=2)
+    with open(POSITIONS_FILE,'w') as f:
+        json.dump(data,f,indent=2)
 
-def check_position_status(pos, current_price, klines_15m=None):
-    # === WAITING_LIMIT = limit order belum ke-fill - OPSI B 24 JAM ===
-    if pos.get('order_status') == "WAITING_LIMIT":
-        # cek fill pakai wick high/low 15m - 96 candle = 24 jam (fix bug #1)
-        if klines_15m:
-            touched = any(c['low'] <= pos['entry'] <= c['high'] for c in klines_15m[-96:])
-            if touched:
-                pos['order_status'] = "FILLED"
-                pos['filled_at'] = datetime.datetime.now(timezone.utc).isoformat()
-                pos['filled_price'] = pos['entry']
-                # setelah FILLED, lanjut ke pengecekan TP/SL di bawah
-            else:
-                # belum ke-fill, cek expiry 24 jam
-                try:
-                    open_time = datetime.datetime.fromisoformat(pos['open_time'].replace('Z','+00:00'))
-                except:
-                    open_time = datetime.datetime.now(timezone.utc)
-                age_hours = (datetime.datetime.now(timezone.utc) - open_time).total_seconds()/3600
-                if age_hours > 24:
-                    return "EXPIRED", 0
-                return "WAITING_LIMIT", 0
-        else:
-            # bug #3 fix: kalau klines None, tetap cek expiry jangan nyangkut selamanya
-            try:
-                open_time = datetime.datetime.fromisoformat(pos['open_time'].replace('Z','+00:00'))
-            except:
-                open_time = datetime.datetime.now(timezone.utc)
-            age_hours = (datetime.datetime.now(timezone.utc) - open_time).total_seconds()/3600
-            if age_hours > 24:
-                return "EXPIRED", 0
-            return "WAITING_LIMIT", 0
-    
-    # === FILLED / ACTIVE = sudah ke-fill, wajib sampai TP atau SL, tidak pakai waktu ===
-    tp_price = pos.get('tp', pos.get('tp1', pos.get('tp2', 0)))
-    sl_price = pos.get('sl', 0)
-
-    # bug #2 fix: cek wick high/low juga, bukan cuma current_price ticker
-    if klines_15m and len(klines_15m) > 0:
-        # cek candle terakhir dan beberapa candle setelah filled untuk wick
-        recent_klines = klines_15m[-4:]  # 1 jam terakhir
-        for c in recent_klines:
-            if pos['direction']=="LONG":
-                if c['low'] <= sl_price:
-                    return "SL_HIT", -1
-                if c['high'] >= tp_price:
-                    return "TP_HIT", 2.0
-            else:
-                if c['high'] >= sl_price:
-                    return "SL_HIT", -1
-                if c['low'] <= tp_price:
-                    return "TP_HIT", 2.0
-
-    # fallback cek current_price juga
-    if pos['direction']=="LONG":
-        if current_price <= sl_price: return "SL_HIT", -1
-        if current_price >= tp_price: return "TP_HIT", 2.0
-    else:
-        if current_price >= sl_price: return "SL_HIT", -1
-        if current_price <= tp_price: return "TP_HIT", 2.0
-    return "ACTIVE", 0
-
-# === MAIN ===
-print(f"=== SMC V6.3 FIXED | OPSI B 24JAM | WICK TP/SL CHECK | STRUCTURE SL BUFFER {BUFFER_PCT*100}% | 2R ===")
 positions_data = load_positions()
-active_positions = positions_data.get("active", [])
-closed_positions = positions_data.get("closed", [])
-valid_new = []
-results = []
+active_positions = positions_data.get("active",[])
+closed_positions = positions_data.get("closed",[])
 
-if active_positions:
-    symbols_to_check = set([p['symbol'] for p in active_positions] + SYMBOLS)
-else:
-    symbols_to_check = SYMBOLS
-
-active_symbols = [p['symbol'] for p in active_positions]
-slots_left = MAX_POSITIONS - len(active_positions)
-
-for pos in list(active_positions):
-    try:
-        cur_price = get_current_price(pos['symbol'])
-        k15 = get_klines(pos['symbol'], "15m", 50)
-        if cur_price is None:
-            results.append({"symbol":pos['symbol'],"status":"HOLD","reason":"price fail","confluence_score":pos.get('confluence_score',0)})
+def check_active_positions():
+    global active_positions, closed_positions
+    new_active = []
+    for pos in active_positions:
+        sym = pos["symbol"]
+        klines = get_klines(sym, "15m", 20)
+        if not klines:
+            new_active.append(pos)
             continue
-        status, pnl_r = check_position_status(pos, cur_price, k15)
-        if status in ["SL_HIT","TP_HIT"]:
-            pos['close_status']=status
-            pos['pnl_rrr']=pnl_r
-            pos['closed_at']=datetime.datetime.now(timezone.utc).isoformat()
-            # bug #4 fix: close_price harus TP/SL exact, bukan ticker cur_price
-            if status == "TP_HIT":
-                pos['close_price']=pos.get('tp', cur_price)
+        high = max(c['high'] for c in klines[-10:])
+        low = min(c['low'] for c in klines[-10:])
+        # wick check
+        if pos["direction"]=="LONG":
+            if low <= pos["sl"]:
+                pos["close_status"]="SL_HIT"
+                pos["pnl_rrr"]=-1
+                pos["closed_at"]=datetime.datetime.now(timezone.utc).isoformat()
+                closed_positions.append(pos)
+                positions_data["stats"]["losses"]+=1
+                positions_data["stats"]["total_pnl"]+=-1
+            elif high >= pos["tp"]:
+                pos["close_status"]="TP_HIT"
+                pos["pnl_rrr"]=2
+                pos["closed_at"]=datetime.datetime.now(timezone.utc).isoformat()
+                closed_positions.append(pos)
+                positions_data["stats"]["wins"]+=1
+                positions_data["stats"]["total_pnl"]+=2
             else:
-                pos['close_price']=pos.get('sl', cur_price)
-            closed_positions.append(pos)
-            active_positions.remove(pos)
-            if pnl_r>0: positions_data['stats']['wins']+=1
-            else: positions_data['stats']['losses']+=1
-            positions_data['stats']['total_pnl']+=pnl_r
-            print(f"CLOSED {pos['symbol']} {status} {pnl_r}R @ {pos['close_price']} (ticker {cur_price})")
-            results.append({"symbol":pos['symbol'],"status":status,"reason":f"Closed {status} {pnl_r}R","confluence_score":pos.get('confluence_score',0)})
-        elif status in ["EXPIRED"]:
-            pos['close_status']=status
-            pos['pnl_rrr']=0
-            pos['closed_at']=datetime.datetime.now(timezone.utc).isoformat()
-            closed_positions.append(pos)
-            active_positions.remove(pos)
-            results.append({"symbol":pos['symbol'],"status":status,"reason":status,"confluence_score":0})
-        else:
-            results.append({"symbol":pos['symbol'],"status":"HOLD","reason":f"Holding {pos.get('direction')} {status}","confluence_score":pos.get('confluence_score',0)})
-    except Exception as e:
-        results.append({"symbol":pos['symbol'],"status":"ERROR","reason":str(e),"confluence_score":0})
+                # check expiry 24h
+                created = datetime.datetime.fromisoformat(pos.get("created_at","2000-01-01T00:00:00+00:00"))
+                if (datetime.datetime.now(timezone.utc)-created).total_seconds()>86400 and pos.get("status")=="WAITING_LIMIT":
+                    pos["close_status"]="EXPIRED"
+                    pos["pnl_rrr"]=0
+                    pos["closed_at"]=datetime.datetime.now(timezone.utc).isoformat()
+                    closed_positions.append(pos)
+                else:
+                    # check if entry touched for WAITING_LIMIT
+                    if pos.get("status")=="WAITING_LIMIT":
+                        entry = pos["entry"]
+                        touched = any(c['low'] <= entry <= c['high'] for c in klines[-96:])
+                        if touched:
+                            pos["status"]="FILLED"
+                            new_active.append(pos)
+                        else:
+                            new_active.append(pos)
+                    else:
+                        new_active.append(pos)
+        else: # SHORT
+            if high >= pos["sl"]:
+                pos["close_status"]="SL_HIT"
+                pos["pnl_rrr"]=-1
+                pos["closed_at"]=datetime.datetime.now(timezone.utc).isoformat()
+                closed_positions.append(pos)
+                positions_data["stats"]["losses"]+=1
+                positions_data["stats"]["total_pnl"]+=-1
+            elif low <= pos["tp"]:
+                pos["close_status"]="TP_HIT"
+                pos["pnl_rrr"]=2
+                pos["closed_at"]=datetime.datetime.now(timezone.utc).isoformat()
+                closed_positions.append(pos)
+                positions_data["stats"]["wins"]+=1
+                positions_data["stats"]["total_pnl"]+=2
+            else:
+                created = datetime.datetime.fromisoformat(pos.get("created_at","2000-01-01T00:00:00+00:00"))
+                if (datetime.datetime.now(timezone.utc)-created).total_seconds()>86400 and pos.get("status")=="WAITING_LIMIT":
+                    pos["close_status"]="EXPIRED"
+                    pos["pnl_rrr"]=0
+                    pos["closed_at"]=datetime.datetime.now(timezone.utc).isoformat()
+                    closed_positions.append(pos)
+                else:
+                    if pos.get("status")=="WAITING_LIMIT":
+                        entry = pos["entry"]
+                        touched = any(c['low'] <= entry <= c['high'] for c in klines[-96:])
+                        if touched:
+                            pos["status"]="FILLED"
+                            new_active.append(pos)
+                        else:
+                            new_active.append(pos)
+                    else:
+                        new_active.append(pos)
+    active_positions = new_active
 
-if slots_left > 0:
-    for sym in SYMBOLS:
-        if len(valid_new) >= slots_left: break
-        if sym in active_symbols: continue
-        try:
-            r=analyze_symbol_multi(sym)
-            results.append(r)
-            print(f"{sym}: {r['status']} SCORE {r.get('confluence_score',0)} - {r['reason'][:120]}")
-            if r['status']=="VALID" and len(valid_new)<slots_left:
-                new_pos = {
-                    "symbol": sym, "direction": r['direction'], "entry": r['entry'], "sl": r['sl'],
-                    "tp": r['tp'], "tp1": r['tp'], "tp2": r['tp'], "rrr": r['rrr'],
-                    "sl_pct": r['sl_pct'], "tp_pct": r['tp_pct'],
-                    "zone_price": r['zone']['price'] if r['zone'] else r['entry'],
-                    "confluence_score": r['confluence_score'],
-                    "confluences": r['confluences'],
-                    "sizing": r['sizing'],
-                    "reason": r['reason'],
-                    "open_price": r['price'], "open_time": datetime.datetime.now(timezone.utc).isoformat(),
-                    "status": "ACTIVE", "order_status": "WAITING_LIMIT",
-                    "paper_trade": PAPER_TRADE
-                }
-                valid_new.append(new_pos)
-                active_positions.append(new_pos)
-                print(f"  -> NEW {sym} {r['direction']} SCORE {r['confluence_score']} Entry {r['entry']} SL {r['sl']} TP {r['tp']} | Size ${r['sizing']['notional_usd']} Lev {r['sizing']['leverage']}x Margin ${r['sizing']['margin_needed']}")
-            time.sleep(0.3)
-        except Exception as e:
-            results.append({"symbol":sym,"status":"ERROR","reason":str(e),"confluence_score":0})
-else:
-    for sym in SYMBOLS:
-        if sym not in active_symbols:
-            results.append({"symbol":sym,"status":"SKIP","reason":f"Max pos {MAX_POSITIONS}","filter":"max_pos","confluence_score":0})
+check_active_positions()
+results = []
+valid_new = []
+active_symbols = [p["symbol"] for p in active_positions]
+
+for sym in SYMBOLS:
+    if sym in active_symbols and len(active_positions)>=MAX_POSITIONS:
+        results.append({"symbol":sym,"status":"SKIP","reason":f"Max pos {MAX_POSITIONS}","filter":"max_pos","confluence_score":0})
+        continue
+    k15 = get_klines(sym, "15m", LIMIT)
+    k1h = get_klines(sym, "1h", 100)
+    if not k15 or not k1h:
+        results.append({"symbol":sym,"status":"ERROR","reason":"no klines","confluence_score":0})
+        continue
+    price = k15[-1]['close']
+    sweep = detect_sweep(k15)
+    choch = detect_choch(k15)
+    zones = detect_zones(k15)
+    htf = detect_htf_trend(k1h)
+    vol = detect_volume(k15)
+    rsi = detect_rsi_filter(k15)
+
+    confluence_score = sweep["score"] + choch["score"] + zones["score"] + htf["score"] + vol["score"] + rsi["score"]
+    confluences = []
+    if sweep["score"]>0: confluences.append(f"SWEEP({sweep['score']})")
+    if choch["score"]>0: confluences.append(f"CHOCH({choch['score']})")
+    if zones["best"]: confluences.append(f"{zones['best']['subtype']}({zones['score']})")
+    if htf["score"]>0: confluences.append(f"HTF({htf['score']})")
+    if vol["score"]>0: confluences.append(f"VOL({vol['score']})")
+
+    if zones["best"] is None:
+        results.append({"symbol":sym,"status":"SKIP","reason":"No zone","filter":"zone","confluence_score":confluence_score})
+        continue
+    best_zone = zones["best"]
+    zone_price = best_zone["price"]
+    distance_pct = abs(price-zone_price)/price*100
+    if distance_pct > MAX_DISTANCE_PCT:
+        results.append({"symbol":sym,"status":"SKIP","reason":f"Distance {distance_pct:.2f}%","filter":"distance","confluence_score":confluence_score})
+        continue
+    if confluence_score < MIN_CONFLUENCE_SCORE:
+        results.append({"symbol":sym,"status":"SKIP","reason":f"Score {confluence_score}<{MIN_CONFLUENCE_SCORE}","filter":"confluence","confluence_score":confluence_score})
+        continue
+
+    # Determine direction
+    if "BULLISH" in best_zone["subtype"]:
+        direction = "LONG"
+        sl_level = best_zone["low"] if best_zone["low"] else zone_price*0.995
+        # SL structure + sweep + buffer
+        sweep_level = sweep.get("level", sl_level)
+        if sweep.get("sweep") and sweep["type"]=="BULLISH_SWEEP":
+            sl = min(sl_level, sweep_level) * (1-BUFFER_PCT)
+        else:
+            sl = sl_level * (1-BUFFER_PCT)
+        sl_pct = abs(price-sl)/price
+        if sl_pct < MIN_SL_PCT:
+            sl = price * (1-MIN_SL_PCT)
+            sl_pct = MIN_SL_PCT
+        if sl_pct > MAX_SL_PCT:
+            results.append({"symbol":sym,"status":"SKIP","reason":f"SL wide {sl_pct*100:.2f}%","filter":"sl_wide","confluence_score":confluence_score})
+            continue
+        tp = price + (price-sl)*2
+        entry = zone_price
+    else:
+        direction = "SHORT"
+        sl_level = best_zone["high"] if best_zone["high"] else zone_price*1.005
+        sweep_level = sweep.get("level", sl_level)
+        if sweep.get("sweep") and sweep["type"]=="BEARISH_SWEEP":
+            sl = max(sl_level, sweep_level) * (1+BUFFER_PCT)
+        else:
+            sl = sl_level * (1+BUFFER_PCT)
+        sl_pct = abs(sl-price)/price
+        if sl_pct < MIN_SL_PCT:
+            sl = price * (1+MIN_SL_PCT)
+            sl_pct = MIN_SL_PCT
+        if sl_pct > MAX_SL_PCT:
+            results.append({"symbol":sym,"status":"SKIP","reason":f"SL wide {sl_pct*100:.2f}%","filter":"sl_wide","confluence_score":confluence_score})
+            continue
+        tp = price - (sl-price)*2
+        entry = zone_price
+
+    leverage = MAX_LEVERAGE.get(sym, DEFAULT_MAX_LEV)
+    risk_usd = PAPER_RISK_USD
+    sl_dist = abs(entry-sl)
+    if sl_dist==0:
+        results.append({"symbol":sym,"status":"SKIP","reason":"SL zero","filter":"sl_narrow","confluence_score":confluence_score})
+        continue
+    qty = risk_usd / sl_dist
+    notional = qty * entry
+    margin_needed = notional / leverage
+
+    pos = {
+        "symbol": sym,
+        "direction": direction,
+        "entry": round(entry,6),
+        "sl": round(sl,6),
+        "tp": round(tp,6),
+        "status": "WAITING_LIMIT",
+        "created_at": datetime.datetime.now(timezone.utc).isoformat(),
+        "confluence_score": confluence_score,
+        "confluences": confluences,
+        "zone": best_zone,
+        "sizing": {
+            "risk_usd": risk_usd,
+            "risk_note": "$2 fix belum fee/slippage/tax",
+            "sl_pct": round(sl_pct*100,4),
+            "notional_usd": round(notional,2),
+            "qty": round(qty,6),
+            "leverage": leverage,
+            "leverage_mode": "ALWAYS_MAX",
+            "margin_needed": round(margin_needed,2),
+            "tp_usd": 4.0,
+            "tp_note": "$4 fix belum fee"
+        }
+    }
+    # position guard
+    if any(p["symbol"]==sym and p["direction"]==direction for p in active_positions):
+        results.append({"symbol":sym,"status":"SKIP","reason":"Already active same dir","filter":"position_guard","confluence_score":confluence_score})
+        continue
+
+    results.append({"symbol":sym,"status":"VALID","direction":direction,"entry":pos["entry"],"sl":pos["sl"],"tp":pos["tp"],"confluence_score":confluence_score,"confluences":confluences,"sizing":pos["sizing"]})
+    if len(active_positions)+len(valid_new) < MAX_POSITIONS:
+        valid_new.append(pos)
+        active_positions.append(pos)
+    time.sleep(0.3)
 
 positions_data['active'] = active_positions
 positions_data['closed'] = closed_positions[-200:]
 save_positions(positions_data)
 
-# === PAPER TRADING SIMULATION - REAL FEE INCLUDED ===
 def build_paper_trading():
     try:
         capital = PAPER_START_CAPITAL
@@ -459,23 +376,20 @@ def build_paper_trading():
         equity_curve = [capital]
         for pos in sorted(closed_positions, key=lambda x: x.get('closed_at','')):
             r = pos.get('pnl_rrr',0)
-            # real risk $2 fix, TP $4 fix
             if r > 0:
-                pnl_usd = PAPER_RISK_USD * r  # +$4
-                # fee 0.05% * 2 = 0.1% dari notional, simulasi
+                pnl_usd = PAPER_RISK_USD * r
                 sizing = pos.get('sizing', {})
                 notional = sizing.get('notional_usd', 200)
-                fee = notional * 0.001  # 0.1% total fee
+                fee = notional * 0.001
                 pnl_usd -= fee
             elif r < 0:
-                pnl_usd = -PAPER_RISK_USD  # -$2
+                pnl_usd = -PAPER_RISK_USD
                 sizing = pos.get('sizing', {})
                 notional = sizing.get('notional_usd', 200)
                 fee = notional * 0.001
                 pnl_usd -= fee
             else:
                 pnl_usd = 0
-            
             capital += pnl_usd
             capital = max(capital, 0.1)
             equity_curve.append(round(capital,2))
