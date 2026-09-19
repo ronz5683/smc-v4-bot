@@ -1,3 +1,4 @@
+
 import os, json, time, hmac, base64, hashlib, datetime, requests
 from datetime import timezone
 
@@ -27,7 +28,6 @@ API_KEY = os.getenv("OKX_DEMO_API_KEY")
 API_SECRET = os.getenv("OKX_DEMO_API_SECRET")
 PASSPHRASE = os.getenv("OKX_DEMO_PASSPHRASE")
 BASE_URL = "https://www.okx.com"
-
 LOG_FILE = "okx_demo_log.json"
 
 def sign(timestamp, method, request_path, body=""):
@@ -42,11 +42,6 @@ def okx_request(method, path, body_dict=None):
     body = ""
     if body_dict:
         body = json.dumps(body_dict)
-    ts = datetime.datetime.now(timezone.utc).isoformat().replace("+00:00","Z")
-    # OKX wants iso with ms
-    ts = datetime.datetime.utcnow().isoformat() + "Z"
-    # Actually OKX needs format: 2020-12-08T09:08:57.715Z
-    # use current with ms
     from datetime import datetime as dt
     ts = dt.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
     signature = sign(ts, method, path, body)
@@ -64,15 +59,12 @@ def okx_request(method, path, body_dict=None):
             r = requests.get(url, headers=headers, params=body_dict, timeout=10)
         else:
             r = requests.post(url, headers=headers, data=body, timeout=10)
-        # print for debug
-        # print(f"{method} {path} -> {r.status_code} {r.text[:500]}")
         return r.json()
     except Exception as e:
         print(f"OKX request error {e}")
         return {"code":"999", "msg": str(e)}
 
 def get_instruments():
-    # public, no auth
     try:
         r = requests.get(f"{BASE_URL}/api/v5/public/instruments", params={"instType":"SWAP"}, timeout=10)
         data = r.json()
@@ -82,7 +74,6 @@ def get_instruments():
     return {}
 
 def set_leverage(instId, lever, mgnMode="isolated"):
-    # set leverage
     path = "/api/v5/account/set-leverage"
     body = {"instId": instId, "lever": str(lever), "mgnMode": mgnMode}
     res = okx_request("POST", path, body)
@@ -90,9 +81,7 @@ def set_leverage(instId, lever, mgnMode="isolated"):
     return res
 
 def place_order(instId, side, sz, posSide=None, tdMode="isolated"):
-    # side: buy/sell
     path = "/api/v5/trade/order"
-    # market order
     body = {
         "instId": instId,
         "tdMode": tdMode,
@@ -107,18 +96,15 @@ def place_order(instId, side, sz, posSide=None, tdMode="isolated"):
     return res
 
 def place_algo_tp_sl(instId, side, sz, tpTriggerPx, slTriggerPx, posSide=None):
-    # tp/sl algo - close position
     path = "/api/v5/trade/order-algo"
-    # OKX algo: tp/sl with side opposite
-    # For long: side sell, for short side buy
     body = {
         "instId": instId,
         "tdMode": "isolated",
-        "side": side,  # opposite of entry
+        "side": side,
         "ordType": "conditional",
         "sz": str(sz),
         "tpTriggerPx": str(tpTriggerPx),
-        "tpOrdPx": "-1",  # market
+        "tpOrdPx": "-1",
         "slTriggerPx": str(slTriggerPx),
         "slOrdPx": "-1",
     }
@@ -128,14 +114,36 @@ def place_algo_tp_sl(instId, side, sz, tpTriggerPx, slTriggerPx, posSide=None):
     print(f"Algo TP/SL {instId} TP={tpTriggerPx} SL={slTriggerPx} -> {res}")
     return res
 
+def round_to_lot_size(qty, lotSz_str, minSz_str):
+    """Fix lot size - OKX requires multiple of lotSz"""
+    try:
+        lotSz = float(lotSz_str)
+        minSz = float(minSz_str)
+        # Round down to nearest lotSz
+        if lotSz == 0:
+            return qty
+        # Calculate how many lots
+        lots = math.floor(qty / lotSz)
+        rounded = lots * lotSz
+        # Ensure at least minSz
+        if rounded < minSz:
+            rounded = minSz
+        # Format to avoid floating errors - keep lotSz decimals
+        dec_str = lotSz_str.split('.')
+        decimals = len(dec_str[1]) if len(dec_str) > 1 else 0
+        # For small lotSz like 0.01, keep 2 decimals
+        # Use string formatting to match OKX precision
+        return float(f"{rounded:.{decimals}f}") if decimals <= 8 else rounded
+    except:
+        return qty
+
 def main():
     if not API_KEY:
-        print("OKX_DEMO keys not set in env - create log empty")
+        print("OKX_DEMO keys not set")
         with open(LOG_FILE, "w") as f:
             json.dump({"generated_at": datetime.datetime.now(timezone.utc).isoformat(), "status":"NO_KEYS", "trades":[]}, f, indent=2)
         return
 
-    # load last_scan
     if not os.path.exists("last_scan.json"):
         print("no last_scan.json")
         return
@@ -155,14 +163,13 @@ def main():
         except: log = []
 
     for pos in valid_new:
-        sym = pos.get("symbol")  # BTCUSDT
+        sym = pos.get("symbol")
         instId = SYMBOL_MAP.get(sym)
         if not instId:
             print(f"Skip {sym} no map")
             continue
-        # anti duplicate - check log last 24h same symbol
         recent = [x for x in log if x["symbol"]==sym and x["instId"]==instId and (datetime.datetime.now(timezone.utc) - datetime.datetime.fromisoformat(x["timestamp"])).total_seconds() < 86400]
-        if recent:
+        if recent and any(r.get("status")=="EXECUTED" for r in recent):
             print(f"Skip duplicate {sym} within 24h")
             continue
 
@@ -171,35 +178,36 @@ def main():
         sl = pos.get("sl")
         tp = pos.get("tp")
         sizing = pos.get("sizing", {})
-        qty = sizing.get("qty")  # base qty like 0.004 BTC
+        qty = sizing.get("qty")
         leverage = sizing.get("leverage", MAX_LEVERAGE.get(sym, 20))
-        notional = sizing.get("notional_usd", 200)
 
-        # OKX SWAP sz is in contracts: need ctVal
         inst_info = instruments.get(instId, {})
-        ctVal = float(inst_info.get("ctVal", "0.01")) if inst_info else 0.01
-        minSz = float(inst_info.get("minSz", "0.01")) if inst_info else 0.01
-        # For USDT swap, ctVal is like 0.01 BTC per contract? Actually ctVal is in base? Let's use lotSz
-        # Simplified: sz = qty / ctVal
-        # But for many alt, ctVal = 1 or 0.01
-        # Calculate contracts
+        ctVal = float(inst_info.get("ctVal", "1"))
+        # ctVal is contract value - for USDT swaps, 1 contract = ctVal * 1 unit of base?
+        # Actually for USDT-SWAP, sz is number of contracts, each contract = ctVal * underlying
+        # Simplified: we use qty (base qty) / ctVal = contracts
+        minSz = inst_info.get("minSz", "1")
+        lotSz = inst_info.get("lotSz", "1")
+        
         try:
-            contracts = qty / ctVal if ctVal else qty
+            # qty is base asset qty (e.g., 0.2 ETH), ctVal is multiplier
+            # For many USDT swaps: ctVal = 0.01 for BTC, 0.1 for ETH, 1 for others?
+            # So contracts = qty / ctVal
+            if ctVal != 0:
+                raw_contracts = qty / ctVal
+            else:
+                raw_contracts = qty
         except:
-            contracts = qty
+            raw_contracts = qty
 
-        # Round to minSz steps
-        # OKX minSz usually 0.01, lotSz 0.01
-        # round down
-        # ensure at least minSz
-        if contracts < minSz:
-            print(f"{sym} contracts {contracts} < minSz {minSz} -> adjust to minSz")
-            contracts = minSz
+        # FIX LOT SIZE
+        contracts = round_to_lot_size(raw_contracts, lotSz, minSz)
+        
+        # If still 0, use minSz
+        if contracts <= 0:
+            contracts = float(minSz)
 
-        # round to 2 decimals for safety
-        contracts = round(contracts, 4)
-        # if BTC contracts too small, use 2 dec
-        # Check notional minimal OKX ~ $1, so OK
+        print(f"Calc {sym}: qty={qty} ctVal={ctVal} lotSz={lotSz} minSz={minSz} -> raw {raw_contracts:.4f} -> rounded {contracts}")
 
         side = "buy" if direction=="LONG" else "sell"
         opp_side = "sell" if side=="buy" else "buy"
@@ -207,17 +215,14 @@ def main():
 
         print(f"\n=== EXEC {sym} {direction} {instId} sz={contracts} lev={leverage} SL={sl} TP={tp} ===")
 
-        # 1. set leverage
         set_leverage(instId, leverage, "isolated")
         time.sleep(0.5)
 
-        # 2. place market order
         order_res = place_order(instId, side, contracts, posSide=posSide, tdMode="isolated")
         order_id = None
         if order_res and order_res.get("code")=="0":
             order_id = order_res["data"][0].get("ordId")
         else:
-            # log fail
             log.append({
                 "timestamp": datetime.datetime.now(timezone.utc).isoformat(),
                 "symbol": sym,
@@ -227,13 +232,14 @@ def main():
                 "reason": str(order_res),
                 "entry": entry, "sl": sl, "tp": tp,
                 "sizing": sizing,
-                "contracts": contracts
+                "contracts": contracts,
+                "lotSz": lotSz,
+                "minSz": minSz,
+                "ctVal": ctVal
             })
             continue
 
         time.sleep(0.8)
-
-        # 3. place TP/SL algo
         algo_res = place_algo_tp_sl(instId, opp_side, contracts, tp, sl, posSide=posSide)
 
         log.append({
@@ -252,16 +258,15 @@ def main():
             "risk_usd": PAPER_RISK_USD
         })
 
-    # save log
     out = {
         "generated_at": datetime.datetime.now(timezone.utc).isoformat(),
-        "bot_version": "V6_OKX_DEMO_EXEC",
+        "bot_version": "V6_OKX_DEMO_EXEC_FIXED_LOT",
         "total_executed": len([x for x in log if x["status"]=="EXECUTED"]),
         "trades": log[-200:]
     }
     with open(LOG_FILE, "w") as f:
         json.dump(out, f, indent=2)
-    print(f"Saved {LOG_FILE} {len(log)} trades")
+    print(f"Saved {LOG_FILE} {len(log)} trades - EXECUTED {out['total_executed']}")
 
 if __name__ == "__main__":
     main()
