@@ -37,6 +37,8 @@ def now_utc():
     return datetime.now(timezone.utc).isoformat()
 
 def sign(timestamp, method, request_path, body=""):
+    if not SECRET:
+        raise ValueError("OKX_SECRET_KEY is None - check GitHub Secrets")
     message = timestamp + method + request_path + body
     mac = hmac.new(SECRET.encode(), message.encode(), hashlib.sha256)
     return base64.b64encode(mac.digest()).decode()
@@ -153,6 +155,16 @@ def is_recently_executed(log_trades, symbol, hours=24):
     return False
 
 def main():
+    if not API_KEY or not SECRET or not PASSPHRASE:
+        print("WARNING: OKX_API_KEY / SECRET / PASSPHRASE not set in env")
+        print("Skipping OKX demo executor - check workflow yaml env injection")
+        # jangan crash workflow, tetap buat log kosong
+        log_data = load_okx_log()
+        log_data["bot_version"] = "V7.3_LIMIT_IDENTIK_PAPER_CANCELED"
+        log_data["generated_at"] = now_utc()
+        save_log()
+        return
+
     scan = load_last_scan()
     valid_new = scan.get("valid_new_positions", []) or scan.get("valid_new", []) or []
     log_data = load_okx_log()
