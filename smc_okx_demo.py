@@ -165,7 +165,7 @@ def main():
         log_data = load_okx_log()
         log_data["bot_version"] = "V7.3_LIMIT_IDENTIK_PAPER_CANCELED"
         log_data["generated_at"] = now_utc()
-        save_log()
+        save_log(log_data)
         return
 
     scan = load_last_scan()
@@ -344,7 +344,7 @@ def main():
     log_data["total_executed"] = len(log_data["trades"])
     log_data["total_verified"] = len([t for t in log_data["trades"] if t["status"] in ("VERIFIED","LIMIT_FILLED")])
     log_data["total_canceled"] = len([t for t in log_data["trades"] if t["status"]=="LIMIT_NOT_FILLED_CANCELED"])
-    save_log()
+    save_log(log_data)
     print(f"Done V7.3 verified {log_data['total_verified']} canceled {log_data['total_canceled']}")
 
 if __name__ == "__main__":
