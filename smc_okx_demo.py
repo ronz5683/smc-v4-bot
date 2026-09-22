@@ -12,11 +12,14 @@ Log format:
 import os, json, time, hmac, base64, hashlib, requests
 from datetime import datetime, timezone
 
-# CONFIG
-API_KEY = os.getenv("OKX_API_KEY")
-SECRET = os.getenv("OKX_SECRET_KEY")
-PASSPHRASE = os.getenv("OKX_PASSPHRASE")
+# CONFIG - support both OKX_DEMO_* (workflow kamu) dan OKX_* (standard)
+API_KEY = os.getenv("OKX_DEMO_API_KEY") or os.getenv("OKX_API_KEY")
+SECRET = os.getenv("OKX_DEMO_API_SECRET") or os.getenv("OKX_SECRET_KEY")
+PASSPHRASE = os.getenv("OKX_DEMO_PASSPHRASE") or os.getenv("OKX_PASSPHRASE")
 BASE_URL = "https://www.okx.com"
+
+# Debug biar keliatan di log workflow kalau secret kebaca atau tidak (tanpa print secretnya)
+print(f"ENV CHECK: API_KEY={'SET' if API_KEY else 'MISSING'} SECRET={'SET' if SECRET else 'MISSING'} PASS={'SET' if PASSPHRASE else 'MISSING'}")
 
 # Threshold jarak lari dianggap PRICE_RAN_AWAY (bisa diatur per coin)
 # BTC/ETH volatil kecil, alt volatil besar
