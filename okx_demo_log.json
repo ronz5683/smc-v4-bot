@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-24T02:00:48.948809+00:00",
+  "generated_at": "2026-09-24T02:15:37.076873+00:00",
   "bot_version": "V7.5_DEMO_HEADER_TIMESTAMP_LEVERAGE_FIX",
-  "total_executed": 14,
+  "total_executed": 15,
   "total_verified": 3,
   "trades": [
     {
@@ -644,6 +644,27 @@
       "entry": 0.12405,
       "sl": 0.123614,
       "tp": 0.124771,
+      "sizing": {
+        "risk_usd": 2.0,
+        "qty": 4590.314437,
+        "notional_usd": 569.43,
+        "leverage": 20
+      },
+      "contracts": "4587",
+      "lotSz": "1",
+      "minSz": "1.0",
+      "ctVal": "1.0"
+    },
+    {
+      "timestamp": "2026-09-24T02:15:37.074473+00:00",
+      "symbol": "OPUSDT",
+      "instId": "OP-USDT-SWAP",
+      "direction": "LONG",
+      "status": "FAILED_ORDER",
+      "reason": "{'code': '1', 'data': [{'clOrdId': '', 'ordId': '', 'sCode': '51000', 'sMsg': 'Parameter posSide error ', 'subCode': '', 'tag': '', 'ts': '1790216137001'}], 'inTime': '1790216137000680', 'msg': 'All operations failed', 'outTime': '1790216137001396'}",
+      "entry": 0.12405,
+      "sl": 0.123614,
+      "tp": 0.125371,
       "sizing": {
         "risk_usd": 2.0,
         "qty": 4590.314437,
@@ -1628,5 +1649,5 @@
     "note": "LIMIT order identik paper. Jika LIMIT_NOT_FILLED_CANCELED, berarti harga sudah lewat, paper TP/SL tidak valid di real. Risk tetap $2 karena SL dihitung dari avgPx real."
   },
   "total_canceled": 0,
-  "total_failed": 11
+  "total_failed": 12
 }
