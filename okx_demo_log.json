@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-24T02:30:44.288718+00:00",
+  "generated_at": "2026-09-24T02:45:40.382683+00:00",
   "bot_version": "V7.5_DEMO_HEADER_TIMESTAMP_LEVERAGE_FIX",
-  "total_executed": 15,
+  "total_executed": 17,
   "total_verified": 3,
   "trades": [
     {
@@ -674,6 +674,48 @@
       "contracts": "4587",
       "lotSz": "1",
       "minSz": "1.0",
+      "ctVal": "1.0"
+    },
+    {
+      "timestamp": "2026-09-24T02:45:39.282565+00:00",
+      "symbol": "AVAXUSDT",
+      "instId": "AVAX-USDT-SWAP",
+      "direction": "LONG",
+      "status": "FAILED_ORDER",
+      "reason": "{'code': '1', 'data': [{'clOrdId': '', 'ordId': '', 'sCode': '51000', 'sMsg': 'Parameter posSide error ', 'subCode': '', 'tag': '', 'ts': '1790217939209'}], 'inTime': '1790217939209249', 'msg': 'All operations failed', 'outTime': '1790217939210084'}",
+      "entry": 10.262,
+      "sl": 10.228634,
+      "tp": 10.436732,
+      "sizing": {
+        "risk_usd": 2.0,
+        "qty": 59.941258,
+        "notional_usd": 615.12,
+        "leverage": 50
+      },
+      "contracts": "59.9",
+      "lotSz": "0.1",
+      "minSz": "0.1",
+      "ctVal": "1.0"
+    },
+    {
+      "timestamp": "2026-09-24T02:45:40.380805+00:00",
+      "symbol": "LINKUSDT",
+      "instId": "LINK-USDT-SWAP",
+      "direction": "LONG",
+      "status": "FAILED_ORDER",
+      "reason": "{'code': '1', 'data': [{'clOrdId': '', 'ordId': '', 'sCode': '51000', 'sMsg': 'Parameter posSide error ', 'subCode': '', 'tag': '', 'ts': '1790217940298'}], 'inTime': '1790217940297705', 'msg': 'All operations failed', 'outTime': '1790217940298445'}",
+      "entry": 12.349,
+      "sl": 12.316498,
+      "tp": 12.432005,
+      "sizing": {
+        "risk_usd": 2.0,
+        "qty": 61.533728,
+        "notional_usd": 759.88,
+        "leverage": 50
+      },
+      "contracts": "61.53",
+      "lotSz": "0.01",
+      "minSz": "0.01",
       "ctVal": "1.0"
     }
   ],
@@ -1649,5 +1691,5 @@
     "note": "LIMIT order identik paper. Jika LIMIT_NOT_FILLED_CANCELED, berarti harga sudah lewat, paper TP/SL tidak valid di real. Risk tetap $2 karena SL dihitung dari avgPx real."
   },
   "total_canceled": 0,
-  "total_failed": 12
+  "total_failed": 14
 }
