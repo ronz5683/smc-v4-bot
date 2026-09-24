@@ -1,9 +1,10 @@
 """
-SMC OKX Demo Executor V7.4 - 23 Sep 2026 08:35 WIB
+SMC OKX Demo Executor V7.5 - 24 Sep 2026
 FIX dari log 23 Sep:
-- 3x FAILED 51121 lot size -> fixed rounding + format sz presisi
-- 1x FAILED 50112 Invalid TIMESTAMP -> fixed ms timestamp fresh tiap request
-- 2x VERIFIED tapi lever 3x (posSide error 51000) -> fixed set_leverage hedge long+short
+- 50101 APIKey does not match current environment -> FIX: tambah header x-simulated-trading: 1 otomatis
+- 50112 Invalid TIMESTAMP -> FIX: get_timestamp() milliseconds fresh tiap request
+- 51121 lot size -> FIX: Decimal quantize + format_sz
+- lever 3x -> FIX: set_leverage hedge long+short isolated
 
 Support env OKX_DEMO_* (workflow kamu) dan OKX_* (standard)
 """
@@ -17,7 +18,10 @@ SECRET = os.getenv("OKX_DEMO_API_SECRET") or os.getenv("OKX_SECRET_KEY")
 PASSPHRASE = os.getenv("OKX_DEMO_PASSPHRASE") or os.getenv("OKX_PASSPHRASE")
 BASE_URL = "https://www.okx.com"
 
-print(f"V7.4 ENV CHECK: API_KEY={'SET' if API_KEY else 'MISSING'} SECRET={'SET' if SECRET else 'MISSING'} PASS={'SET' if PASSPHRASE else 'MISSING'}")
+# Deteksi apakah ini akun demo (kalau env DEMO yang kepakai, otomatis pakai header demo)
+IS_DEMO = bool(os.getenv("OKX_DEMO_API_KEY") or os.getenv("OKX_DEMO_API_SECRET"))
+
+print(f"V7.5 ENV CHECK: API_KEY={'SET' if API_KEY else 'MISSING'} SECRET={'SET' if SECRET else 'MISSING'} PASS={'SET' if PASSPHRASE else 'MISSING'} IS_DEMO={IS_DEMO}")
 
 DISTANCE_THRESHOLD_PCT = {
     "BTCUSDT": 0.15, "ETHUSDT": 0.18, "BNBUSDT": 0.20,
@@ -30,7 +34,6 @@ def now_utc():
     return datetime.now(timezone.utc).isoformat()
 
 def get_timestamp():
-    # OKX butuh milliseconds + Z, fresh tiap call - anti 50112
     return datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace("+00:00", "Z")
 
 def sign(timestamp, method, request_path, body=""):
@@ -41,7 +44,7 @@ def sign(timestamp, method, request_path, body=""):
     return base64.b64encode(mac.digest()).decode('utf-8')
 
 def request_okx(method, path, body=None):
-    timestamp = get_timestamp()  # fresh tiap request
+    timestamp = get_timestamp()
     body_str = json.dumps(body) if body else ""
     headers = {
         "OK-ACCESS-KEY": API_KEY or "",
@@ -50,12 +53,16 @@ def request_okx(method, path, body=None):
         "OK-ACCESS-PASSPHRASE": PASSPHRASE or "",
         "Content-Type": "application/json"
     }
+    # WAJIB untuk akun demo OKX - tanpa ini akan 50101
+    if IS_DEMO:
+        headers["x-simulated-trading"] = "1"
+    
     url = BASE_URL + path
     try:
         if method == "GET":
-            r = requests.get(url, headers=headers, timeout=10)
+            r = requests.get(url, headers=headers, timeout=15)
         else:
-            r = requests.post(url, headers=headers, data=body_str, timeout=10)
+            r = requests.post(url, headers=headers, data=body_str, timeout=15)
         return r.json()
     except Exception as e:
         return {"code": "1", "msg": str(e)}
@@ -68,43 +75,32 @@ def get_instruments(instId):
     return 0.01, 0.01, 1.0, {}
 
 def set_leverage_safe(instId, lever):
-    # Fix 51000: kalau hedge mode, harus set long & short. Kalau one-way, set tanpa posSide
     results = []
     attempts = [
         {"mgnMode": "isolated", "posSide": "long", "lever": str(lever)},
         {"mgnMode": "isolated", "posSide": "short", "lever": str(lever)},
-        {"mgnMode": "isolated", "lever": str(lever)},  # net mode fallback
-        {"mgnMode": "cross", "posSide": "long", "lever": str(lever)},
-        {"mgnMode": "cross", "posSide": "short", "lever": str(lever)},
+        {"mgnMode": "isolated", "lever": str(lever)},
     ]
     for extra in attempts:
         body = {"instId": instId, **extra}
         res = request_okx("POST", "/api/v5/account/set-leverage", body)
-        results.append(res)
+        results.append((extra, res))
         if res.get("code")=="0":
             print(f"  leverage OK {extra} -> {res.get('code')}")
-            # jangan return langsung, set dua sisi kalau hedge
             if "posSide" not in extra:
                 return res
-    # return last success if any
-    for r in results:
+    for _, r in results:
         if r.get("code")=="0":
             return r
-    print(f"  leverage FAIL all attempts: {results[-1]}")
-    return results[-1] if results else {"code":"1","msg":"no attempt"}
+    print(f"  leverage FAIL all: {results[-1]}")
+    return results[-1][1] if results else {"code":"1","msg":"no attempt"}
 
 def format_sz(contracts, lotSz_str):
-    # Format sz sesuai presisi lotSz biar tidak 51121 - pakai Decimal
     try:
         lot = Decimal(str(lotSz_str))
-        # hitung decimal places dari lotSz
-        exp = lot.as_tuple().exponent
-        # quantize
         d = Decimal(str(contracts)).quantize(lot, rounding=ROUND_DOWN)
-        # kalau masih < lot, pakai lot
         if d < lot:
             d = lot
-        # format tanpa scientific
         return format(d, 'f')
     except:
         return str(contracts)
@@ -156,11 +152,11 @@ def load_okx_log():
         with open("okx_demo_log.json") as f:
             return json.load(f)
     except:
-        return {"generated_at": now_utc(), "bot_version": "V7.4", "total_executed":0, "total_verified":0, "trades":[]}
+        return {"generated_at": now_utc(), "bot_version": "V7.5", "total_executed":0, "total_verified":0, "trades":[]}
 
 def save_log(data):
     data["generated_at"] = now_utc()
-    data["bot_version"] = "V7.4_TIMESTAMP_LEVERAGE_LOTSIZE_FIX"
+    data["bot_version"] = "V7.5_DEMO_HEADER_TIMESTAMP_LEVERAGE_FIX"
     with open("okx_demo_log.json", "w") as f:
         json.dump(data, f, indent=2)
 
@@ -212,7 +208,6 @@ def main():
         notional = risk_usd / sl_pct if sl_pct>0 else 0
         qty_raw = notional / entry / ctVal if ctVal else notional/entry
 
-        # FIX lot size dengan Decimal
         contracts_float = math.floor(qty_raw / lotSz) * lotSz if lotSz else qty_raw
         if contracts_float < minSz:
             contracts_float = minSz
@@ -220,11 +215,9 @@ def main():
 
         side = "buy" if direction=="LONG" else "sell"
 
-        # Set leverage hedge safe
         lev_res = set_leverage_safe(instId, leverage)
         print(f"{symbol} set lev {leverage}: {lev_res.get('code')} {lev_res.get('msg','')}")
 
-        # Place LIMIT
         order_res = place_limit_order(instId, side, sz_str, entry)
         if order_res.get("code")!="0":
             print(f"{symbol} FAILED_ORDER {order_res}")
@@ -314,8 +307,7 @@ def main():
             "pos_snapshot": pos,
             "signal_entry": entry, "signal_sl": sl, "signal_tp": tp,
             "real_avgPx": avgPx, "real_sl": real_sl, "real_tp": real_tp,
-            "sizing": sizing, "contracts": float(sz_str) if sz_str.replace('.','').isdigit() else sz_str,
-            "contracts_str": sz_str, "raw": float(qty_raw),
+            "sizing": sizing, "contracts": sz_str, "contracts_str": sz_str, "raw": float(qty_raw),
             "lotSz": lotSz_str, "minSz": str(minSz), "ctVal": str(ctVal),
             "leverage": leverage, "margin_needed": float(margin) if margin else None,
             "risk_note": f"LIMIT identik paper, SL recalc dari avgPx {avgPx}"
@@ -329,7 +321,7 @@ def main():
     log_data["total_canceled"] = len([t for t in log_data["trades"] if t["status"]=="LIMIT_NOT_FILLED_CANCELED"])
     log_data["total_failed"] = len([t for t in log_data["trades"] if t["status"]=="FAILED_ORDER"])
     save_log(log_data)
-    print(f"Done V7.4 verified {log_data['total_verified']} canceled {log_data['total_canceled']} failed {log_data['total_failed']}")
+    print(f"Done V7.5 verified {log_data['total_verified']} canceled {log_data['total_canceled']} failed {log_data['total_failed']}")
 
 if __name__ == "__main__":
     main()
