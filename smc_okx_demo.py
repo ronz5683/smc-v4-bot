@@ -1,27 +1,22 @@
 """
-SMC OKX Demo Executor V7.5 - 24 Sep 2026
-FIX dari log 23 Sep:
-- 50101 APIKey does not match current environment -> FIX: tambah header x-simulated-trading: 1 otomatis
-- 50112 Invalid TIMESTAMP -> FIX: get_timestamp() milliseconds fresh tiap request
-- 51121 lot size -> FIX: Decimal quantize + format_sz
-- lever 3x -> FIX: set_leverage hedge long+short isolated
+SMC OKX Demo Executor V7.6 - 25 Sep 2026 08:23 WIB FIX posSide
+FIX dari log 24-25 Sep:
+- 18x FAILED 51000 posSide error -> FIX: place_limit_order + algo WAJIB kirim posSide long/short kalau akun hedge mode
+- Sebelumnya hanya set_leverage yang pakai posSide, ordernya tidak -> OKX reject
 
-Support env OKX_DEMO_* (workflow kamu) dan OKX_* (standard)
+Support env OKX_DEMO_* + x-simulated-trading header
 """
 import os, json, time, hmac, base64, hashlib, requests, math
 from decimal import Decimal, ROUND_DOWN
 from datetime import datetime, timezone
 
-# CONFIG - support both naming
 API_KEY = os.getenv("OKX_DEMO_API_KEY") or os.getenv("OKX_API_KEY")
 SECRET = os.getenv("OKX_DEMO_API_SECRET") or os.getenv("OKX_SECRET_KEY")
 PASSPHRASE = os.getenv("OKX_DEMO_PASSPHRASE") or os.getenv("OKX_PASSPHRASE")
 BASE_URL = "https://www.okx.com"
+IS_DEMO = bool(os.getenv("OKX_DEMO_API_KEY"))
 
-# Deteksi apakah ini akun demo (kalau env DEMO yang kepakai, otomatis pakai header demo)
-IS_DEMO = bool(os.getenv("OKX_DEMO_API_KEY") or os.getenv("OKX_DEMO_API_SECRET"))
-
-print(f"V7.5 ENV CHECK: API_KEY={'SET' if API_KEY else 'MISSING'} SECRET={'SET' if SECRET else 'MISSING'} PASS={'SET' if PASSPHRASE else 'MISSING'} IS_DEMO={IS_DEMO}")
+print(f"V7.6 ENV CHECK: API_KEY={'SET' if API_KEY else 'MISSING'} IS_DEMO={IS_DEMO}")
 
 DISTANCE_THRESHOLD_PCT = {
     "BTCUSDT": 0.15, "ETHUSDT": 0.18, "BNBUSDT": 0.20,
@@ -39,8 +34,8 @@ def get_timestamp():
 def sign(timestamp, method, request_path, body=""):
     if not SECRET:
         raise ValueError("SECRET missing")
-    message = timestamp + method + request_path + body
-    mac = hmac.new(SECRET.encode('utf-8'), message.encode('utf-8'), hashlib.sha256)
+    msg = timestamp + method + request_path + body
+    mac = hmac.new(SECRET.encode('utf-8'), msg.encode('utf-8'), hashlib.sha256)
     return base64.b64encode(mac.digest()).decode('utf-8')
 
 def request_okx(method, path, body=None):
@@ -53,10 +48,8 @@ def request_okx(method, path, body=None):
         "OK-ACCESS-PASSPHRASE": PASSPHRASE or "",
         "Content-Type": "application/json"
     }
-    # WAJIB untuk akun demo OKX - tanpa ini akan 50101
     if IS_DEMO:
         headers["x-simulated-trading"] = "1"
-    
     url = BASE_URL + path
     try:
         if method == "GET":
@@ -75,25 +68,22 @@ def get_instruments(instId):
     return 0.01, 0.01, 1.0, {}
 
 def set_leverage_safe(instId, lever):
+    # hedge mode: set long & short
     results = []
-    attempts = [
+    for extra in [
         {"mgnMode": "isolated", "posSide": "long", "lever": str(lever)},
         {"mgnMode": "isolated", "posSide": "short", "lever": str(lever)},
         {"mgnMode": "isolated", "lever": str(lever)},
-    ]
-    for extra in attempts:
+    ]:
         body = {"instId": instId, **extra}
         res = request_okx("POST", "/api/v5/account/set-leverage", body)
-        results.append((extra, res))
-        if res.get("code")=="0":
-            print(f"  leverage OK {extra} -> {res.get('code')}")
-            if "posSide" not in extra:
-                return res
-    for _, r in results:
+        results.append(res)
+        if res.get("code")=="0" and "posSide" not in extra:
+            return res
+    for r in results:
         if r.get("code")=="0":
             return r
-    print(f"  leverage FAIL all: {results[-1]}")
-    return results[-1][1] if results else {"code":"1","msg":"no attempt"}
+    return results[-1] if results else {"code":"1"}
 
 def format_sz(contracts, lotSz_str):
     try:
@@ -105,11 +95,13 @@ def format_sz(contracts, lotSz_str):
     except:
         return str(contracts)
 
-def place_limit_order(instId, side, sz_str, px):
+def place_limit_order(instId, side, sz_str, px, posSide):
+    # FIX V7.6: WAJIB posSide kalau hedge mode
     body = {
         "instId": instId,
         "tdMode": "isolated",
         "side": side,
+        "posSide": posSide,
         "ordType": "limit",
         "sz": sz_str,
         "px": str(px)
@@ -120,17 +112,17 @@ def get_order(instId, ordId):
     return request_okx("GET", f"/api/v5/trade/order?instId={instId}&ordId={ordId}")
 
 def cancel_order(instId, ordId):
-    body = {"instId": instId, "ordId": ordId}
-    return request_okx("POST", "/api/v5/trade/cancel-order", body)
+    return request_okx("POST", "/api/v5/trade/cancel-order", {"instId": instId, "ordId": ordId})
 
 def get_positions(instId):
     return request_okx("GET", f"/api/v5/account/positions?instId={instId}")
 
-def place_algo_sl_tp(instId, side, sz_str, slPx, tpPx):
+def place_algo_sl_tp(instId, side, sz_str, slPx, tpPx, posSide):
     body = {
         "instId": instId,
         "tdMode": "isolated",
         "side": side,
+        "posSide": posSide,
         "ordType": "conditional",
         "sz": sz_str,
         "slTriggerPx": str(slPx),
@@ -152,18 +144,18 @@ def load_okx_log():
         with open("okx_demo_log.json") as f:
             return json.load(f)
     except:
-        return {"generated_at": now_utc(), "bot_version": "V7.5", "total_executed":0, "total_verified":0, "trades":[]}
+        return {"generated_at": now_utc(), "bot_version": "V7.6", "total_executed":0, "trades":[]}
 
 def save_log(data):
     data["generated_at"] = now_utc()
-    data["bot_version"] = "V7.5_DEMO_HEADER_TIMESTAMP_LEVERAGE_FIX"
+    data["bot_version"] = "V7.6_POS_SIDE_FIX"
     with open("okx_demo_log.json", "w") as f:
         json.dump(data, f, indent=2)
 
 def is_recently_executed(log_trades, symbol, hours=24):
     now = datetime.now(timezone.utc)
     for t in log_trades[-30:]:
-        if t["symbol"]==symbol and t["status"] in ("VERIFIED","LIMIT_FILLED","LIMIT_NOT_FILLED_CANCELED"):
+        if t["symbol"]==symbol and t["status"] in ("VERIFIED",):
             try:
                 ts = datetime.fromisoformat(t["timestamp"].replace("Z","+00:00"))
                 if (now - ts).total_seconds() < hours*3600:
@@ -174,16 +166,15 @@ def is_recently_executed(log_trades, symbol, hours=24):
 
 def main():
     if not API_KEY or not SECRET or not PASSPHRASE:
-        print("WARNING: OKX keys missing - skipping")
+        print("WARNING: keys missing")
         log_data = load_okx_log()
         save_log(log_data)
         return
 
     scan = load_last_scan()
-    valid_new = scan.get("valid_new_positions", []) or scan.get("valid_new", []) or []
+    valid_new = scan.get("valid_new_positions", []) or []
     log_data = load_okx_log()
-
-    print(f"Scan valid_new: {len(valid_new)} | existing trades: {len(log_data.get('trades',[]))}")
+    print(f"Scan valid_new: {len(valid_new)} | existing: {len(log_data.get('trades',[]))}")
 
     for item in valid_new:
         symbol = item["symbol"]
@@ -196,46 +187,44 @@ def main():
         leverage = int(sizing.get("leverage", 50))
 
         if is_recently_executed(log_data["trades"], symbol, 24):
-            print(f"SKIP {symbol} - already executed <24h")
+            print(f"SKIP {symbol} <24h")
             continue
 
         lotSz, minSz, ctVal, inst_data = get_instruments(instId)
         lotSz_str = inst_data.get("lotSz", str(lotSz))
-        print(f"{symbol} inst: lotSz={lotSz_str} minSz={minSz} ctVal={ctVal}")
+        print(f"{symbol} lotSz={lotSz_str} minSz={minSz} ctVal={ctVal}")
 
         sl_pct = abs(entry - sl) / entry if entry else 0
-        risk_usd = 2.0
-        notional = risk_usd / sl_pct if sl_pct>0 else 0
+        notional = 2.0 / sl_pct if sl_pct>0 else 0
         qty_raw = notional / entry / ctVal if ctVal else notional/entry
-
         contracts_float = math.floor(qty_raw / lotSz) * lotSz if lotSz else qty_raw
         if contracts_float < minSz:
             contracts_float = minSz
         sz_str = format_sz(contracts_float, lotSz_str)
 
         side = "buy" if direction=="LONG" else "sell"
+        posSide = "long" if direction=="LONG" else "short"
+        close_side = "sell" if direction=="LONG" else "buy"
 
         lev_res = set_leverage_safe(instId, leverage)
-        print(f"{symbol} set lev {leverage}: {lev_res.get('code')} {lev_res.get('msg','')}")
+        print(f"{symbol} lev {leverage}: {lev_res.get('code')}")
 
-        order_res = place_limit_order(instId, side, sz_str, entry)
+        order_res = place_limit_order(instId, side, sz_str, entry, posSide)
         if order_res.get("code")!="0":
-            print(f"{symbol} FAILED_ORDER {order_res}")
+            print(f"{symbol} FAILED {order_res}")
             trade = {
-                "timestamp": now_utc(),
-                "symbol": symbol, "instId": instId, "direction": direction,
-                "status": "FAILED_ORDER",
-                "reason": str(order_res),
-                "entry": entry, "sl": sl, "tp": tp,
-                "sizing": sizing, "contracts": sz_str,
-                "lotSz": lotSz_str, "minSz": str(minSz), "ctVal": str(ctVal)
+                "timestamp": now_utc(), "symbol": symbol, "instId": instId,
+                "direction": direction, "status": "FAILED_ORDER",
+                "reason": str(order_res), "entry": entry, "sl": sl, "tp": tp,
+                "sizing": sizing, "contracts": sz_str, "posSide": posSide,
+                "lotSz": lotSz_str
             }
             log_data["trades"].append(trade)
             save_log(log_data)
             continue
 
         ordId = order_res["data"][0]["ordId"]
-        print(f"{symbol} LIMIT placed {ordId} px {entry} sz {sz_str}")
+        print(f"{symbol} LIMIT {ordId} px {entry} sz {sz_str} posSide {posSide}")
 
         filled = False
         last_px = entry
@@ -249,13 +238,13 @@ def main():
                 try:
                     last_px = float(d.get("lastPx") or d.get("px") or entry)
                 except:
-                    last_px = entry
+                    pass
                 if last_state == "filled":
                     filled = True
                     break
                 if last_state in ("canceled","mmp_canceled"):
                     break
-            print(f"  wait {i+1}/6 state={last_state} lastPx={last_px}")
+            print(f"  wait {i+1}/6 {last_state} {last_px}")
 
         if not filled:
             c_res = cancel_order(instId, ordId)
@@ -263,21 +252,16 @@ def main():
             distance_pct = abs(last_px - entry) / entry * 100 if entry else 0
             cancel_reason = "PRICE_RAN_AWAY" if distance_pct >= threshold else "TIMEOUT_30S"
             trade = {
-                "timestamp": now_utc(),
-                "symbol": symbol, "instId": instId, "direction": direction,
-                "status": "LIMIT_NOT_FILLED_CANCELED",
-                "order_type": "LIMIT", "verified_by_api": True,
+                "timestamp": now_utc(), "symbol": symbol, "instId": instId,
+                "direction": direction, "status": "LIMIT_NOT_FILLED_CANCELED",
                 "order_id": ordId, "order_res": order_res, "cancel_res": c_res,
                 "signal_entry": entry, "signal_sl": sl, "signal_tp": tp,
                 "real_last_price": last_px, "real_state": last_state,
-                "distance_pct": round(distance_pct,4), "threshold_pct": threshold,
-                "cancel_reason": cancel_reason,
-                "sizing": sizing, "contracts": sz_str,
-                "lotSz": lotSz_str, "minSz": str(minSz), "ctVal": str(ctVal),
-                "leverage": leverage
+                "distance_pct": round(distance_pct,4), "cancel_reason": cancel_reason,
+                "sizing": sizing, "contracts": sz_str, "posSide": posSide
             }
             log_data["trades"].append(trade)
-            print(f"{symbol} CANCELED {cancel_reason} dist {distance_pct:.3f}%")
+            print(f"{symbol} CANCELED {cancel_reason}")
             save_log(log_data)
             continue
 
@@ -296,32 +280,30 @@ def main():
         real_sl = avgPx - dist_sl if direction=="LONG" else avgPx + dist_sl
         real_tp = avgPx + dist_tp if direction=="LONG" else avgPx - dist_tp
 
-        close_side = "sell" if direction=="LONG" else "buy"
-        algo_res = place_algo_sl_tp(instId, close_side, sz_str, real_sl, real_tp)
+        algo_res = place_algo_sl_tp(instId, close_side, sz_str, real_sl, real_tp, posSide)
 
         trade = {
-            "timestamp": now_utc(),
-            "symbol": symbol, "instId": instId, "direction": direction,
-            "status": "VERIFIED", "order_type": "LIMIT", "verified_by_api": True,
-            "order_id": ordId, "order_res": order_res, "lev_res": lev_res, "algo_res": algo_res,
+            "timestamp": now_utc(), "symbol": symbol, "instId": instId,
+            "direction": direction, "status": "VERIFIED", "order_type": "LIMIT",
+            "verified_by_api": True, "order_id": ordId,
+            "order_res": order_res, "lev_res": lev_res, "algo_res": algo_res,
             "pos_snapshot": pos,
             "signal_entry": entry, "signal_sl": sl, "signal_tp": tp,
             "real_avgPx": avgPx, "real_sl": real_sl, "real_tp": real_tp,
-            "sizing": sizing, "contracts": sz_str, "contracts_str": sz_str, "raw": float(qty_raw),
-            "lotSz": lotSz_str, "minSz": str(minSz), "ctVal": str(ctVal),
-            "leverage": leverage, "margin_needed": float(margin) if margin else None,
-            "risk_note": f"LIMIT identik paper, SL recalc dari avgPx {avgPx}"
+            "sizing": sizing, "contracts": sz_str, "raw": float(qty_raw),
+            "lotSz": lotSz_str, "leverage": leverage, "posSide": posSide,
+            "margin_needed": float(margin) if margin else None
         }
         log_data["trades"].append(trade)
-        print(f"{symbol} VERIFIED avgPx {avgPx} SL {real_sl} TP {real_tp} sz {sz_str}")
+        print(f"{symbol} VERIFIED avgPx {avgPx} posSide {posSide}")
         save_log(log_data)
 
     log_data["total_executed"] = len(log_data["trades"])
-    log_data["total_verified"] = len([t for t in log_data["trades"] if t["status"] in ("VERIFIED","LIMIT_FILLED")])
+    log_data["total_verified"] = len([t for t in log_data["trades"] if t["status"]=="VERIFIED"])
     log_data["total_canceled"] = len([t for t in log_data["trades"] if t["status"]=="LIMIT_NOT_FILLED_CANCELED"])
     log_data["total_failed"] = len([t for t in log_data["trades"] if t["status"]=="FAILED_ORDER"])
     save_log(log_data)
-    print(f"Done V7.5 verified {log_data['total_verified']} canceled {log_data['total_canceled']} failed {log_data['total_failed']}")
+    print(f"Done V7.6 verified {log_data['total_verified']} canceled {log_data['total_canceled']} failed {log_data['total_failed']}")
 
 if __name__ == "__main__":
     main()
