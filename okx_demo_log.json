@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-25T02:45:39.834574+00:00",
+  "generated_at": "2026-09-25T03:01:27.608435+00:00",
   "bot_version": "V7.7_POS_SIDE_FIX",
-  "total_executed": 21,
+  "total_executed": 22,
   "total_verified": 3,
   "trades": [
     {
@@ -801,6 +801,64 @@
       "lotSz": "0.01",
       "minSz": "0.01",
       "ctVal": "1.0"
+    },
+    {
+      "timestamp": "2026-09-25T03:01:27.605763+00:00",
+      "symbol": "ETHUSDT",
+      "instId": "ETH-USDT-SWAP",
+      "direction": "SHORT",
+      "status": "LIMIT_NOT_FILLED_CANCELED",
+      "order_id": "3952807914641059841",
+      "order_res": {
+        "code": "0",
+        "data": [
+          {
+            "clOrdId": "",
+            "ordId": "3952807914641059841",
+            "sCode": "0",
+            "sMsg": "Order placed",
+            "subCode": "",
+            "tag": "",
+            "ts": "1790305255808"
+          }
+        ],
+        "inTime": "1790305255808214",
+        "msg": "",
+        "outTime": "1790305255808980"
+      },
+      "cancel_res": {
+        "code": "0",
+        "data": [
+          {
+            "clOrdId": "",
+            "ordId": "3952807914641059841",
+            "sCode": "0",
+            "sMsg": "",
+            "ts": "1790305287521"
+          }
+        ],
+        "inTime": "1790305287520625",
+        "msg": "",
+        "outTime": "1790305287521355"
+      },
+      "signal_entry": 2678.795,
+      "signal_sl": 2703.877,
+      "signal_tp": 2628.6311,
+      "real_last_price": 2678.8,
+      "real_state": "live",
+      "distance_pct": 0.0002,
+      "cancel_reason": "TIMEOUT_30S",
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.9363,
+        "notional_usd": 213.6,
+        "qty": 0.079739,
+        "leverage": 100,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 2.14
+      },
+      "contracts": "0.79",
+      "posSide": "short"
     }
   ],
   "verification": {
@@ -1774,6 +1832,6 @@
     },
     "note": "LIMIT order identik paper. Jika LIMIT_NOT_FILLED_CANCELED, berarti harga sudah lewat, paper TP/SL tidak valid di real. Risk tetap $2 karena SL dihitung dari avgPx real."
   },
-  "total_canceled": 0,
+  "total_canceled": 1,
   "total_failed": 18
 }
