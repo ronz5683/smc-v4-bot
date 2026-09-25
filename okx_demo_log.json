@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-25T00:00:51.626086+00:00",
+  "generated_at": "2026-09-25T00:12:55.400750+00:00",
   "bot_version": "V7.5_DEMO_HEADER_TIMESTAMP_LEVERAGE_FIX",
-  "total_executed": 19,
+  "total_executed": 21,
   "total_verified": 3,
   "trades": [
     {
@@ -756,6 +756,48 @@
         "leverage": 50
       },
       "contracts": "61.53",
+      "lotSz": "0.01",
+      "minSz": "0.01",
+      "ctVal": "1.0"
+    },
+    {
+      "timestamp": "2026-09-25T00:12:54.205911+00:00",
+      "symbol": "BTCUSDT",
+      "instId": "BTC-USDT-SWAP",
+      "direction": "LONG",
+      "status": "FAILED_ORDER",
+      "reason": "{'code': '1', 'data': [{'clOrdId': '', 'ordId': '', 'sCode': '51000', 'sMsg': 'Parameter posSide error ', 'subCode': '', 'tag': '', 'ts': '1790295174109'}], 'inTime': '1790295174108678', 'msg': 'All operations failed', 'outTime': '1790295174110702'}",
+      "entry": 84600.0,
+      "sl": 84413.19,
+      "tp": 85145.13,
+      "sizing": {
+        "risk_usd": 2.0,
+        "qty": 0.010706,
+        "notional_usd": 905.73,
+        "leverage": 100
+      },
+      "contracts": "1.07",
+      "lotSz": "0.01",
+      "minSz": "0.01",
+      "ctVal": "0.01"
+    },
+    {
+      "timestamp": "2026-09-25T00:12:55.346156+00:00",
+      "symbol": "LINKUSDT",
+      "instId": "LINK-USDT-SWAP",
+      "direction": "LONG",
+      "status": "FAILED_ORDER",
+      "reason": "{'code': '1', 'data': [{'clOrdId': '', 'ordId': '', 'sCode': '51000', 'sMsg': 'Parameter posSide error ', 'subCode': '', 'tag': '', 'ts': '1790295175264'}], 'inTime': '1790295175263545', 'msg': 'All operations failed', 'outTime': '1790295175264509'}",
+      "entry": 13.274,
+      "sl": 13.225132,
+      "tp": 13.521735,
+      "sizing": {
+        "risk_usd": 2.0,
+        "qty": 40.926996,
+        "notional_usd": 543.26,
+        "leverage": 50
+      },
+      "contracts": "40.92",
       "lotSz": "0.01",
       "minSz": "0.01",
       "ctVal": "1.0"
@@ -1733,5 +1775,5 @@
     "note": "LIMIT order identik paper. Jika LIMIT_NOT_FILLED_CANCELED, berarti harga sudah lewat, paper TP/SL tidak valid di real. Risk tetap $2 karena SL dihitung dari avgPx real."
   },
   "total_canceled": 0,
-  "total_failed": 16
+  "total_failed": 18
 }
