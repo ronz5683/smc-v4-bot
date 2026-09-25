@@ -1,5 +1,5 @@
 """
-SMC OKX Demo Executor V7.6 - 25 Sep 2026 08:23 WIB FIX posSide
+SMC OKX Demo Executor V7.7 - 25 Sep 2026 08:23 WIB FIX posSide
 FIX dari log 24-25 Sep:
 - 18x FAILED 51000 posSide error -> FIX: place_limit_order + algo WAJIB kirim posSide long/short kalau akun hedge mode
 - Sebelumnya hanya set_leverage yang pakai posSide, ordernya tidak -> OKX reject
@@ -16,7 +16,7 @@ PASSPHRASE = os.getenv("OKX_DEMO_PASSPHRASE") or os.getenv("OKX_PASSPHRASE")
 BASE_URL = "https://www.okx.com"
 IS_DEMO = bool(os.getenv("OKX_DEMO_API_KEY"))
 
-print(f"V7.6 ENV CHECK: API_KEY={'SET' if API_KEY else 'MISSING'} IS_DEMO={IS_DEMO}")
+print(f"V7.7 ENV CHECK: API_KEY={'SET' if API_KEY else 'MISSING'} IS_DEMO={IS_DEMO}")
 
 DISTANCE_THRESHOLD_PCT = {
     "BTCUSDT": 0.15, "ETHUSDT": 0.18, "BNBUSDT": 0.20,
@@ -96,7 +96,7 @@ def format_sz(contracts, lotSz_str):
         return str(contracts)
 
 def place_limit_order(instId, side, sz_str, px, posSide):
-    # FIX V7.6: WAJIB posSide kalau hedge mode
+    # FIX V7.7: WAJIB posSide kalau hedge mode
     body = {
         "instId": instId,
         "tdMode": "isolated",
@@ -144,11 +144,11 @@ def load_okx_log():
         with open("okx_demo_log.json") as f:
             return json.load(f)
     except:
-        return {"generated_at": now_utc(), "bot_version": "V7.6", "total_executed":0, "trades":[]}
+        return {"generated_at": now_utc(), "bot_version": "V7.7", "total_executed":0, "trades":[]}
 
 def save_log(data):
     data["generated_at"] = now_utc()
-    data["bot_version"] = "V7.6_POS_SIDE_FIX"
+    data["bot_version"] = "V7.7_POS_SIDE_FIX"
     with open("okx_demo_log.json", "w") as f:
         json.dump(data, f, indent=2)
 
@@ -164,6 +164,33 @@ def is_recently_executed(log_trades, symbol, hours=24):
                 pass
     return False
 
+
+def is_duplicate_entry(log_trades, symbol, entry, hours=2):
+    now = __import__('datetime').datetime.now(__import__('datetime').timezone.utc)
+    for t in log_trades[-20:]:
+        if t["symbol"]==symbol:
+            try:
+                ts = __import__('datetime').datetime.fromisoformat(t["timestamp"].replace("Z","+00:00"))
+                same_price = abs(float(t.get("entry",0) or t.get("signal_entry",0)) - entry) < entry*0.001
+                if same_price and (now - ts).total_seconds() < hours*3600:
+                    return True
+            except:
+                pass
+    return False
+
+def count_failed_today(log_trades):
+    today = __import__('datetime').datetime.now(__import__('datetime').timezone.utc).date()
+    cnt=0
+    for t in log_trades[-30:]:
+        try:
+            ts = __import__('datetime').datetime.fromisoformat(t["timestamp"].replace("Z","+00:00"))
+            if ts.date()==today and t["status"] in ("FAILED_ORDER","LIMIT_NOT_FILLED_CANCELED"):
+                cnt+=1
+        except:
+            pass
+    return cnt
+
+
 def main():
     if not API_KEY or not SECRET or not PASSPHRASE:
         print("WARNING: keys missing")
@@ -174,7 +201,12 @@ def main():
     scan = load_last_scan()
     valid_new = scan.get("valid_new_positions", []) or []
     log_data = load_okx_log()
-    print(f"Scan valid_new: {len(valid_new)} | existing: {len(log_data.get('trades',[]))}")
+    failed_today = count_failed_today(log_data.get("trades",[]))
+    if failed_today >= 3:
+        print(f"!!! DAILY STOP: {failed_today} FAILED/CANCELED today, skip all")
+        save_log(log_data)
+        return
+    print(f"Scan valid_new: {len(valid_new)} | existing: {len(log_data.get('trades',[]))} | failed_today: {failed_today}")
 
     for item in valid_new:
         symbol = item["symbol"]
@@ -188,6 +220,13 @@ def main():
 
         if is_recently_executed(log_data["trades"], symbol, 24):
             print(f"SKIP {symbol} <24h")
+            continue
+        if is_duplicate_entry(log_data["trades"], symbol, entry, 2):
+            print(f"SKIP {symbol} duplicate entry {entry} <2h anti OP 3x")
+            continue
+        sl_pct_check = abs(entry - sl) / entry if entry else 0
+        if sl_pct_check < 0.005:
+            print(f"SKIP {symbol} SL too tight {sl_pct_check*100:.2f}% <0.5%")
             continue
 
         lotSz, minSz, ctVal, inst_data = get_instruments(instId)
@@ -303,7 +342,7 @@ def main():
     log_data["total_canceled"] = len([t for t in log_data["trades"] if t["status"]=="LIMIT_NOT_FILLED_CANCELED"])
     log_data["total_failed"] = len([t for t in log_data["trades"] if t["status"]=="FAILED_ORDER"])
     save_log(log_data)
-    print(f"Done V7.6 verified {log_data['total_verified']} canceled {log_data['total_canceled']} failed {log_data['total_failed']}")
+    print(f"Done V7.7 verified {log_data['total_verified']} canceled {log_data['total_canceled']} failed {log_data['total_failed']}")
 
 if __name__ == "__main__":
     main()
