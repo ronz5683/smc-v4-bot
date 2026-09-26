@@ -41,7 +41,16 @@ jobs:
           OKX_DEMO_API_KEY: ${{ secrets.OKX_DEMO_API_KEY }}
           OKX_DEMO_API_SECRET: ${{ secrets.OKX_DEMO_API_SECRET }}
           OKX_DEMO_PASSPHRASE: ${{ secrets.OKX_DEMO_PASSPHRASE }}
-        run: python smc_okx_demo_v73.py
+        run: |
+          if [ -f smc_okx_demo_v73.py ]; then
+            python smc_okx_demo_v73.py
+          elif [ -f smc_okx_demo.py ]; then
+            python smc_okx_demo.py
+          else
+            echo "No OKX demo file found, listing files:"
+            ls -la *.py
+            exit 1
+          fi
 
       - name: Commit results
         run: |
@@ -51,6 +60,5 @@ jobs:
           git add last_scan.json positions.json paper_trading.json okx_demo_log.json || true
           git diff --staged --quiet && echo "no changes" && exit 0
           git commit -m "bot: update scan $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          # Fix for race condition - pull rebase before push
           git pull --rebase origin main || (git rebase --abort; git pull --rebase origin main)
           git push
