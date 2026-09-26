@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: scan
+  cancel-in-progress: false
+
 jobs:
   scan:
     runs-on: ubuntu-latest
@@ -16,6 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -30,25 +35,22 @@ jobs:
 
       - name: Run OKX Demo Executor (auto entry real)
         env:
+          OKX_API_KEY: ${{ secrets.OKX_API_KEY }}
+          OKX_SECRET_KEY: ${{ secrets.OKX_SECRET_KEY }}
+          OKX_PASSPHRASE: ${{ secrets.OKX_PASSPHRASE }}
           OKX_DEMO_API_KEY: ${{ secrets.OKX_DEMO_API_KEY }}
           OKX_DEMO_API_SECRET: ${{ secrets.OKX_DEMO_API_SECRET }}
           OKX_DEMO_PASSPHRASE: ${{ secrets.OKX_DEMO_PASSPHRASE }}
-        run: |
-          echo "Listing files:"
-          ls -la *.py || true
-          FILE=$(find . -maxdepth 1 -iname "*okx*demo*.py" | head -n 1)
-          if [ -n "$FILE" ]; then
-            echo "Found OKX file: $FILE - running..."
-            python "$FILE"
-          else
-            echo "smc_okx_demo.py not found - skip OKX demo"
-            echo '{"generated_at":"skip","status":"FILE_NOT_FOUND","trades":[]}' > okx_demo_log.json
-          fi
+        run: python smc_okx_demo_v73.py
 
       - name: Commit results
         run: |
           git config --global user.name "smc-bot"
           git config --global user.email "bot@smc.com"
+          git config --global pull.rebase true
           git add last_scan.json positions.json paper_trading.json okx_demo_log.json || true
-          git commit -m "bot: update scan $(date -u +'%Y-%m-%dT%H:%M:%SZ')" || echo "no changes to commit"
+          git diff --staged --quiet && echo "no changes" && exit 0
+          git commit -m "bot: update scan $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          # Fix for race condition - pull rebase before push
+          git pull --rebase origin main || (git rebase --abort; git pull --rebase origin main)
           git push
