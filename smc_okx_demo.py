@@ -152,23 +152,44 @@ def main():
                 filled = True
 
         if filled:
-            print(f"{symbol} LIMIT FILLED ordId {ordId} at {last_px} (within 2-3 candles)")
-            # Update log kalau belum ada VERIFIED
-            # Ambil avgPx real
+            print(f"{symbol} LIMIT FILLED ordId {ordId} at {last_px} (within 2-3 candles) -> placing SL/TP FIX")
             pos_api = get_positions(instId)
             avgPx = entry
+            sz_from_pos = None
             if pos_api.get("code")=="0" and pos_api["data"]:
                 for p in pos_api["data"]:
                     if p.get("posSide")==("long" if pos["direction"]=="LONG" else "short"):
                         avgPx = float(p.get("avgPx", entry))
+                        sz_from_pos = p.get("pos") or p.get("availPos")
                         break
-            # Recalc SL/TP dari avgPx
             sl = float(pos["sl"]); tp = float(pos["tp"])
             dist_sl = abs(entry - sl)
             real_sl = avgPx - dist_sl if pos["direction"]=="LONG" else avgPx + dist_sl
             real_tp = avgPx + (tp-entry) if pos["direction"]=="LONG" else avgPx - (entry-tp)
-            # Place SL/TP algo kalau belum
-            # (skip detail, anggap sudah ada dari log)
+            # FIX V10.1: langsung pasang SL/TP
+            close_side = "sell" if pos["direction"]=="LONG" else "buy"
+            posSide = "long" if pos["direction"]=="LONG" else "short"
+            sz = pos.get("contracts") or sz_from_pos or 1
+            try:
+                algo_res = place_algo_sl_tp(instId, close_side, sz, real_sl, real_tp, posSide)
+                print(f"{symbol} SL/TP placed SL {real_sl} TP {real_tp} res {algo_res.get('code')}")
+            except Exception as e:
+                algo_res = {"code":"error","msg":str(e)}
+            trade = {
+                "timestamp": now_utc(),
+                "symbol": symbol,
+                "instId": instId,
+                "direction": pos["direction"],
+                "status": "LIMIT_FILLED",
+                "order_id": ordId,
+                "real_avgPx": avgPx,
+                "real_sl": real_sl,
+                "real_tp": real_tp,
+                "algo_res": algo_res,
+                "confluence_score": pos.get("confluence_score",0),
+                "note": f"V10.1 FIX LIMIT FILLED {last_px} -> SLTP {real_sl}/{real_tp}"
+            }
+            log_data["trades"].append(trade)
             continue
 
         # Belum fill - cek apakah harga lari jauh?
