@@ -1,5 +1,5 @@
 {
-  "last_scan_utc": "2026-09-27T05:15:33.560752+00:00",
+  "last_scan_utc": "2026-09-27T05:30:41.440901+00:00",
   "bot_version": "V10_PRO_LIMIT_7",
   "params": {
     "MIN_CONFLUENCE_SCORE": 7.0,
@@ -14,7 +14,7 @@
     "skip": 12,
     "active_positions": 0,
     "waiting_limit": 0,
-    "avg_confluence": 2.79,
+    "avg_confluence": 2.88,
     "by_filter": {
       "confluence": 12,
       "distance": 0,
@@ -27,8 +27,8 @@
   "results": [
     {
       "symbol": "BTCUSDT",
-      "price": 84391.55,
-      "confluence_score": 1,
+      "price": 84398.87,
+      "confluence_score": 3,
       "confluences": [
         "FVG(1)",
         "HTF(1)",
@@ -46,10 +46,10 @@
       },
       "zone": {
         "type": "FVG",
-        "subtype": "BEARISH_FVG",
-        "price": 84394.0,
-        "high": 84426.0,
-        "low": 84362.0,
+        "subtype": "BULLISH_FVG",
+        "price": 84398.43,
+        "high": 84398.86,
+        "low": 84398.0,
         "score": 1
       },
       "zones_all": [
@@ -88,16 +88,16 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 41.1,
-        "reason": "RSI healthy 41.1"
+        "rsi": 41.6,
+        "reason": "RSI healthy 41.6"
       },
       "status": "SKIP",
-      "reason": "Score 1 < 7.0",
+      "reason": "Score 3 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2695.39,
+      "price": 2697.01,
       "confluence_score": 2.5,
       "confluences": [
         "FVG(1)",
@@ -116,10 +116,10 @@
       },
       "zone": {
         "type": "FVG",
-        "subtype": "BEARISH_FVG",
-        "price": 2694.6499999999996,
-        "high": 2695.66,
-        "low": 2693.64,
+        "subtype": "BULLISH_FVG",
+        "price": 2697.185,
+        "high": 2699.37,
+        "low": 2695.0,
         "score": 1
       },
       "zones_all": [
@@ -157,8 +157,8 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 39.4,
-        "reason": "RSI healthy 39.4"
+        "rsi": 41.3,
+        "reason": "RSI healthy 41.3"
       },
       "status": "SKIP",
       "reason": "Score 2.5 < 7.0",
@@ -166,20 +166,20 @@
     },
     {
       "symbol": "SOLUSDT",
-      "price": 120.55,
-      "confluence_score": 4.5,
+      "price": 120.68,
+      "confluence_score": 5.0,
       "confluences": [
         "SWEEP(2)",
-        "OB(1.5)",
+        "BREAKER(2)",
         "HTF(0.5)",
         "RSI(0.5)"
       ],
       "sweep": {
         "sweep": true,
         "type": "BULLISH_SWEEP",
-        "level": 120.46,
+        "level": 120.43,
         "score": 2,
-        "reason": "Bull sweep wick 120.12 below 120.46"
+        "reason": "Bull sweep wick 120.12 below 120.43"
       },
       "choch": {
         "choch": false,
@@ -187,22 +187,14 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "OB",
-        "subtype": "BULLISH_OB",
-        "price": 120.62,
-        "high": 120.68,
-        "low": 120.56,
-        "score": 1.5
+        "type": "BREAKER",
+        "subtype": "BULLISH_BREAKER",
+        "price": 120.685,
+        "high": 120.8,
+        "low": 120.57,
+        "score": 2
       },
       "zones_all": [
-        {
-          "type": "BREAKER",
-          "subtype": "BULLISH_BREAKER",
-          "price": 121.035,
-          "high": 121.18,
-          "low": 120.89,
-          "score": 2
-        },
         {
           "type": "OB",
           "subtype": "BULLISH_OB",
@@ -218,6 +210,14 @@
           "high": 121.68,
           "low": 121.44,
           "score": 2
+        },
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 120.685,
+          "high": 120.8,
+          "low": 120.57,
+          "score": 2
         }
       ],
       "htf": {
@@ -229,26 +229,29 @@
       },
       "rsi": {
         "score": 0.5,
-        "rsi": 32.4,
-        "reason": "RSI neutral 32.4"
+        "rsi": 33.8,
+        "reason": "RSI neutral 33.8"
       },
       "status": "SKIP",
-      "reason": "Score 4.5 < 7.0",
+      "reason": "Score 5.0 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "XRPUSDT",
-      "price": 1.5129,
-      "confluence_score": 3,
+      "price": 1.5133,
+      "confluence_score": 2.5,
       "confluences": [
+        "SWEEP(2)",
         "FVG(1)",
         "HTF(1)",
-        "RSI(1)"
+        "RSI(0.5)"
       ],
       "sweep": {
-        "sweep": false,
-        "score": 0,
-        "reason": "No sweep"
+        "sweep": true,
+        "type": "BULLISH_SWEEP",
+        "level": 1.51,
+        "score": 2,
+        "reason": "Bull sweep wick 1.51 below 1.51"
       },
       "choch": {
         "choch": false,
@@ -267,14 +270,6 @@
         {
           "type": "BREAKER",
           "subtype": "BULLISH_BREAKER",
-          "price": 1.5218,
-          "high": 1.5236,
-          "low": 1.52,
-          "score": 2
-        },
-        {
-          "type": "BREAKER",
-          "subtype": "BULLISH_BREAKER",
           "price": 1.5276,
           "high": 1.5299,
           "low": 1.5253,
@@ -287,6 +282,14 @@
           "high": 1.5218,
           "low": 1.519,
           "score": 2
+        },
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 1.51685,
+          "high": 1.5181,
+          "low": 1.5156,
+          "score": 2
         }
       ],
       "htf": {
@@ -298,17 +301,17 @@
         "score": 0
       },
       "rsi": {
-        "score": 1,
-        "rsi": 35.7,
-        "reason": "RSI healthy 35.7"
+        "score": 0.5,
+        "rsi": 31.8,
+        "reason": "RSI neutral 31.8"
       },
       "status": "SKIP",
-      "reason": "Score 3 < 7.0",
+      "reason": "Score 2.5 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "BNBUSDT",
-      "price": 772.27,
+      "price": 772.45,
       "confluence_score": 3,
       "confluences": [
         "SWEEP(2)",
@@ -340,14 +343,6 @@
         {
           "type": "BREAKER",
           "subtype": "BULLISH_BREAKER",
-          "price": 773.085,
-          "high": 773.48,
-          "low": 772.69,
-          "score": 2
-        },
-        {
-          "type": "BREAKER",
-          "subtype": "BULLISH_BREAKER",
           "price": 774.1099999999999,
           "high": 774.54,
           "low": 773.68,
@@ -359,6 +354,14 @@
           "price": 772.73,
           "high": 773.04,
           "low": 772.42,
+          "score": 2
+        },
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 772.03,
+          "high": 772.32,
+          "low": 771.74,
           "score": 2
         }
       ],
@@ -372,8 +375,8 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 39.6,
-        "reason": "RSI healthy 39.6"
+        "rsi": 39.1,
+        "reason": "RSI healthy 39.1"
       },
       "status": "SKIP",
       "reason": "Score 3 < 7.0",
@@ -381,10 +384,10 @@
     },
     {
       "symbol": "ADAUSDT",
-      "price": 0.2518,
-      "confluence_score": 2,
+      "price": 0.2527,
+      "confluence_score": 1,
       "confluences": [
-        "BREAKER(2)",
+        "FVG(1)",
         "HTF(1)",
         "RSI(1)"
       ],
@@ -399,12 +402,12 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "BREAKER",
-        "subtype": "BULLISH_BREAKER",
-        "price": 0.25175000000000003,
-        "high": 0.2524,
-        "low": 0.2511,
-        "score": 2
+        "type": "FVG",
+        "subtype": "BULLISH_FVG",
+        "price": 0.25255,
+        "high": 0.2526,
+        "low": 0.2525,
+        "score": 1
       },
       "zones_all": [
         {
@@ -442,16 +445,16 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 44.4,
-        "reason": "RSI healthy 44.4"
+        "rsi": 46.5,
+        "reason": "RSI healthy 46.5"
       },
       "status": "SKIP",
-      "reason": "Score 2 < 7.0",
+      "reason": "Score 1 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "DOGEUSDT",
-      "price": 0.09589,
+      "price": 0.09588,
       "confluence_score": 2.5,
       "confluences": [
         "SWEEP(2)",
@@ -515,8 +518,8 @@
       },
       "rsi": {
         "score": 0.5,
-        "rsi": 33.2,
-        "reason": "RSI neutral 33.2"
+        "rsi": 31.8,
+        "reason": "RSI neutral 31.8"
       },
       "status": "SKIP",
       "reason": "Score 2.5 < 7.0",
@@ -524,7 +527,7 @@
     },
     {
       "symbol": "AVAXUSDT",
-      "price": 10.777,
+      "price": 10.785,
       "confluence_score": 4.5,
       "confluences": [
         "SWEEP(2)",
@@ -546,21 +549,13 @@
       },
       "zone": {
         "type": "FVG",
-        "subtype": "BEARISH_FVG",
-        "price": 10.765,
-        "high": 10.775,
-        "low": 10.755,
+        "subtype": "BULLISH_FVG",
+        "price": 10.7965,
+        "high": 10.797,
+        "low": 10.796,
         "score": 1
       },
       "zones_all": [
-        {
-          "type": "BREAKER",
-          "subtype": "BULLISH_BREAKER",
-          "price": 10.902000000000001,
-          "high": 10.951,
-          "low": 10.853,
-          "score": 2
-        },
         {
           "type": "BREAKER",
           "subtype": "BULLISH_BREAKER",
@@ -576,6 +571,14 @@
           "high": 10.76,
           "low": 10.732,
           "score": 1.5
+        },
+        {
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 10.683,
+          "high": 10.704,
+          "low": 10.662,
+          "score": 1.5
         }
       ],
       "htf": {
@@ -587,8 +590,8 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 42.7,
-        "reason": "RSI healthy 42.7"
+        "rsi": 45.1,
+        "reason": "RSI healthy 45.1"
       },
       "status": "SKIP",
       "reason": "Score 4.5 < 7.0",
@@ -596,11 +599,11 @@
     },
     {
       "symbol": "LINKUSDT",
-      "price": 14.097,
-      "confluence_score": 4.5,
+      "price": 14.105,
+      "confluence_score": 5.0,
       "confluences": [
         "SWEEP(2)",
-        "FVG(1)",
+        "OB(1.5)",
         "HTF(0.5)",
         "RSI(1)"
       ],
@@ -617,22 +620,14 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "FVG",
-        "subtype": "BULLISH_FVG",
-        "price": 14.091999999999999,
-        "high": 14.093,
-        "low": 14.091,
-        "score": 1
+        "type": "OB",
+        "subtype": "BULLISH_OB",
+        "price": 14.1085,
+        "high": 14.124,
+        "low": 14.093,
+        "score": 1.5
       },
       "zones_all": [
-        {
-          "type": "BREAKER",
-          "subtype": "BULLISH_BREAKER",
-          "price": 14.1365,
-          "high": 14.163,
-          "low": 14.11,
-          "score": 2
-        },
         {
           "type": "OB",
           "subtype": "BULLISH_OB",
@@ -648,6 +643,14 @@
           "high": 14.349,
           "low": 14.228,
           "score": 2
+        },
+        {
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 14.1085,
+          "high": 14.124,
+          "low": 14.093,
+          "score": 1.5
         }
       ],
       "htf": {
@@ -659,21 +662,21 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 38.2,
-        "reason": "RSI healthy 38.2"
+        "rsi": 35.1,
+        "reason": "RSI healthy 35.1"
       },
       "status": "SKIP",
-      "reason": "Score 4.5 < 7.0",
+      "reason": "Score 5.0 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "OPUSDT",
-      "price": 0.144,
-      "confluence_score": 2.5,
+      "price": 0.1436,
+      "confluence_score": 2.0,
       "confluences": [
         "FVG(1)",
         "HTF(0.5)",
-        "RSI(1)"
+        "RSI(0.5)"
       ],
       "sweep": {
         "sweep": false,
@@ -727,17 +730,17 @@
         "score": 0
       },
       "rsi": {
-        "score": 1,
-        "rsi": 40.4,
-        "reason": "RSI healthy 40.4"
+        "score": 0.5,
+        "rsi": 34.7,
+        "reason": "RSI neutral 34.7"
       },
       "status": "SKIP",
-      "reason": "Score 2.5 < 7.0",
+      "reason": "Score 2.0 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "ARBUSDT",
-      "price": 0.223,
+      "price": 0.2232,
       "confluence_score": 1.5,
       "confluences": [
         "FVG(1)",
@@ -756,8 +759,8 @@
       "zone": {
         "type": "FVG",
         "subtype": "BULLISH_FVG",
-        "price": 0.22260000000000002,
-        "high": 0.223,
+        "price": 0.22255,
+        "high": 0.2229,
         "low": 0.2222,
         "score": 1
       },
@@ -796,8 +799,8 @@
       },
       "rsi": {
         "score": 0,
-        "rsi": 25.5,
-        "reason": "RSI extreme 25.5"
+        "rsi": 21.7,
+        "reason": "RSI extreme 21.7"
       },
       "status": "SKIP",
       "reason": "Score 1.5 < 7.0",
