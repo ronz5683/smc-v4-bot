@@ -1,5 +1,5 @@
 {
-  "last_scan_utc": "2026-09-28T03:45:36.508846+00:00",
+  "last_scan_utc": "2026-09-28T04:00:46.122872+00:00",
   "bot_version": "V10_PRO_LIMIT_7",
   "params": {
     "MIN_CONFLUENCE_SCORE": 7.0,
@@ -9,15 +9,15 @@
   },
   "summary": {
     "total_scanned": 12,
-    "valid_new": 0,
-    "valid": 0,
-    "skip": 12,
-    "active_positions": 0,
-    "waiting_limit": 0,
-    "avg_confluence": 3.08,
+    "valid_new": 1,
+    "valid": 1,
+    "skip": 11,
+    "active_positions": 1,
+    "waiting_limit": 1,
+    "avg_confluence": 4.54,
     "by_filter": {
-      "confluence": 12,
-      "distance": 0,
+      "confluence": 10,
+      "distance": 1,
       "zone": 0,
       "sl_narrow": 0,
       "daily_stop": 0,
@@ -27,7 +27,7 @@
   "results": [
     {
       "symbol": "BTCUSDT",
-      "price": 83438.01,
+      "price": 83300.0,
       "confluence_score": 4.5,
       "confluences": [
         "SWEEP(2)",
@@ -37,9 +37,9 @@
       "sweep": {
         "sweep": true,
         "type": "BULLISH_SWEEP",
-        "level": 83420.81,
+        "level": 83389.07,
         "score": 2,
-        "reason": "Bull sweep wick 83210.00 below 83420.81"
+        "reason": "Bull sweep wick 83210.00 below 83389.07"
       },
       "choch": {
         "choch": false,
@@ -89,8 +89,8 @@
       },
       "rsi": {
         "score": 0,
-        "rsi": 15.5,
-        "reason": "RSI extreme 15.5"
+        "rsi": 18.9,
+        "reason": "RSI extreme 18.9"
       },
       "status": "SKIP",
       "reason": "Score 4.5 < 7.0",
@@ -98,19 +98,20 @@
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2653.06,
-      "confluence_score": 2.5,
+      "price": 2650.96,
+      "confluence_score": 3.0,
       "confluences": [
         "SWEEP(2)",
         "OB(1.5)",
-        "HTF(1)"
+        "HTF(1)",
+        "RSI(0.5)"
       ],
       "sweep": {
         "sweep": true,
         "type": "BULLISH_SWEEP",
-        "level": 2650.0,
+        "level": 2648.36,
         "score": 2,
-        "reason": "Bull sweep wick 2648.36 below 2650.00"
+        "reason": "Bull sweep wick 2643.48 below 2648.36"
       },
       "choch": {
         "choch": false,
@@ -160,34 +161,37 @@
         "score": 0
       },
       "rsi": {
-        "score": 0,
-        "rsi": 25.2,
-        "reason": "RSI extreme 25.2"
+        "score": 0.5,
+        "rsi": 30.1,
+        "reason": "RSI neutral 30.1"
       },
       "status": "SKIP",
-      "reason": "Score 2.5 < 7.0",
+      "reason": "Score 3.0 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "SOLUSDT",
-      "price": 120.21,
-      "confluence_score": 4.5,
+      "price": 119.67,
+      "confluence_score": 7.0,
       "confluences": [
         "SWEEP(2)",
+        "CHOCH(2)",
         "BREAKER(2)",
-        "HTF(0.5)"
+        "HTF(0.5)",
+        "RSI(0.5)"
       ],
       "sweep": {
         "sweep": true,
         "type": "BULLISH_SWEEP",
-        "level": 120.17,
+        "level": 119.88,
         "score": 2,
-        "reason": "Bull sweep wick 119.45 below 120.17"
+        "reason": "Bull sweep wick 119.45 below 119.88"
       },
       "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
+        "choch": true,
+        "type": "BEARISH_CHOCH",
+        "score": 2,
+        "reason": "Bearish CHOCH 119.67 < 119.85"
       },
       "zone": {
         "type": "BREAKER",
@@ -231,17 +235,32 @@
         "score": 0
       },
       "rsi": {
-        "score": 0,
-        "rsi": 28.2,
-        "reason": "RSI extreme 28.2"
+        "score": 0.5,
+        "rsi": 30.8,
+        "reason": "RSI neutral 30.8"
       },
-      "status": "SKIP",
-      "reason": "Score 4.5 < 7.0",
-      "filter": "confluence"
+      "direction": "LONG",
+      "entry": 120.22999999999999,
+      "sl": 119.98953999999999,
+      "tp": 121.83616107963562,
+      "rrr": 2.0,
+      "sl_pct": 0.006679535388986279,
+      "tp_pct": 0.013359070777972559,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.668,
+        "notional_usd": 299.42,
+        "qty": 2.49041,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 5.99
+      },
+      "status": "VALID",
+      "reason": "SCORE 7.0/10: SWEEP(2)+CHOCH(2)+BREAKER(2)+HTF(0.5)+RSI(0.5) | LIMIT 120.2300 SL 0.67% | HTF NEUTRAL"
     },
     {
       "symbol": "XRPUSDT",
-      "price": 1.4958,
+      "price": 1.4901,
       "confluence_score": 3.5,
       "confluences": [
         "SWEEP(2)",
@@ -252,9 +271,9 @@
       "sweep": {
         "sweep": true,
         "type": "BULLISH_SWEEP",
-        "level": 1.495,
+        "level": 1.4934,
         "score": 2,
-        "reason": "Bull sweep wick 1.49 below 1.50"
+        "reason": "Bull sweep wick 1.48 below 1.49"
       },
       "choch": {
         "choch": false,
@@ -305,8 +324,8 @@
       },
       "rsi": {
         "score": 0.5,
-        "rsi": 30.2,
-        "reason": "RSI neutral 30.2"
+        "rsi": 33.9,
+        "reason": "RSI neutral 33.9"
       },
       "status": "SKIP",
       "reason": "Score 3.5 < 7.0",
@@ -314,16 +333,19 @@
     },
     {
       "symbol": "BNBUSDT",
-      "price": 771.91,
-      "confluence_score": 1.5,
+      "price": 770.07,
+      "confluence_score": 3.5,
       "confluences": [
+        "SWEEP(2)",
         "FVG(1)",
         "HTF(0.5)"
       ],
       "sweep": {
-        "sweep": false,
-        "score": 0,
-        "reason": "No sweep"
+        "sweep": true,
+        "type": "BULLISH_SWEEP",
+        "level": 771.5,
+        "score": 2,
+        "reason": "Bull sweep wick 767.90 below 771.50"
       },
       "choch": {
         "choch": false,
@@ -373,22 +395,23 @@
       },
       "rsi": {
         "score": 0,
-        "rsi": 25.7,
-        "reason": "RSI extreme 25.7"
+        "rsi": 28.8,
+        "reason": "RSI extreme 28.8"
       },
       "status": "SKIP",
-      "reason": "Score 1.5 < 7.0",
+      "reason": "Score 3.5 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "ADAUSDT",
-      "price": 0.2517,
-      "confluence_score": 3.5,
+      "price": 0.2498,
+      "confluence_score": 6,
       "confluences": [
         "SWEEP(2)",
+        "CHOCH(2)",
         "BREAKER(2)",
         "HTF(1)",
-        "RSI(0.5)"
+        "RSI(1)"
       ],
       "sweep": {
         "sweep": true,
@@ -398,9 +421,10 @@
         "reason": "Bull sweep wick 0.25 below 0.25"
       },
       "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
+        "choch": true,
+        "type": "BEARISH_CHOCH",
+        "score": 2,
+        "reason": "Bearish CHOCH 0.25 < 0.25"
       },
       "zone": {
         "type": "BREAKER",
@@ -445,34 +469,36 @@
         "score": 0
       },
       "rsi": {
-        "score": 0.5,
-        "rsi": 33.7,
-        "reason": "RSI neutral 33.7"
+        "score": 1,
+        "rsi": 36.3,
+        "reason": "RSI healthy 36.3"
       },
       "status": "SKIP",
-      "reason": "Score 3.5 < 7.0",
+      "reason": "Score 6 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "DOGEUSDT",
-      "price": 0.09435,
-      "confluence_score": 3,
+      "price": 0.09386,
+      "confluence_score": 5,
       "confluences": [
         "SWEEP(2)",
+        "CHOCH(2)",
         "BREAKER(2)",
         "HTF(1)"
       ],
       "sweep": {
         "sweep": true,
         "type": "BULLISH_SWEEP",
-        "level": 0.09475,
+        "level": 0.09466,
         "score": 2,
         "reason": "Bull sweep wick 0.09 below 0.09"
       },
       "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
+        "choch": true,
+        "type": "BEARISH_CHOCH",
+        "score": 2,
+        "reason": "Bearish CHOCH 0.09 < 0.09"
       },
       "zone": {
         "type": "BREAKER",
@@ -518,23 +544,20 @@
       },
       "rsi": {
         "score": 0,
-        "rsi": 23.9,
-        "reason": "RSI extreme 23.9"
+        "rsi": 26.7,
+        "reason": "RSI extreme 26.7"
       },
       "status": "SKIP",
-      "reason": "Score 3 < 7.0",
+      "reason": "Score 5 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "AVAXUSDT",
-      "price": 10.761,
-      "confluence_score": 5.0,
-      "confluences": [
-        "SWEEP(2)",
-        "OB(1.5)",
-        "HTF(0.5)",
-        "RSI(1)"
-      ],
+      "price": 10.697,
+      "confluence_score": 7.0,
+      "status": "SKIP",
+      "reason": "Distance 1.04% > 0.5%",
+      "filter": "distance",
       "sweep": {
         "sweep": true,
         "type": "BULLISH_SWEEP",
@@ -543,27 +566,20 @@
         "reason": "Bull sweep wick 10.63 below 10.70"
       },
       "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
+        "choch": true,
+        "type": "BEARISH_CHOCH",
+        "score": 2,
+        "reason": "Bearish CHOCH 10.70 < 10.72"
       },
       "zone": {
         "type": "OB",
         "subtype": "BULLISH_OB",
-        "price": 10.7675,
-        "high": 10.835,
-        "low": 10.7,
+        "price": 10.8085,
+        "high": 10.887,
+        "low": 10.73,
         "score": 1.5
       },
       "zones_all": [
-        {
-          "type": "OB",
-          "subtype": "BULLISH_OB",
-          "price": 10.7675,
-          "high": 10.835,
-          "low": 10.7,
-          "score": 1.5
-        },
         {
           "type": "OB",
           "subtype": "BULLISH_OB",
@@ -579,6 +595,14 @@
           "high": 10.934,
           "low": 10.827,
           "score": 2
+        },
+        {
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 10.8695,
+          "high": 10.913,
+          "low": 10.826,
+          "score": 1.5
         }
       ],
       "htf": {
@@ -590,20 +614,18 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 36.4,
-        "reason": "RSI healthy 36.4"
-      },
-      "status": "SKIP",
-      "reason": "Score 5.0 < 7.0",
-      "filter": "confluence"
+        "rsi": 40.4,
+        "reason": "RSI healthy 40.4"
+      }
     },
     {
       "symbol": "LINKUSDT",
-      "price": 14.023,
-      "confluence_score": 4,
+      "price": 13.85,
+      "confluence_score": 5.5,
       "confluences": [
         "SWEEP(2)",
-        "BREAKER(2)",
+        "CHOCH(2)",
+        "OB(1.5)",
         "HTF(1)",
         "RSI(1)"
       ],
@@ -615,17 +637,18 @@
         "reason": "Bull sweep wick 13.89 below 13.90"
       },
       "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
+        "choch": true,
+        "type": "BEARISH_CHOCH",
+        "score": 2,
+        "reason": "Bearish CHOCH 13.85 < 13.89"
       },
       "zone": {
-        "type": "BREAKER",
-        "subtype": "BULLISH_BREAKER",
-        "price": 14.022,
-        "high": 14.069,
-        "low": 13.975,
-        "score": 2
+        "type": "OB",
+        "subtype": "BULLISH_OB",
+        "price": 13.9815,
+        "high": 14.0,
+        "low": 13.963,
+        "score": 1.5
       },
       "zones_all": [
         {
@@ -663,18 +686,19 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 41.8,
-        "reason": "RSI healthy 41.8"
+        "rsi": 39.3,
+        "reason": "RSI healthy 39.3"
       },
       "status": "SKIP",
-      "reason": "Score 4 < 7.0",
+      "reason": "Score 5.5 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "OPUSDT",
-      "price": 0.1434,
-      "confluence_score": 1.5,
+      "price": 0.1422,
+      "confluence_score": 3.5,
       "confluences": [
+        "CHOCH(2)",
         "FVG(1)",
         "HTF(0.5)"
       ],
@@ -684,9 +708,10 @@
         "reason": "No sweep"
       },
       "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
+        "choch": true,
+        "type": "BEARISH_CHOCH",
+        "score": 2,
+        "reason": "Bearish CHOCH 0.14 < 0.14"
       },
       "zone": {
         "type": "FVG",
@@ -731,30 +756,35 @@
       },
       "rsi": {
         "score": 0,
-        "rsi": 19.6,
-        "reason": "RSI extreme 19.6"
+        "rsi": 22.8,
+        "reason": "RSI extreme 22.8"
       },
       "status": "SKIP",
-      "reason": "Score 1.5 < 7.0",
+      "reason": "Score 3.5 < 7.0",
       "filter": "confluence"
     },
     {
       "symbol": "ARBUSDT",
-      "price": 0.2172,
-      "confluence_score": 1.5,
+      "price": 0.2136,
+      "confluence_score": 4,
       "confluences": [
+        "SWEEP(2)",
+        "CHOCH(2)",
         "FVG(1)",
-        "HTF(0.5)"
+        "HTF(1)"
       ],
       "sweep": {
-        "sweep": false,
-        "score": 0,
-        "reason": "No sweep"
+        "sweep": true,
+        "type": "BULLISH_SWEEP",
+        "level": 0.2193,
+        "score": 2,
+        "reason": "Bull sweep wick 0.22 below 0.22"
       },
       "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
+        "choch": true,
+        "type": "BEARISH_CHOCH",
+        "score": 2,
+        "reason": "Bearish CHOCH 0.21 < 0.21"
       },
       "zone": {
         "type": "FVG",
@@ -791,19 +821,20 @@
         }
       ],
       "htf": {
-        "trend": "NEUTRAL",
-        "score": 0.5
+        "trend": "BEARISH",
+        "score": 1,
+        "reason": "HTF bearish"
       },
       "vol": {
         "score": 0
       },
       "rsi": {
         "score": 0,
-        "rsi": 24.2,
-        "reason": "RSI extreme 24.2"
+        "rsi": 24.6,
+        "reason": "RSI extreme 24.6"
       },
       "status": "SKIP",
-      "reason": "Score 1.5 < 7.0",
+      "reason": "Score 4 < 7.0",
       "filter": "confluence"
     },
     {
@@ -876,9 +907,173 @@
       "filter": "confluence"
     }
   ],
-  "valid_trades": [],
-  "valid_new_positions": [],
-  "running_positions": [],
+  "valid_trades": [
+    {
+      "symbol": "SOLUSDT",
+      "price": 119.67,
+      "confluence_score": 7.0,
+      "confluences": [
+        "SWEEP(2)",
+        "CHOCH(2)",
+        "BREAKER(2)",
+        "HTF(0.5)",
+        "RSI(0.5)"
+      ],
+      "sweep": {
+        "sweep": true,
+        "type": "BULLISH_SWEEP",
+        "level": 119.88,
+        "score": 2,
+        "reason": "Bull sweep wick 119.45 below 119.88"
+      },
+      "choch": {
+        "choch": true,
+        "type": "BEARISH_CHOCH",
+        "score": 2,
+        "reason": "Bearish CHOCH 119.67 < 119.85"
+      },
+      "zone": {
+        "type": "BREAKER",
+        "subtype": "BULLISH_BREAKER",
+        "price": 120.22999999999999,
+        "high": 120.41,
+        "low": 120.05,
+        "score": 2
+      },
+      "zones_all": [
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 121.975,
+          "high": 122.2,
+          "low": 121.75,
+          "score": 2
+        },
+        {
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 121.91,
+          "high": 122.21,
+          "low": 121.61,
+          "score": 1.5
+        },
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 122.36000000000001,
+          "high": 122.93,
+          "low": 121.79,
+          "score": 2
+        }
+      ],
+      "htf": {
+        "trend": "NEUTRAL",
+        "score": 0.5
+      },
+      "vol": {
+        "score": 0
+      },
+      "rsi": {
+        "score": 0.5,
+        "rsi": 30.8,
+        "reason": "RSI neutral 30.8"
+      },
+      "direction": "LONG",
+      "entry": 120.22999999999999,
+      "sl": 119.98953999999999,
+      "tp": 121.83616107963562,
+      "rrr": 2.0,
+      "sl_pct": 0.006679535388986279,
+      "tp_pct": 0.013359070777972559,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.668,
+        "notional_usd": 299.42,
+        "qty": 2.49041,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 5.99
+      },
+      "status": "VALID",
+      "reason": "SCORE 7.0/10: SWEEP(2)+CHOCH(2)+BREAKER(2)+HTF(0.5)+RSI(0.5) | LIMIT 120.2300 SL 0.67% | HTF NEUTRAL"
+    }
+  ],
+  "valid_new_positions": [
+    {
+      "symbol": "SOLUSDT",
+      "direction": "LONG",
+      "entry": 120.22999999999999,
+      "sl": 119.98953999999999,
+      "tp": 121.83616107963562,
+      "rrr": 2.0,
+      "sl_pct": 0.006679535388986279,
+      "tp_pct": 0.013359070777972559,
+      "zone_price": 120.22999999999999,
+      "confluence_score": 7.0,
+      "confluences": [
+        "SWEEP(2)",
+        "CHOCH(2)",
+        "BREAKER(2)",
+        "HTF(0.5)",
+        "RSI(0.5)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.668,
+        "notional_usd": 299.42,
+        "qty": 2.49041,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 5.99
+      },
+      "reason": "SCORE 7.0/10: SWEEP(2)+CHOCH(2)+BREAKER(2)+HTF(0.5)+RSI(0.5) | LIMIT 120.2300 SL 0.67% | HTF NEUTRAL",
+      "open_price": 119.67,
+      "open_time": "2026-09-28T04:00:33.763389+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "2-3 candles 15m"
+    }
+  ],
+  "running_positions": [
+    {
+      "symbol": "SOLUSDT",
+      "direction": "LONG",
+      "entry": 120.22999999999999,
+      "sl": 119.98953999999999,
+      "tp": 121.83616107963562,
+      "rrr": 2.0,
+      "sl_pct": 0.006679535388986279,
+      "tp_pct": 0.013359070777972559,
+      "zone_price": 120.22999999999999,
+      "confluence_score": 7.0,
+      "confluences": [
+        "SWEEP(2)",
+        "CHOCH(2)",
+        "BREAKER(2)",
+        "HTF(0.5)",
+        "RSI(0.5)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.668,
+        "notional_usd": 299.42,
+        "qty": 2.49041,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 5.99
+      },
+      "reason": "SCORE 7.0/10: SWEEP(2)+CHOCH(2)+BREAKER(2)+HTF(0.5)+RSI(0.5) | LIMIT 120.2300 SL 0.67% | HTF NEUTRAL",
+      "open_price": 119.67,
+      "open_time": "2026-09-28T04:00:33.763389+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "2-3 candles 15m"
+    }
+  ],
   "closed_positions": [
     {
       "symbol": "BNBUSDT",
