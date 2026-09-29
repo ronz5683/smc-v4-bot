@@ -1,13 +1,14 @@
 """
-SMC OKX Demo Executor V10_PRO_LIMIT - SESUAI RULES TRADING BENER
-- LIMIT GTC di zone (OB/Breaker/FVG), bukan MARKET
-- Cek 2-3 candle kedepan: fill atau price ran away (hemat kuota)
-- MIN_CONFLUENCE 7.0
-- PAPER = DEMO 100% identik
-- Tidak ada 30s timeout ngawur, tidak ada MARKET ngawur
+SMC OKX Demo Executor V10.2 FIX - PAPER = DEMO = REAL
+- FIX 1: Timestamp OKX harus 3 digit ms (2026-09-29T03:16:14.123Z) + auto retry 50112
+- FIX 2: Auto deteksi posMode net_mode vs long_short_mode -> akun demo & real dua2nya jalan
+- FIX 3: place_limit_order + set_leverage retry tanpa posSide kalau net_mode
+- Fokus: kalau analisa valid (score >=7.0) harus ada trade terbuka di demo/real
+- LIMIT GTC di zone (OB/Breaker/FVG), cek 2-3 candle fill atau price ran away
 """
 import os, json, time, hmac, base64, hashlib, requests
 from datetime import datetime, timezone
+import math
 
 API_KEY = os.getenv("OKX_DEMO_API_KEY") or os.getenv("OKX_API_KEY")
 SECRET = os.getenv("OKX_DEMO_API_SECRET") or os.getenv("OKX_SECRET_KEY")
@@ -17,25 +18,39 @@ MIN_CONFLUENCE_V10 = 7.0
 
 RUN_AWAY_PCT = {"BTCUSDT":0.8,"ETHUSDT":0.8,"BNBUSDT":0.9,"SOLUSDT":1.0,"LINKUSDT":1.0,"ADAUSDT":1.2,"DOGEUSDT":1.2,"AVAXUSDT":1.0,"ARBUSDT":1.5,"OPUSDT":1.5,"XRPUSDT":1.0,"MATICUSDT":1.2,"DEFAULT":1.0}
 
-print(f"ENV CHECK: API_KEY={'SET' if API_KEY else 'MISSING'} SECRET={'SET' if SECRET else 'MISSING'} PASS={'SET' if PASSPHRASE else 'MISSING'} | V10 PRO LIMIT MIN_CONF {MIN_CONFLUENCE_V10}")
+print(f"ENV CHECK: API_KEY={'SET' if API_KEY else 'MISSING'} SECRET={'SET' if SECRET else 'MISSING'} PASS={'SET' if PASSPHRASE else 'MISSING'} | V10.2 FIX MIN_CONF {MIN_CONFLUENCE_V10}")
 
-def now_utc(): return datetime.now(timezone.utc).isoformat()
+def now_utc():
+    return datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace("+00:00","Z")
+
+def get_okx_timestamp():
+    return datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace("+00:00","Z")
 
 def sign(timestamp, method, request_path, body=""):
-    if not SECRET: raise ValueError("SECRET missing")
+    if not SECRET:
+        raise ValueError("SECRET missing")
     message = timestamp + method + request_path + body
     mac = hmac.new(SECRET.encode(), message.encode(), hashlib.sha256)
     return base64.b64encode(mac.digest()).decode()
 
-def request_okx(method, path, body=None):
-    timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+def request_okx(method, path, body=None, retry=0):
+    timestamp = get_okx_timestamp()
     body_str = json.dumps(body) if body else ""
     headers = {"OK-ACCESS-KEY": API_KEY, "OK-ACCESS-SIGN": sign(timestamp, method, path, body_str), "OK-ACCESS-TIMESTAMP": timestamp, "OK-ACCESS-PASSPHRASE": PASSPHRASE, "Content-Type": "application/json"}
     url = BASE_URL + path
-    if method == "GET": r = requests.get(url, headers=headers)
-    else: r = requests.post(url, headers=headers, data=body_str)
-    try: return r.json()
-    except: return {"code": "1", "msg": r.text}
+    try:
+        if method == "GET":
+            r = requests.get(url, headers=headers, timeout=10)
+        else:
+            r = requests.post(url, headers=headers, data=body_str, timeout=10)
+        j = r.json()
+    except Exception as e:
+        return {"code": "1", "msg": str(e)}
+    # Auto retry kalau timestamp error 50112 / 50114
+    if j.get("code") in ["50112","50114"] and retry < 2:
+        time.sleep(1.2)
+        return request_okx(method, path, body, retry+1)
+    return j
 
 def get_instruments(instId):
     res = request_okx("GET", f"/api/v5/public/instruments?instType=SWAP&instId={instId}")
@@ -44,21 +59,57 @@ def get_instruments(instId):
         return float(d["lotSz"]), float(d["minSz"]), float(d["ctVal"])
     return 1.0, 1.0, 0.01
 
+def get_account_mode():
+    try:
+        res = request_okx("GET", "/api/v5/account/config")
+        if res.get("code")=="0" and res["data"]:
+            return res["data"][0].get("posMode", "net_mode")
+    except:
+        pass
+    return "net_mode"
+
 def set_leverage_safe(instId, lever, posSide):
-    for mode in ["isolated"]:
-        for ps in [posSide, ""]:
-            try:
-                body = {"instId": instId, "lever": str(lever), "mgnMode": mode}
-                if ps: body["posSide"] = ps
-                res = request_okx("POST", "/api/v5/account/set-leverage", body)
-                if res.get("code")=="0": return res
-            except: pass
-    return {"code": "51000", "msg": "leverage fail"}
+    pos_mode = get_account_mode()
+    print(f"Account posMode: {pos_mode}")
+    attempts = []
+    if pos_mode == "long_short_mode":
+        attempts = [
+            {"instId": instId, "lever": str(lever), "mgnMode": "isolated", "posSide": posSide},
+            {"instId": instId, "lever": str(lever), "mgnMode": "cross", "posSide": posSide},
+            {"instId": instId, "lever": str(lever), "mgnMode": "isolated"},
+        ]
+    else:
+        attempts = [
+            {"instId": instId, "lever": str(lever), "mgnMode": "isolated"},
+            {"instId": instId, "lever": str(lever), "mgnMode": "cross"},
+            {"instId": instId, "lever": str(lever), "mgnMode": "isolated", "posSide": posSide},
+        ]
+    last = None
+    for body in attempts:
+        try:
+            res = request_okx("POST", "/api/v5/account/set-leverage", body)
+            if res.get("code")=="0":
+                return res
+            last = res
+            if "posSide" in str(res):
+                continue
+        except Exception as e:
+            last = {"code":"error","msg":str(e)}
+    return last or {"code": "51000", "msg": "leverage fail"}
 
 def place_limit_order(instId, side, sz, px, posSide):
-    # LIMIT GTC - biarin hidup sampai fill atau cancel karena lari jauh
-    body = {"instId": instId, "tdMode": "isolated", "side": side, "ordType": "limit", "sz": str(sz), "px": str(px), "posSide": posSide}
-    return request_okx("POST", "/api/v5/trade/order", body)
+    # Coba dengan posSide dulu, kalau net_mode error -> retry tanpa posSide
+    body_with = {"instId": instId, "tdMode": "isolated", "side": side, "ordType": "limit", "sz": str(sz), "px": str(px), "posSide": posSide}
+    res = request_okx("POST", "/api/v5/trade/order", body_with)
+    if res.get("code")=="0":
+        return res
+    msg = str(res)
+    if "posSide" in msg or "51000" in msg:
+        print(f"Retry without posSide for {instId} because {msg}")
+        body_without = {"instId": instId, "tdMode": "isolated", "side": side, "ordType": "limit", "sz": str(sz), "px": str(px)}
+        res2 = request_okx("POST", "/api/v5/trade/order", body_without)
+        return res2
+    return res
 
 def get_order(instId, ordId):
     return request_okx("GET", f"/api/v5/trade/order?instId={instId}&ordId={ordId}")
@@ -71,47 +122,62 @@ def get_positions(instId):
     return request_okx("GET", f"/api/v5/account/positions?instId={instId}")
 
 def get_ticker_price(instId):
-    # OKX ticker price untuk cek ran away
     try:
         res = request_okx("GET", f"/api/v5/market/ticker?instId={instId}")
         if res.get("code")=="0" and res["data"]:
             return float(res["data"][0]["last"])
-    except: pass
+    except:
+        pass
     return None
 
 def place_algo_sl_tp(instId, side, sz, slPx, tpPx, posSide):
-    body = {"instId": instId, "tdMode": "isolated", "side": side, "ordType": "conditional", "sz": str(sz), "slTriggerPx": str(slPx), "tpTriggerPx": str(tpPx), "slOrdPx": "-1", "tpOrdPx": "-1", "posSide": posSide}
-    return request_okx("POST", "/api/v5/trade/order-algo", body)
+    # Coba dengan posSide dulu
+    body_with = {"instId": instId, "tdMode": "isolated", "side": side, "ordType": "conditional", "sz": str(sz), "slTriggerPx": str(slPx), "tpTriggerPx": str(tpPx), "slOrdPx": "-1", "tpOrdPx": "-1", "posSide": posSide}
+    res = request_okx("POST", "/api/v5/trade/order-algo", body_with)
+    if res.get("code")=="0":
+        return res
+    if "posSide" in str(res):
+        body_without = {"instId": instId, "tdMode": "isolated", "side": side, "ordType": "conditional", "sz": str(sz), "slTriggerPx": str(slPx), "tpTriggerPx": str(tpPx), "slOrdPx": "-1", "tpOrdPx": "-1"}
+        res2 = request_okx("POST", "/api/v5/trade/order-algo", body_without)
+        return res2
+    return res
 
 def load_last_scan():
     try:
-        with open("last_scan.json") as f: return json.load(f)
-    except: return {"valid_new_positions": [], "running_positions":[]}
+        with open("last_scan.json") as f:
+            return json.load(f)
+    except:
+        return {"valid_new_positions": [], "running_positions":[]}
 
 def load_okx_log():
     try:
-        with open("okx_demo_log.json") as f: return json.load(f)
-    except: return {"generated_at": now_utc(), "bot_version": "V10_PRO_LIMIT_7", "total_executed":0, "total_verified":0, "trades":[]}
+        with open("okx_demo_log.json") as f:
+            return json.load(f)
+    except:
+        return {"generated_at": now_utc(), "bot_version": "V10.2_FIXED", "total_executed":0, "total_verified":0, "trades":[]}
 
 def save_log(data):
     data["generated_at"] = now_utc()
-    with open("okx_demo_log.json", "w") as f: json.dump(data, f, indent=2)
+    with open("okx_demo_log.json", "w") as f:
+        json.dump(data, f, indent=2)
 
 def is_recently_executed(log_trades, symbol, hours=24):
     now = datetime.now(timezone.utc)
     for t in log_trades[-20:]:
-        if t["symbol"]==symbol and t["status"] in ("VERIFIED","WAITING_LIMIT","LIMIT_FILLED"):
+        if t["symbol"]==symbol and t["status"] in ("VERIFIED","WAITING_LIMIT","LIMIT_FILLED","LIMIT_CANCELED_PRICE_RAN_AWAY"):
             try:
                 ts = datetime.fromisoformat(t["timestamp"].replace("Z","+00:00"))
-                if (now - ts).total_seconds() < hours*3600: return True
-            except: pass
+                if (now - ts).total_seconds() < hours*3600:
+                    return True
+            except:
+                pass
     return False
 
 def main():
     if not API_KEY or not SECRET or not PASSPHRASE:
         print("WARNING: OKX keys not set")
         log_data = load_okx_log()
-        log_data["bot_version"] = "V10_PRO_LIMIT_7"
+        log_data["bot_version"] = "V10.2_FIXED_NO_KEYS"
         save_log(log_data)
         return
 
@@ -119,11 +185,12 @@ def main():
     valid_new = scan.get("valid_new_positions", []) or []
     running = scan.get("running_positions", [])
     log_data = load_okx_log()
-    log_data["bot_version"] = "V10_PRO_LIMIT_7_GTC"
+    log_data["bot_version"] = "V10.2_PAPER=DEMO=REAL_FIXED"
+    print(f"BOT V10.2 FIX | MIN_CONF {MIN_CONFLUENCE_V10} | posMode auto | timestamp ms fix")
 
-    # === 1. CEK ORDER WAITING_LIMIT YANG SUDAH ADA: apakah fill atau lari? ===
+    # === 1. CEK WAITING_LIMIT ===
     waiting_in_scan = [p for p in running if p.get('order_status')=='WAITING_LIMIT']
-    print(f"Checking {len(waiting_in_scan)} WAITING_LIMIT positions for fill / ran away (2-3 candle logic)")
+    print(f"Checking {len(waiting_in_scan)} WAITING_LIMIT for fill / ran away")
 
     for pos in waiting_in_scan:
         symbol = pos['symbol']
@@ -131,7 +198,6 @@ def main():
         entry = float(pos['entry'])
         ordId = pos.get('order_id') or pos.get('ordId')
         if not ordId:
-            # cari di log
             for t in log_data["trades"][-10:]:
                 if t["symbol"]==symbol and t.get("order_id"):
                     ordId = t["order_id"]
@@ -139,7 +205,6 @@ def main():
         if not ordId:
             continue
 
-        # Cek status order di OKX
         o = get_order(instId, ordId)
         filled = False
         last_px = entry
@@ -152,13 +217,14 @@ def main():
                 filled = True
 
         if filled:
-            print(f"{symbol} LIMIT FILLED ordId {ordId} at {last_px} (within 2-3 candles) -> placing SL/TP FIX")
+            print(f"{symbol} LIMIT FILLED {ordId} at {last_px} -> placing SL/TP")
             pos_api = get_positions(instId)
             avgPx = entry
             sz_from_pos = None
             if pos_api.get("code")=="0" and pos_api["data"]:
                 for p in pos_api["data"]:
-                    if p.get("posSide")==("long" if pos["direction"]=="LONG" else "short"):
+                    # support both net and hedge
+                    if p.get("instId")==instId:
                         avgPx = float(p.get("avgPx", entry))
                         sz_from_pos = p.get("pos") or p.get("availPos")
                         break
@@ -166,13 +232,12 @@ def main():
             dist_sl = abs(entry - sl)
             real_sl = avgPx - dist_sl if pos["direction"]=="LONG" else avgPx + dist_sl
             real_tp = avgPx + (tp-entry) if pos["direction"]=="LONG" else avgPx - (entry-tp)
-            # FIX V10.1: langsung pasang SL/TP
             close_side = "sell" if pos["direction"]=="LONG" else "buy"
             posSide = "long" if pos["direction"]=="LONG" else "short"
             sz = pos.get("contracts") or sz_from_pos or 1
             try:
                 algo_res = place_algo_sl_tp(instId, close_side, sz, real_sl, real_tp, posSide)
-                print(f"{symbol} SL/TP placed SL {real_sl} TP {real_tp} res {algo_res.get('code')}")
+                print(f"{symbol} SL/TP {real_sl}/{real_tp} res {algo_res.get('code')}")
             except Exception as e:
                 algo_res = {"code":"error","msg":str(e)}
             trade = {
@@ -187,19 +252,17 @@ def main():
                 "real_tp": real_tp,
                 "algo_res": algo_res,
                 "confluence_score": pos.get("confluence_score",0),
-                "note": f"V10.1 FIX LIMIT FILLED {last_px} -> SLTP {real_sl}/{real_tp}"
+                "note": f"V10.2 FIX FILLED {last_px} -> SLTP {real_sl}/{real_tp}"
             }
             log_data["trades"].append(trade)
             continue
 
-        # Belum fill - cek apakah harga lari jauh?
         curr_px = get_ticker_price(instId) or last_px
         run_away_thresh = RUN_AWAY_PCT.get(symbol, RUN_AWAY_PCT["DEFAULT"])/100
-        dist_pct = abs(curr_px - entry)/entry
+        dist_pct = abs(curr_px - entry)/entry if entry else 0
         if dist_pct > run_away_thresh:
-            # CANCEL karena lari jauh
             c_res = cancel_order(instId, ordId)
-            print(f"{symbol} CANCELED PRICE_RAN_AWAY dist {dist_pct*100:.2f}% > {run_away_thresh*100}% curr {curr_px} entry {entry}")
+            print(f"{symbol} CANCELED RAN_AWAY {dist_pct*100:.2f}% > {run_away_thresh*100}%")
             trade = {
                 "timestamp": now_utc(),
                 "symbol": symbol,
@@ -216,56 +279,55 @@ def main():
                 "threshold_pct": run_away_thresh*100,
                 "cancel_reason": "PRICE_RAN_AWAY",
                 "confluence_score": pos.get("confluence_score",0),
-                "note": f"LIMIT {entry} GTC cancel karena harga lari ke {curr_px} ({dist_pct*100:.2f}%) > {run_away_thresh*100}% dalam 2-3 candle - hemat kuota, gak tunggu seharian",
                 "cancel_res": c_res
             }
             log_data["trades"].append(trade)
         else:
-            print(f"{symbol} WAITING_LIMIT still alive ordId {ordId} entry {entry} curr {curr_px} dist {dist_pct*100:.2f}% < {run_away_thresh*100}% - keep waiting (hemat kuota, cek 2-3 candle)")
+            print(f"{symbol} WAITING {ordId} entry {entry} curr {curr_px} dist {dist_pct*100:.2f}%")
 
-    # === 2. ENTRY BARU: pasang LIMIT GTC ===
-    print(f"\nScan valid_new: {len(valid_new)} | Filter MIN_CONF {MIN_CONFLUENCE_V10}")
+    # === 2. ENTRY BARU ===
+    print(f"\nScan valid_new: {len(valid_new)} | MIN_CONF {MIN_CONFLUENCE_V10}")
     executed = 0
     for item in valid_new:
         symbol = item["symbol"]
         confluence = float(item.get("confluence_score", 0))
         if confluence < MIN_CONFLUENCE_V10:
-            print(f"SKIP {symbol} - confluence {confluence} < {MIN_CONFLUENCE_V10}")
+            print(f"SKIP {symbol} score {confluence} < {MIN_CONFLUENCE_V10}")
             continue
         if is_recently_executed(log_data["trades"], symbol, 24):
-            print(f"SKIP {symbol} - recently executed <24h")
+            print(f"SKIP {symbol} recently executed <24h")
             continue
         instId = item.get("instId", symbol.replace("USDT","-USDT-SWAP"))
         direction = item["direction"]
-        entry = float(item["entry"])  # entry = zone_price (LIMIT)
+        entry = float(item["entry"])
         sl = float(item["sl"])
         tp = float(item["tp"])
         sizing = item.get("sizing", {})
         leverage = int(sizing.get("leverage", 50))
 
         lotSz, minSz, ctVal = get_instruments(instId)
-        sl_pct = abs(entry - sl) / entry
+        sl_pct = abs(entry - sl) / entry if entry else 0.01
         notional = 2.0 / sl_pct if sl_pct>0 else 0
         qty_raw = notional / entry / ctVal if ctVal else notional/entry
-        import math
         contracts = math.floor(qty_raw / lotSz) * lotSz
-        if contracts < minSz: contracts = minSz
+        if contracts < minSz:
+            contracts = minSz
         sz = contracts
         side = "buy" if direction=="LONG" else "sell"
         posSide = "long" if direction=="LONG" else "short"
 
         lev_res = set_leverage_safe(instId, leverage, posSide)
-        print(f"{symbol} set lev {leverage} {posSide}: {lev_res.get('code')} | LIMIT {entry} SL {sl} TP {tp} conf {confluence}")
+        print(f"{symbol} lev {leverage} {posSide}: {lev_res.get('code')} | LIMIT {entry} SL {sl} TP {tp} conf {confluence}")
 
         order_res = place_limit_order(instId, side, sz, entry, posSide)
         if order_res.get("code")!="0":
-            print(f"{symbol} FAILED_ORDER {order_res}")
+            print(f"{symbol} FAILED {order_res}")
             trade = {"timestamp": now_utc(), "symbol": symbol, "instId": instId, "direction": direction, "status": "FAILED_ORDER", "reason": str(order_res), "entry": entry, "sl": sl, "tp": tp, "sizing": sizing, "contracts": sz, "confluence_score": confluence}
             log_data["trades"].append(trade)
             continue
 
         ordId = order_res["data"][0]["ordId"]
-        print(f"{symbol} LIMIT GTC placed {ordId} {direction} entry {entry} sz {sz} conf {confluence} - will check 2-3 candles for fill")
+        print(f"{symbol} LIMIT GTC placed {ordId} {direction} entry {entry} sz {sz} conf {confluence}")
 
         trade = {
             "timestamp": now_utc(),
@@ -288,8 +350,8 @@ def main():
             "leverage": leverage,
             "confluence_score": confluence,
             "confluences": item.get("confluences", []),
-            "note": f"V10 PRO LIMIT GTC - entry di zone {entry}, cek 2-3 candle fill, cancel kalau lari > {RUN_AWAY_PCT.get(symbol, RUN_AWAY_PCT['DEFAULT'])}%",
-            "fill_check": "2-3 candles 15m + price ran away threshold"
+            "note": f"V10.2 FIX - entry zone {entry}, cek 2-3 candle",
+            "fill_check": "2-3 candles 15m + price ran away"
         }
         log_data["trades"].append(trade)
         executed+=1
@@ -299,7 +361,7 @@ def main():
     log_data["total_waiting"] = len([t for t in log_data["trades"] if t["status"]=="WAITING_LIMIT"])
     log_data["total_canceled_ran_away"] = len([t for t in log_data["trades"] if "PRICE_RAN_AWAY" in t["status"]])
     save_log(log_data)
-    print(f"Done V10 PRO LIMIT: new LIMIT {executed} | waiting {log_data['total_waiting']} | canceled ran away {log_data['total_canceled_ran_away']} | MIN_CONF {MIN_CONFLUENCE_V10}")
+    print(f"Done V10.2 FIX: new LIMIT {executed} | waiting {log_data['total_waiting']} | canceled {log_data['total_canceled_ran_away']}")
 
 if __name__ == "__main__":
     main()
