@@ -1,12 +1,13 @@
 {
-  "generated_at": "2026-09-30T02:45:32.102299+00:00",
-  "bot_version": "V10_LOOSE_TEST_RISK2",
+  "generated_at": "2026-09-30T02:56:03.461684+00:00",
+  "bot_version": "V10_M1_TEST_100TRADE",
   "config": {
     "start_capital": 20.0,
     "risk_usd": 2.0,
-    "min_sl_pct": 0.3,
-    "min_confluence": 5.0,
-    "limit_logic": "LOOSE TEST MODE"
+    "min_sl_pct": 0.1,
+    "min_confluence": 4.0,
+    "tf": "M1/M5",
+    "limit_logic": "M1 10 candles"
   },
   "summary": {
     "initial": 20.0,
@@ -897,6 +898,41 @@
       "paper_trade": true,
       "limit_order": true,
       "fill_check": "2-3 candles 15m"
+    },
+    {
+      "symbol": "OPUSDT",
+      "direction": "SHORT",
+      "entry": 0.13055,
+      "sl": 0.1308111,
+      "tp": 0.12972814429992346,
+      "rrr": 2.0,
+      "sl_pct": 0.0031476664116297723,
+      "tp_pct": 0.006295332823259545,
+      "zone_price": 0.13055,
+      "confluence_score": 4.5,
+      "confluences": [
+        "SWEEP(2)",
+        "FVG(1)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.3148,
+        "notional_usd": 635.39,
+        "qty": 4867.034444,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 31.77
+      },
+      "reason": "M1 SCORE 4.5/10: SWEEP(2)+FVG(1)+HTF(1)+RSI(1) | LIMIT SWING 0.1305 SL 0.31% | HTF BULLISH",
+      "open_price": 0.1307,
+      "open_time": "2026-09-30T02:56:01.079406+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
     }
   ],
   "waiting_limit": [
@@ -934,6 +970,41 @@
       "paper_trade": true,
       "limit_order": true,
       "fill_check": "2-3 candles 15m"
+    },
+    {
+      "symbol": "OPUSDT",
+      "direction": "SHORT",
+      "entry": 0.13055,
+      "sl": 0.1308111,
+      "tp": 0.12972814429992346,
+      "rrr": 2.0,
+      "sl_pct": 0.0031476664116297723,
+      "tp_pct": 0.006295332823259545,
+      "zone_price": 0.13055,
+      "confluence_score": 4.5,
+      "confluences": [
+        "SWEEP(2)",
+        "FVG(1)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.3148,
+        "notional_usd": 635.39,
+        "qty": 4867.034444,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 31.77
+      },
+      "reason": "M1 SCORE 4.5/10: SWEEP(2)+FVG(1)+HTF(1)+RSI(1) | LIMIT SWING 0.1305 SL 0.31% | HTF BULLISH",
+      "open_price": 0.1307,
+      "open_time": "2026-09-30T02:56:01.079406+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
     }
   ]
 }
