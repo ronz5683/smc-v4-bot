@@ -1,5 +1,5 @@
 {
-  "last_scan_utc": "2026-09-30T07:30:37.785579+00:00",
+  "last_scan_utc": "2026-09-30T07:32:25.268512+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "params": {
     "MIN_CONFLUENCE_SCORE": 4.0,
@@ -9,13 +9,13 @@
     "TF": "M1/M5"
   },
   "summary": {
-    "total_scanned": 13,
+    "total_scanned": 12,
     "valid_new": 0,
     "valid": 0,
     "skip": 3,
     "active_positions": 9,
     "waiting_limit": 0,
-    "avg_confluence": 4.15,
+    "avg_confluence": 4.08,
     "by_filter": {
       "confluence": 3,
       "distance": 0,
@@ -23,12 +23,6 @@
     }
   },
   "results": [
-    {
-      "symbol": "SOLUSDT",
-      "status": "FILLED",
-      "reason": "M1 LIMIT filled at 118.555 within 10 candles",
-      "confluence_score": 4.0
-    },
     {
       "symbol": "ETHUSDT",
       "status": "HOLD",
@@ -85,10 +79,10 @@
     },
     {
       "symbol": "BTCUSDT",
-      "price": 83278.01,
-      "confluence_score": 2.5,
+      "price": 83318.96,
+      "confluence_score": 1.5,
       "confluences": [
-        "BREAKER(2)",
+        "FVG(1)",
         "HTF(0.5)"
       ],
       "sweep": {
@@ -102,12 +96,12 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "BREAKER",
-        "subtype": "BULLISH_BREAKER",
-        "price": 83296.17499999999,
-        "high": 83308.01,
-        "low": 83284.34,
-        "score": 2
+        "type": "FVG",
+        "subtype": "BULLISH_FVG",
+        "price": 83313.485,
+        "high": 83318.96,
+        "low": 83308.01,
+        "score": 1
       },
       "zones_all": [
         {
@@ -119,12 +113,12 @@
           "score": 2
         },
         {
-          "type": "FVG",
-          "subtype": "BEARISH_FVG",
-          "price": 83015.98000000001,
-          "high": 83016.44,
-          "low": 83015.52,
-          "score": 1
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 83288.005,
+          "high": 83308.01,
+          "low": 83268.0,
+          "score": 1.5
         },
         {
           "type": "FVG",
@@ -144,11 +138,11 @@
       },
       "rsi": {
         "score": 0,
-        "rsi": 72.3,
-        "reason": "RSI extreme 72.3"
+        "rsi": 72.7,
+        "reason": "RSI extreme 72.7"
       },
       "status": "SKIP",
-      "reason": "Score 2.5 < 4.0",
+      "reason": "Score 1.5 < 4.0",
       "filter": "confluence"
     },
     {
@@ -213,8 +207,8 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 63.2,
-        "reason": "RSI healthy 63.2"
+        "rsi": 56.2,
+        "reason": "RSI healthy 56.2"
       },
       "status": "SKIP",
       "reason": "Score 2.5 < 4.0",
