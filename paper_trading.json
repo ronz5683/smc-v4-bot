@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T21:16:24.797336+00:00",
+  "generated_at": "2026-09-30T21:18:30.067347+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "config": {
     "start_capital": 1000.0,
@@ -11,12 +11,12 @@
   },
   "summary": {
     "initial": 1000.0,
-    "final": 818.33,
-    "total_trades": 226,
+    "final": 815.5,
+    "total_trades": 227,
     "wins": 70,
-    "losses": 156,
-    "win_rate": 31.0,
-    "total_r": -16.0
+    "losses": 157,
+    "win_rate": 30.8,
+    "total_r": -17.0
   },
   "trades": [
     {
@@ -4990,6 +4990,28 @@
       "capital_after": 818.3285,
       "confluence_score": 5.5,
       "closed_at": "2026-09-30T21:14:21"
+    },
+    {
+      "symbol": "ADAUSDT",
+      "direction": "SHORT",
+      "entry": 0.24430000000000002,
+      "sl": 0.24478860000000002,
+      "tp": 0.24312288183306058,
+      "close_status": "SL_HIT",
+      "pnl_r": -1.0,
+      "pnl_usd": -2.8302,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2409,
+        "notional_usd": 830.16,
+        "qty": 3398.129527,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 16.6
+      },
+      "capital_after": 815.4983,
+      "confluence_score": 4.5,
+      "closed_at": "2026-09-30T21:18:24"
     }
   ],
   "active_positions": [
@@ -5252,15 +5274,52 @@
       "filled_price": 2683.45
     },
     {
-      "symbol": "ADAUSDT",
+      "symbol": "OPUSDT",
       "direction": "SHORT",
-      "entry": 0.24430000000000002,
-      "sl": 0.24478860000000002,
-      "tp": 0.24312288183306058,
+      "entry": 0.12925,
+      "sl": 0.1295085,
+      "tp": 0.12823203100775193,
       "rrr": 2.0,
-      "sl_pct": 0.002409165302782279,
-      "tp_pct": 0.004818330605564558,
-      "zone_price": 0.24430000000000002,
+      "sl_pct": 0.003937984496124033,
+      "tp_pct": 0.007875968992248066,
+      "zone_price": 0.12925,
+      "confluence_score": 5,
+      "confluences": [
+        "CHOCH(2)",
+        "FVG(1)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.3938,
+        "notional_usd": 507.87,
+        "qty": 3929.392772,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 25.39
+      },
+      "reason": "M1 SCORE 5/10: CHOCH(2)+FVG(1)+HTF(1)+RSI(1) | LIMIT SWING 0.1293 SL 0.39% | HTF BEARISH",
+      "open_price": 0.129,
+      "open_time": "2026-09-30T21:16:23.860730+00:00",
+      "status": "ACTIVE",
+      "order_status": "FILLED",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m",
+      "filled_at": "2026-09-30T21:18:18.312753+00:00",
+      "filled_price": 0.12925
+    },
+    {
+      "symbol": "ADAUSDT",
+      "direction": "LONG",
+      "entry": 0.24509999999999998,
+      "sl": 0.2446098,
+      "tp": 0.24608040000000003,
+      "rrr": 2.0,
+      "sl_pct": 0.0020000000000001132,
+      "tp_pct": 0.0040000000000002265,
+      "zone_price": 0.24509999999999998,
       "confluence_score": 4.5,
       "confluences": [
         "CHOCH(2)",
@@ -5270,53 +5329,16 @@
       ],
       "sizing": {
         "risk_usd": 2.0,
-        "sl_pct": 0.2409,
-        "notional_usd": 830.16,
-        "qty": 3398.129527,
+        "sl_pct": 0.2,
+        "notional_usd": 1000.0,
+        "qty": 4079.96736,
         "leverage": 50,
         "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 16.6
+        "margin_needed": 20.0
       },
-      "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 0.2443 SL 0.24% | HTF NEUTRAL",
-      "open_price": 0.2444,
-      "open_time": "2026-09-30T21:14:25.727224+00:00",
-      "status": "ACTIVE",
-      "order_status": "FILLED",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m",
-      "filled_at": "2026-09-30T21:16:17.354917+00:00",
-      "filled_price": 0.24430000000000002
-    },
-    {
-      "symbol": "OPUSDT",
-      "direction": "SHORT",
-      "entry": 0.12925,
-      "sl": 0.1295085,
-      "tp": 0.12823203100775193,
-      "rrr": 2.0,
-      "sl_pct": 0.003937984496124033,
-      "tp_pct": 0.007875968992248066,
-      "zone_price": 0.12925,
-      "confluence_score": 5,
-      "confluences": [
-        "CHOCH(2)",
-        "FVG(1)",
-        "HTF(1)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.3938,
-        "notional_usd": 507.87,
-        "qty": 3929.392772,
-        "leverage": 20,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 25.39
-      },
-      "reason": "M1 SCORE 5/10: CHOCH(2)+FVG(1)+HTF(1)+RSI(1) | LIMIT SWING 0.1293 SL 0.39% | HTF BEARISH",
-      "open_price": 0.129,
-      "open_time": "2026-09-30T21:16:23.860730+00:00",
+      "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 0.2451 SL 0.20% | HTF NEUTRAL",
+      "open_price": 0.2451,
+      "open_time": "2026-09-30T21:18:27.405984+00:00",
       "status": "WAITING_LIMIT",
       "order_status": "WAITING_LIMIT",
       "paper_trade": true,
@@ -5326,34 +5348,34 @@
   ],
   "waiting_limit": [
     {
-      "symbol": "OPUSDT",
-      "direction": "SHORT",
-      "entry": 0.12925,
-      "sl": 0.1295085,
-      "tp": 0.12823203100775193,
+      "symbol": "ADAUSDT",
+      "direction": "LONG",
+      "entry": 0.24509999999999998,
+      "sl": 0.2446098,
+      "tp": 0.24608040000000003,
       "rrr": 2.0,
-      "sl_pct": 0.003937984496124033,
-      "tp_pct": 0.007875968992248066,
-      "zone_price": 0.12925,
-      "confluence_score": 5,
+      "sl_pct": 0.0020000000000001132,
+      "tp_pct": 0.0040000000000002265,
+      "zone_price": 0.24509999999999998,
+      "confluence_score": 4.5,
       "confluences": [
         "CHOCH(2)",
         "FVG(1)",
-        "HTF(1)",
+        "HTF(0.5)",
         "RSI(1)"
       ],
       "sizing": {
         "risk_usd": 2.0,
-        "sl_pct": 0.3938,
-        "notional_usd": 507.87,
-        "qty": 3929.392772,
-        "leverage": 20,
+        "sl_pct": 0.2,
+        "notional_usd": 1000.0,
+        "qty": 4079.96736,
+        "leverage": 50,
         "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 25.39
+        "margin_needed": 20.0
       },
-      "reason": "M1 SCORE 5/10: CHOCH(2)+FVG(1)+HTF(1)+RSI(1) | LIMIT SWING 0.1293 SL 0.39% | HTF BEARISH",
-      "open_price": 0.129,
-      "open_time": "2026-09-30T21:16:23.860730+00:00",
+      "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 0.2451 SL 0.20% | HTF NEUTRAL",
+      "open_price": 0.2451,
+      "open_time": "2026-09-30T21:18:27.405984+00:00",
       "status": "WAITING_LIMIT",
       "order_status": "WAITING_LIMIT",
       "paper_trade": true,
