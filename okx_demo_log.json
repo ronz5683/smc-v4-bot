@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-30T14:20:32.851Z",
+  "generated_at": "2026-09-30T14:22:33.638Z",
   "bot_version": "V10.2_PAPER=DEMO=REAL_FIXED",
-  "total_executed": 81,
+  "total_executed": 83,
   "total_waiting": 21,
   "total_canceled_ran_away": 0,
   "trades": [
@@ -2712,6 +2712,47 @@
         "HTF(0.5)",
         "RSI(1)"
       ]
+    },
+    {
+      "timestamp": "2026-09-30T14:22:29.973Z",
+      "symbol": "XRPUSDT",
+      "instId": "XRP-USDT-SWAP",
+      "direction": "LONG",
+      "status": "LIMIT_FILLED",
+      "order_id": "3968478317602435073",
+      "real_avgPx": 1.5348,
+      "real_sl": 1.5317808,
+      "real_tp": 1.5530878978383766,
+      "algo_res": {
+        "code": "1",
+        "data": [
+          {
+            "algoClOrdId": "",
+            "algoId": "",
+            "clOrdId": "",
+            "sCode": "51280",
+            "sMsg": "SL trigger price must be less than the last price ",
+            "tag": ""
+          }
+        ],
+        "msg": ""
+      },
+      "confluence_score": 7.5,
+      "note": "V10.2 FIX FILLED 1.5348 -> SLTP 1.5317808/1.5530878978383766"
+    },
+    {
+      "timestamp": "2026-09-30T14:22:33.637Z",
+      "symbol": "AVAXUSDT",
+      "instId": "AVAX-USDT-SWAP",
+      "direction": "LONG",
+      "status": "FAILED_ORDER",
+      "reason": "{'code': '1', 'data': [{'clOrdId': '', 'ordId': '', 'sCode': '51121', 'sMsg': 'Order quantity must be a multiple of the lot size.', 'subCode': '', 'tag': '', 'ts': '1790778153578'}], 'inTime': '1790778153577959', 'msg': 'All operations failed', 'outTime': '1790778153578196'}",
+      "entry": 11.03,
+      "sl": 11.00794,
+      "tp": 11.140318054014731,
+      "contracts": 90.60000000000001,
+      "actual_risk_usd": 1.9986,
+      "confluence_score": 6.5
     }
   ],
   "total_verified": 0
