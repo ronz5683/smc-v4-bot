@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T03:38:31.718907+00:00",
+  "generated_at": "2026-09-30T03:40:35.949819+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "config": {
     "start_capital": 1000.0,
@@ -11,12 +11,12 @@
   },
   "summary": {
     "initial": 1000.0,
-    "final": 1006.73,
-    "total_trades": 2,
+    "final": 1001.59,
+    "total_trades": 4,
     "wins": 2,
-    "losses": 0,
-    "win_rate": 100.0,
-    "total_r": 4.0
+    "losses": 2,
+    "win_rate": 50.0,
+    "total_r": 2.0
   },
   "trades": [
     {
@@ -62,6 +62,50 @@
       "capital_after": 1006.7318,
       "confluence_score": 5.5,
       "closed_at": "2026-09-30T03:20:22"
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "direction": "SHORT",
+      "entry": 0.09353500000000001,
+      "sl": 0.09372207,
+      "tp": 0.09301073962764819,
+      "close_status": "SL_HIT",
+      "pnl_r": -1.0,
+      "pnl_usd": -2.7136,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2802,
+        "notional_usd": 713.65,
+        "qty": 7629.796588,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 14.27
+      },
+      "capital_after": 1004.0182,
+      "confluence_score": 6.0,
+      "closed_at": "2026-09-30T03:40:26"
+    },
+    {
+      "symbol": "ARBUSDT",
+      "direction": "SHORT",
+      "entry": 0.20265,
+      "sl": 0.2030553,
+      "tp": 0.20073640643245919,
+      "close_status": "SL_HIT",
+      "pnl_r": -1.0,
+      "pnl_usd": -2.4236,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.4721,
+        "notional_usd": 423.6,
+        "qty": 2090.30803,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 21.18
+      },
+      "capital_after": 1001.5946,
+      "confluence_score": 5.5,
+      "closed_at": "2026-09-30T03:40:27"
     }
   ],
   "active_positions": [
@@ -179,44 +223,6 @@
       "filled_price": 0.24495
     },
     {
-      "symbol": "DOGEUSDT",
-      "direction": "SHORT",
-      "entry": 0.09353500000000001,
-      "sl": 0.09372207,
-      "tp": 0.09301073962764819,
-      "rrr": 2.0,
-      "sl_pct": 0.0028024823453884616,
-      "tp_pct": 0.005604964690776923,
-      "zone_price": 0.09353500000000001,
-      "confluence_score": 6.0,
-      "confluences": [
-        "CHOCH(2)",
-        "BREAKER(2)",
-        "HTF(0.5)",
-        "VOL(1)",
-        "RSI(0.5)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2802,
-        "notional_usd": 713.65,
-        "qty": 7629.796588,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 14.27
-      },
-      "reason": "M1 SCORE 6.0/10: CHOCH(2)+BREAKER(2)+HTF(0.5)+VOL(1)+RSI(0.5) | LIMIT SWING 0.0935 SL 0.28% | HTF NEUTRAL",
-      "open_price": 0.09346,
-      "open_time": "2026-09-30T03:16:24.377340+00:00",
-      "status": "ACTIVE",
-      "order_status": "FILLED",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m",
-      "filled_at": "2026-09-30T03:18:22.676636+00:00",
-      "filled_price": 0.09353500000000001
-    },
-    {
       "symbol": "LINKUSDT",
       "direction": "SHORT",
       "entry": 14.41,
@@ -251,44 +257,6 @@
       "fill_check": "10 candles 1m",
       "filled_at": "2026-09-30T03:18:24.556979+00:00",
       "filled_price": 14.41
-    },
-    {
-      "symbol": "ARBUSDT",
-      "direction": "SHORT",
-      "entry": 0.20265,
-      "sl": 0.2030553,
-      "tp": 0.20073640643245919,
-      "rrr": 2.0,
-      "sl_pct": 0.004721425037110316,
-      "tp_pct": 0.009442850074220632,
-      "zone_price": 0.20265,
-      "confluence_score": 5.5,
-      "confluences": [
-        "CHOCH(2)",
-        "FVG(1)",
-        "HTF(1)",
-        "VOL(1)",
-        "RSI(0.5)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.4721,
-        "notional_usd": 423.6,
-        "qty": 2090.30803,
-        "leverage": 20,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 21.18
-      },
-      "reason": "M1 SCORE 5.5/10: CHOCH(2)+FVG(1)+HTF(1)+VOL(1)+RSI(0.5) | LIMIT SWING 0.2026 SL 0.47% | HTF BEARISH",
-      "open_price": 0.2021,
-      "open_time": "2026-09-30T03:16:28.330290+00:00",
-      "status": "ACTIVE",
-      "order_status": "FILLED",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m",
-      "filled_at": "2026-09-30T03:18:25.501158+00:00",
-      "filled_price": 0.20265
     },
     {
       "symbol": "AVAXUSDT",
@@ -392,48 +360,14 @@
       "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 0.1298 SL 0.20% | HTF NEUTRAL",
       "open_price": 0.1298,
       "open_time": "2026-09-30T03:38:30.347845+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
+      "status": "ACTIVE",
+      "order_status": "FILLED",
       "paper_trade": true,
       "limit_order": true,
-      "fill_check": "10 candles 1m"
+      "fill_check": "10 candles 1m",
+      "filled_at": "2026-09-30T03:40:23.730833+00:00",
+      "filled_price": 0.1298
     }
   ],
-  "waiting_limit": [
-    {
-      "symbol": "OPUSDT",
-      "direction": "LONG",
-      "entry": 0.1298,
-      "sl": 0.1295404,
-      "tp": 0.1303192,
-      "rrr": 2.0,
-      "sl_pct": 0.002,
-      "tp_pct": 0.004,
-      "zone_price": 0.1298,
-      "confluence_score": 4.5,
-      "confluences": [
-        "CHOCH(2)",
-        "FVG(1)",
-        "HTF(0.5)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2,
-        "notional_usd": 1000.0,
-        "qty": 7704.160247,
-        "leverage": 20,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 50.0
-      },
-      "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 0.1298 SL 0.20% | HTF NEUTRAL",
-      "open_price": 0.1298,
-      "open_time": "2026-09-30T03:38:30.347845+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m"
-    }
-  ]
+  "waiting_limit": []
 }
