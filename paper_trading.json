@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T08:32:26.040318+00:00",
+  "generated_at": "2026-09-30T08:34:27.830250+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "config": {
     "start_capital": 1000.0,
@@ -11,12 +11,12 @@
   },
   "summary": {
     "initial": 1000.0,
-    "final": 1001.46,
-    "total_trades": 4,
+    "final": 998.58,
+    "total_trades": 5,
     "wins": 2,
-    "losses": 2,
-    "win_rate": 50.0,
-    "total_r": 2.0
+    "losses": 3,
+    "win_rate": 40.0,
+    "total_r": 1.0
   },
   "trades": [
     {
@@ -106,6 +106,28 @@
       "capital_after": 1001.4565,
       "confluence_score": 5.5,
       "closed_at": "2026-09-30T08:22:22"
+    },
+    {
+      "symbol": "AVAXUSDT",
+      "direction": "LONG",
+      "entry": 11.072,
+      "sl": 11.049855999999998,
+      "tp": 11.122289626163155,
+      "close_status": "SL_HIT",
+      "pnl_r": -1.0,
+      "pnl_usd": -2.8807,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2271,
+        "notional_usd": 880.66,
+        "qty": 79.539267,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 17.61
+      },
+      "capital_after": 998.5758,
+      "confluence_score": 4.5,
+      "closed_at": "2026-09-30T08:34:18"
     }
   ],
   "active_positions": [
@@ -259,43 +281,6 @@
       "filled_price": 0.09353500000000001
     },
     {
-      "symbol": "AVAXUSDT",
-      "direction": "LONG",
-      "entry": 11.072,
-      "sl": 11.049855999999998,
-      "tp": 11.122289626163155,
-      "rrr": 2.0,
-      "sl_pct": 0.002271027193061554,
-      "tp_pct": 0.004542054386123108,
-      "zone_price": 11.072,
-      "confluence_score": 4.5,
-      "confluences": [
-        "SWEEP(2)",
-        "FVG(1)",
-        "HTF(1)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2271,
-        "notional_usd": 880.66,
-        "qty": 79.539267,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 17.61
-      },
-      "reason": "M1 SCORE 4.5/10: SWEEP(2)+FVG(1)+HTF(1)+RSI(1) | LIMIT SWING 11.0720 SL 0.23% | HTF BEARISH",
-      "open_price": 11.069,
-      "open_time": "2026-09-30T08:16:25.590104+00:00",
-      "status": "ACTIVE",
-      "order_status": "FILLED",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m",
-      "filled_at": "2026-09-30T08:18:19.961948+00:00",
-      "filled_price": 11.072
-    },
-    {
       "symbol": "ADAUSDT",
       "direction": "SHORT",
       "entry": 0.24455,
@@ -406,7 +391,78 @@
       "fill_check": "10 candles 1m",
       "filled_at": "2026-09-30T08:28:16.621338+00:00",
       "filled_price": 0.20334999999999998
+    },
+    {
+      "symbol": "AVAXUSDT",
+      "direction": "SHORT",
+      "entry": 11.0525,
+      "sl": 11.074605,
+      "tp": 10.971227964473448,
+      "rrr": 2.0,
+      "sl_pct": 0.003676635852818517,
+      "tp_pct": 0.007353271705637034,
+      "zone_price": 11.0525,
+      "confluence_score": 5.5,
+      "confluences": [
+        "CHOCH(2)",
+        "OB(1.5)",
+        "HTF(1)",
+        "VOL(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.3677,
+        "notional_usd": 543.98,
+        "qty": 49.217421,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 10.88
+      },
+      "reason": "M1 SCORE 5.5/10: CHOCH(2)+OB(1.5)+HTF(1)+VOL(1) | LIMIT SWING 11.0525 SL 0.37% | HTF BEARISH",
+      "open_price": 11.034,
+      "open_time": "2026-09-30T08:34:23.858351+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
     }
   ],
-  "waiting_limit": []
+  "waiting_limit": [
+    {
+      "symbol": "AVAXUSDT",
+      "direction": "SHORT",
+      "entry": 11.0525,
+      "sl": 11.074605,
+      "tp": 10.971227964473448,
+      "rrr": 2.0,
+      "sl_pct": 0.003676635852818517,
+      "tp_pct": 0.007353271705637034,
+      "zone_price": 11.0525,
+      "confluence_score": 5.5,
+      "confluences": [
+        "CHOCH(2)",
+        "OB(1.5)",
+        "HTF(1)",
+        "VOL(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.3677,
+        "notional_usd": 543.98,
+        "qty": 49.217421,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 10.88
+      },
+      "reason": "M1 SCORE 5.5/10: CHOCH(2)+OB(1.5)+HTF(1)+VOL(1) | LIMIT SWING 11.0525 SL 0.37% | HTF BEARISH",
+      "open_price": 11.034,
+      "open_time": "2026-09-30T08:34:23.858351+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
+    }
+  ]
 }
