@@ -1,5 +1,5 @@
 {
-  "last_scan_utc": "2026-09-30T10:26:25.018324+00:00",
+  "last_scan_utc": "2026-09-30T10:28:24.861024+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "params": {
     "MIN_CONFLUENCE_SCORE": 4.0,
@@ -15,7 +15,7 @@
     "skip": 3,
     "active_positions": 9,
     "waiting_limit": 0,
-    "avg_confluence": 4.54,
+    "avg_confluence": 4.62,
     "by_filter": {
       "confluence": 3,
       "distance": 0,
@@ -79,10 +79,10 @@
     },
     {
       "symbol": "DOGEUSDT",
-      "price": 0.09487,
-      "confluence_score": 2,
+      "price": 0.09485,
+      "confluence_score": 3,
       "confluences": [
-        "FVG(1)",
+        "BREAKER(2)",
         "HTF(1)"
       ],
       "sweep": {
@@ -96,22 +96,14 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "FVG",
-        "subtype": "BULLISH_FVG",
-        "price": 0.09478500000000001,
-        "high": 0.09481,
-        "low": 0.09476,
-        "score": 1
+        "type": "BREAKER",
+        "subtype": "BULLISH_BREAKER",
+        "price": 0.094905,
+        "high": 0.09495,
+        "low": 0.09486,
+        "score": 2
       },
       "zones_all": [
-        {
-          "type": "BREAKER",
-          "subtype": "BULLISH_BREAKER",
-          "price": 0.09462999999999999,
-          "high": 0.09468,
-          "low": 0.09458,
-          "score": 2
-        },
         {
           "type": "OB",
           "subtype": "BULLISH_OB",
@@ -127,6 +119,14 @@
           "high": 0.09449,
           "low": 0.09438,
           "score": 1.5
+        },
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 0.094635,
+          "high": 0.09467,
+          "low": 0.0946,
+          "score": 2
         }
       ],
       "htf": {
@@ -139,20 +139,20 @@
       },
       "rsi": {
         "score": 0,
-        "rsi": 70.2,
-        "reason": "RSI extreme 70.2"
+        "rsi": 71.6,
+        "reason": "RSI extreme 71.6"
       },
       "status": "SKIP",
-      "reason": "Score 2 < 4.0",
+      "reason": "Score 3 < 4.0",
       "filter": "confluence"
     },
     {
       "symbol": "OPUSDT",
-      "price": 0.1334,
+      "price": 0.133,
       "confluence_score": 2.5,
       "confluences": [
         "FVG(1)",
-        "HTF(1)",
+        "HTF(0.5)",
         "RSI(1)"
       ],
       "sweep": {
@@ -168,27 +168,19 @@
       "zone": {
         "type": "FVG",
         "subtype": "BEARISH_FVG",
-        "price": 0.1336,
-        "high": 0.1339,
-        "low": 0.1333,
+        "price": 0.13295,
+        "high": 0.133,
+        "low": 0.1329,
         "score": 1
       },
       "zones_all": [
         {
-          "type": "FVG",
-          "subtype": "BEARISH_FVG",
-          "price": 0.13395,
-          "high": 0.1341,
-          "low": 0.1338,
-          "score": 1
-        },
-        {
-          "type": "FVG",
-          "subtype": "BEARISH_FVG",
-          "price": 0.1336,
-          "high": 0.1339,
-          "low": 0.1333,
-          "score": 1
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 0.1333,
+          "high": 0.1334,
+          "low": 0.1332,
+          "score": 2
         },
         {
           "type": "FVG",
@@ -197,20 +189,27 @@
           "high": 0.133,
           "low": 0.1329,
           "score": 1
+        },
+        {
+          "type": "FVG",
+          "subtype": "BULLISH_FVG",
+          "price": 0.1326,
+          "high": 0.1327,
+          "low": 0.1325,
+          "score": 1
         }
       ],
       "htf": {
-        "trend": "BULLISH",
-        "score": 1,
-        "reason": "HTF bullish"
+        "trend": "NEUTRAL",
+        "score": 0.5
       },
       "vol": {
         "score": 0
       },
       "rsi": {
         "score": 1,
-        "rsi": 57.7,
-        "reason": "RSI healthy 57.7"
+        "rsi": 56.5,
+        "reason": "RSI healthy 56.5"
       },
       "status": "SKIP",
       "reason": "Score 2.5 < 4.0",
