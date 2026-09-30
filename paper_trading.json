@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T13:00:48.160082+00:00",
+  "generated_at": "2026-09-30T13:02:26.902174+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "config": {
     "start_capital": 1000.0,
@@ -11,12 +11,12 @@
   },
   "summary": {
     "initial": 1000.0,
-    "final": 1012.1,
-    "total_trades": 80,
+    "final": 1006.62,
+    "total_trades": 82,
     "wins": 38,
-    "losses": 42,
-    "win_rate": 47.5,
-    "total_r": 34.0
+    "losses": 44,
+    "win_rate": 46.3,
+    "total_r": 32.0
   },
   "trades": [
     {
@@ -1778,6 +1778,50 @@
       "capital_after": 1012.1032,
       "confluence_score": 4,
       "closed_at": "2026-09-30T13:00:41"
+    },
+    {
+      "symbol": "AVAXUSDT",
+      "direction": "LONG",
+      "entry": 11.3265,
+      "sl": 11.303847,
+      "tp": 11.398773857142857,
+      "close_status": "SL_HIT",
+      "pnl_r": -1.0,
+      "pnl_usd": -2.6269,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.319,
+        "notional_usd": 626.87,
+        "qty": 55.345047,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 12.54
+      },
+      "capital_after": 1009.4764,
+      "confluence_score": 5.5,
+      "closed_at": "2026-09-30T13:02:21"
+    },
+    {
+      "symbol": "XRPUSDT",
+      "direction": "LONG",
+      "entry": 1.5348,
+      "sl": 1.5317304,
+      "tp": 1.5419395258815092,
+      "close_status": "SL_HIT",
+      "pnl_r": -1.0,
+      "pnl_usd": -2.8599,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2326,
+        "notional_usd": 859.89,
+        "qty": 560.261293,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 17.2
+      },
+      "capital_after": 1006.6165,
+      "confluence_score": 4.0,
+      "closed_at": "2026-09-30T13:02:22"
     }
   ],
   "active_positions": [
@@ -2004,43 +2048,6 @@
       "filled_price": 776.815
     },
     {
-      "symbol": "AVAXUSDT",
-      "direction": "LONG",
-      "entry": 11.3265,
-      "sl": 11.303847,
-      "tp": 11.398773857142857,
-      "rrr": 2.0,
-      "sl_pct": 0.0031904761904762357,
-      "tp_pct": 0.0063809523809524715,
-      "zone_price": 11.3265,
-      "confluence_score": 5.5,
-      "confluences": [
-        "CHOCH(2)",
-        "OB(1.5)",
-        "HTF(1)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.319,
-        "notional_usd": 626.87,
-        "qty": 55.345047,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 12.54
-      },
-      "reason": "M1 SCORE 5.5/10: CHOCH(2)+OB(1.5)+HTF(1)+RSI(1) | LIMIT SWING 11.3265 SL 0.32% | HTF BULLISH",
-      "open_price": 11.34,
-      "open_time": "2026-09-30T12:52:25.675951+00:00",
-      "status": "ACTIVE",
-      "order_status": "FILLED",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m",
-      "filled_at": "2026-09-30T12:54:21.435732+00:00",
-      "filled_price": 11.3265
-    },
-    {
       "symbol": "LINKUSDT",
       "direction": "SHORT",
       "entry": 14.772,
@@ -2076,78 +2083,7 @@
       "fill_check": "10 candles 1m",
       "filled_at": "2026-09-30T13:00:38.178270+00:00",
       "filled_price": 14.772
-    },
-    {
-      "symbol": "XRPUSDT",
-      "direction": "LONG",
-      "entry": 1.5348,
-      "sl": 1.5317304,
-      "tp": 1.5419395258815092,
-      "rrr": 2.0,
-      "sl_pct": 0.002325881509483116,
-      "tp_pct": 0.004651763018966232,
-      "zone_price": 1.5348,
-      "confluence_score": 4.0,
-      "confluences": [
-        "OB(1.5)",
-        "HTF(1)",
-        "VOL(0.5)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2326,
-        "notional_usd": 859.89,
-        "qty": 560.261293,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 17.2
-      },
-      "reason": "M1 SCORE 4.0/10: OB(1.5)+HTF(1)+VOL(0.5)+RSI(1) | LIMIT SWING 1.5348 SL 0.23% | HTF BULLISH",
-      "open_price": 1.5343,
-      "open_time": "2026-09-30T13:00:46.998842+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m"
     }
   ],
-  "waiting_limit": [
-    {
-      "symbol": "XRPUSDT",
-      "direction": "LONG",
-      "entry": 1.5348,
-      "sl": 1.5317304,
-      "tp": 1.5419395258815092,
-      "rrr": 2.0,
-      "sl_pct": 0.002325881509483116,
-      "tp_pct": 0.004651763018966232,
-      "zone_price": 1.5348,
-      "confluence_score": 4.0,
-      "confluences": [
-        "OB(1.5)",
-        "HTF(1)",
-        "VOL(0.5)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2326,
-        "notional_usd": 859.89,
-        "qty": 560.261293,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 17.2
-      },
-      "reason": "M1 SCORE 4.0/10: OB(1.5)+HTF(1)+VOL(0.5)+RSI(1) | LIMIT SWING 1.5348 SL 0.23% | HTF BULLISH",
-      "open_price": 1.5343,
-      "open_time": "2026-09-30T13:00:46.998842+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m"
-    }
-  ]
+  "waiting_limit": []
 }
