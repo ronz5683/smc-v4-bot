@@ -1,5 +1,5 @@
 {
-  "last_scan_utc": "2026-09-30T16:16:31.612896+00:00",
+  "last_scan_utc": "2026-09-30T16:18:30.338192+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "params": {
     "MIN_CONFLUENCE_SCORE": 4.0,
@@ -9,13 +9,13 @@
     "TF": "M1/M5"
   },
   "summary": {
-    "total_scanned": 13,
+    "total_scanned": 14,
     "valid_new": 1,
     "valid": 1,
     "skip": 6,
     "active_positions": 6,
     "waiting_limit": 1,
-    "avg_confluence": 3.92,
+    "avg_confluence": 3.61,
     "by_filter": {
       "confluence": 6,
       "distance": 0,
@@ -24,10 +24,10 @@
   },
   "results": [
     {
-      "symbol": "LINKUSDT",
+      "symbol": "SOLUSDT",
       "status": "FILLED",
-      "reason": "M1 LIMIT filled at 14.344000000000001 within 10 candles",
-      "confluence_score": 4.5
+      "reason": "M1 LIMIT filled at 119.725 within 10 candles",
+      "confluence_score": 5.0
     },
     {
       "symbol": "BNBUSDT",
@@ -37,9 +37,9 @@
     },
     {
       "symbol": "DOGEUSDT",
-      "status": "HOLD",
-      "reason": "Holding LONG",
-      "confluence_score": 5.5
+      "status": "SL_HIT",
+      "reason": "SL_HIT",
+      "confluence_score": 0
     },
     {
       "symbol": "XRPUSDT",
@@ -60,8 +60,14 @@
       "confluence_score": 4.5
     },
     {
+      "symbol": "SOLUSDT",
+      "status": "HOLD",
+      "reason": "Holding SHORT",
+      "confluence_score": 5.0
+    },
+    {
       "symbol": "BTCUSDT",
-      "price": 84341.08,
+      "price": 84336.78,
       "confluence_score": 2.5,
       "confluences": [
         "FVG(1)",
@@ -121,8 +127,8 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 60.9,
-        "reason": "RSI healthy 60.9"
+        "rsi": 56.0,
+        "reason": "RSI healthy 56.0"
       },
       "status": "SKIP",
       "reason": "Score 2.5 < 4.0",
@@ -130,12 +136,12 @@
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2688.51,
-      "confluence_score": 3.0,
+      "price": 2687.93,
+      "confluence_score": 2.5,
       "confluences": [
-        "BREAKER(2)",
+        "FVG(1)",
         "HTF(0.5)",
-        "RSI(0.5)"
+        "RSI(1)"
       ],
       "sweep": {
         "sweep": false,
@@ -148,12 +154,12 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "BREAKER",
-        "subtype": "BULLISH_BREAKER",
-        "price": 2688.36,
-        "high": 2688.96,
-        "low": 2687.76,
-        "score": 2
+        "type": "FVG",
+        "subtype": "BULLISH_FVG",
+        "price": 2687.85,
+        "high": 2687.87,
+        "low": 2687.83,
+        "score": 1
       },
       "zones_all": [
         {
@@ -189,108 +195,23 @@
         "score": 0
       },
       "rsi": {
-        "score": 0.5,
-        "rsi": 65.3,
-        "reason": "RSI neutral 65.3"
+        "score": 1,
+        "rsi": 54.1,
+        "reason": "RSI healthy 54.1"
       },
       "status": "SKIP",
-      "reason": "Score 3.0 < 4.0",
+      "reason": "Score 2.5 < 4.0",
       "filter": "confluence"
     },
     {
-      "symbol": "SOLUSDT",
-      "price": 119.72,
-      "confluence_score": 5.0,
-      "confluences": [
-        "SWEEP(2)",
-        "BREAKER(2)",
-        "HTF(0.5)",
-        "RSI(0.5)"
-      ],
-      "sweep": {
-        "sweep": true,
-        "type": "BEARISH_SWEEP",
-        "level": 119.72,
-        "score": 2,
-        "reason": "Bear sweep 119.78 above 119.72"
-      },
-      "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
-      },
-      "zone": {
-        "type": "BREAKER",
-        "subtype": "BULLISH_BREAKER",
-        "price": 119.725,
-        "high": 119.77,
-        "low": 119.68,
-        "score": 2
-      },
-      "zones_all": [
-        {
-          "type": "BREAKER",
-          "subtype": "BULLISH_BREAKER",
-          "price": 119.315,
-          "high": 119.33,
-          "low": 119.3,
-          "score": 2
-        },
-        {
-          "type": "OB",
-          "subtype": "BULLISH_OB",
-          "price": 119.53999999999999,
-          "high": 119.58,
-          "low": 119.5,
-          "score": 1.5
-        },
-        {
-          "type": "BREAKER",
-          "subtype": "BULLISH_BREAKER",
-          "price": 119.64,
-          "high": 119.67,
-          "low": 119.61,
-          "score": 2
-        }
-      ],
-      "htf": {
-        "trend": "NEUTRAL",
-        "score": 0.5
-      },
-      "vol": {
-        "score": 0
-      },
-      "rsi": {
-        "score": 0.5,
-        "rsi": 67.8,
-        "reason": "RSI neutral 67.8"
-      },
-      "direction": "SHORT",
-      "entry": 119.725,
-      "sl": 119.96445,
-      "tp": 119.23609958235883,
-      "rrr": 2.0,
-      "sl_pct": 0.002041764116271262,
-      "tp_pct": 0.004083528232542524,
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2042,
-        "notional_usd": 979.55,
-        "qty": 8.181625,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 19.59
-      },
-      "status": "VALID",
-      "reason": "M1 SCORE 5.0/10: SWEEP(2)+BREAKER(2)+HTF(0.5)+RSI(0.5) | LIMIT SWING 119.7250 SL 0.20% | HTF NEUTRAL"
-    },
-    {
       "symbol": "ADAUSDT",
-      "price": 0.2487,
-      "confluence_score": 1.5,
+      "price": 0.2481,
+      "confluence_score": 4.5,
       "confluences": [
+        "CHOCH(2)",
         "FVG(1)",
-        "HTF(0.5)"
+        "HTF(0.5)",
+        "RSI(1)"
       ],
       "sweep": {
         "sweep": false,
@@ -298,16 +219,17 @@
         "reason": "No sweep"
       },
       "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
+        "choch": true,
+        "type": "BEARISH_CHOCH",
+        "score": 2,
+        "reason": "Bearish CHOCH 0.25 < 0.25"
       },
       "zone": {
         "type": "FVG",
-        "subtype": "BEARISH_FVG",
-        "price": 0.24880000000000002,
-        "high": 0.2489,
-        "low": 0.2487,
+        "subtype": "BULLISH_FVG",
+        "price": 0.24814999999999998,
+        "high": 0.2483,
+        "low": 0.248,
         "score": 1
       },
       "zones_all": [
@@ -344,17 +266,101 @@
         "score": 0
       },
       "rsi": {
+        "score": 1,
+        "rsi": 54.8,
+        "reason": "RSI healthy 54.8"
+      },
+      "direction": "SHORT",
+      "entry": 0.24814999999999998,
+      "sl": 0.2486463,
+      "tp": 0.24705737984683593,
+      "rrr": 2.0,
+      "sl_pct": 0.002201531640467531,
+      "tp_pct": 0.004403063280935062,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2202,
+        "notional_usd": 908.46,
+        "qty": 3660.924603,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 18.17
+      },
+      "status": "VALID",
+      "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 0.2481 SL 0.22% | HTF NEUTRAL"
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "price": 0.0954,
+      "confluence_score": 2.0,
+      "confluences": [
+        "FVG(1)",
+        "HTF(0.5)",
+        "RSI(0.5)"
+      ],
+      "sweep": {
+        "sweep": false,
         "score": 0,
-        "rsi": 71.4,
-        "reason": "RSI extreme 71.4"
+        "reason": "No sweep"
+      },
+      "choch": {
+        "choch": false,
+        "score": 0,
+        "reason": "No ChoCh"
+      },
+      "zone": {
+        "type": "FVG",
+        "subtype": "BULLISH_FVG",
+        "price": 0.09540499999999999,
+        "high": 0.09545,
+        "low": 0.09536,
+        "score": 1
+      },
+      "zones_all": [
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 0.09537999999999999,
+          "high": 0.09542,
+          "low": 0.09534,
+          "score": 2
+        },
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 0.095585,
+          "high": 0.09562,
+          "low": 0.09555,
+          "score": 2
+        },
+        {
+          "type": "FVG",
+          "subtype": "BULLISH_FVG",
+          "price": 0.09540499999999999,
+          "high": 0.09545,
+          "low": 0.09536,
+          "score": 1
+        }
+      ],
+      "htf": {
+        "trend": "NEUTRAL",
+        "score": 0.5
+      },
+      "vol": {
+        "score": 0
+      },
+      "rsi": {
+        "score": 0.5,
+        "rsi": 34.5,
+        "reason": "RSI neutral 34.5"
       },
       "status": "SKIP",
-      "reason": "Score 1.5 < 4.0",
+      "reason": "Score 2.0 < 4.0",
       "filter": "confluence"
     },
     {
       "symbol": "OPUSDT",
-      "price": 0.1324,
+      "price": 0.1321,
       "confluence_score": 2.5,
       "confluences": [
         "FVG(1)",
@@ -374,9 +380,9 @@
       "zone": {
         "type": "FVG",
         "subtype": "BULLISH_FVG",
-        "price": 0.13240000000000002,
-        "high": 0.1325,
-        "low": 0.1323,
+        "price": 0.13215,
+        "high": 0.1322,
+        "low": 0.1321,
         "score": 1
       },
       "zones_all": [
@@ -389,20 +395,20 @@
           "score": 2
         },
         {
-          "type": "FVG",
-          "subtype": "BULLISH_FVG",
-          "price": 0.132,
-          "high": 0.1321,
-          "low": 0.1319,
-          "score": 1
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 0.13219999999999998,
+          "high": 0.1324,
+          "low": 0.132,
+          "score": 1.5
         },
         {
-          "type": "FVG",
-          "subtype": "BULLISH_FVG",
-          "price": 0.13215,
-          "high": 0.1322,
-          "low": 0.1321,
-          "score": 1
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 0.13235000000000002,
+          "high": 0.1325,
+          "low": 0.1322,
+          "score": 2
         }
       ],
       "htf": {
@@ -414,8 +420,8 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 57.1,
-        "reason": "RSI healthy 57.1"
+        "rsi": 50.0,
+        "reason": "RSI healthy 50.0"
       },
       "status": "SKIP",
       "reason": "Score 2.5 < 4.0",
@@ -423,12 +429,12 @@
     },
     {
       "symbol": "ARBUSDT",
-      "price": 0.207,
+      "price": 0.2065,
       "confluence_score": 3.0,
       "confluences": [
-        "BREAKER(2)",
+        "OB(1.5)",
         "HTF(0.5)",
-        "RSI(0.5)"
+        "RSI(1)"
       ],
       "sweep": {
         "sweep": false,
@@ -441,12 +447,12 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "BREAKER",
-        "subtype": "BULLISH_BREAKER",
-        "price": 0.20684999999999998,
-        "high": 0.207,
-        "low": 0.2067,
-        "score": 2
+        "type": "OB",
+        "subtype": "BULLISH_OB",
+        "price": 0.20650000000000002,
+        "high": 0.2068,
+        "low": 0.2062,
+        "score": 1.5
       },
       "zones_all": [
         {
@@ -482,9 +488,9 @@
         "score": 0
       },
       "rsi": {
-        "score": 0.5,
-        "rsi": 67.9,
-        "reason": "RSI neutral 67.9"
+        "score": 1,
+        "rsi": 53.1,
+        "reason": "RSI healthy 53.1"
       },
       "status": "SKIP",
       "reason": "Score 3.0 < 4.0",
@@ -562,59 +568,58 @@
   ],
   "valid_trades": [
     {
-      "symbol": "SOLUSDT",
-      "price": 119.72,
-      "confluence_score": 5.0,
+      "symbol": "ADAUSDT",
+      "price": 0.2481,
+      "confluence_score": 4.5,
       "confluences": [
-        "SWEEP(2)",
-        "BREAKER(2)",
+        "CHOCH(2)",
+        "FVG(1)",
         "HTF(0.5)",
-        "RSI(0.5)"
+        "RSI(1)"
       ],
       "sweep": {
-        "sweep": true,
-        "type": "BEARISH_SWEEP",
-        "level": 119.72,
-        "score": 2,
-        "reason": "Bear sweep 119.78 above 119.72"
+        "sweep": false,
+        "score": 0,
+        "reason": "No sweep"
       },
       "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
+        "choch": true,
+        "type": "BEARISH_CHOCH",
+        "score": 2,
+        "reason": "Bearish CHOCH 0.25 < 0.25"
       },
       "zone": {
-        "type": "BREAKER",
-        "subtype": "BULLISH_BREAKER",
-        "price": 119.725,
-        "high": 119.77,
-        "low": 119.68,
-        "score": 2
+        "type": "FVG",
+        "subtype": "BULLISH_FVG",
+        "price": 0.24814999999999998,
+        "high": 0.2483,
+        "low": 0.248,
+        "score": 1
       },
       "zones_all": [
         {
           "type": "BREAKER",
           "subtype": "BULLISH_BREAKER",
-          "price": 119.315,
-          "high": 119.33,
-          "low": 119.3,
+          "price": 0.2471,
+          "high": 0.2472,
+          "low": 0.247,
           "score": 2
         },
         {
           "type": "OB",
           "subtype": "BULLISH_OB",
-          "price": 119.53999999999999,
-          "high": 119.58,
-          "low": 119.5,
+          "price": 0.24785000000000001,
+          "high": 0.248,
+          "low": 0.2477,
           "score": 1.5
         },
         {
-          "type": "BREAKER",
-          "subtype": "BULLISH_BREAKER",
-          "price": 119.64,
-          "high": 119.67,
-          "low": 119.61,
-          "score": 2
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 0.24855,
+          "high": 0.2488,
+          "low": 0.2483,
+          "score": 1.5
         }
       ],
       "htf": {
@@ -625,60 +630,60 @@
         "score": 0
       },
       "rsi": {
-        "score": 0.5,
-        "rsi": 67.8,
-        "reason": "RSI neutral 67.8"
+        "score": 1,
+        "rsi": 54.8,
+        "reason": "RSI healthy 54.8"
       },
       "direction": "SHORT",
-      "entry": 119.725,
-      "sl": 119.96445,
-      "tp": 119.23609958235883,
+      "entry": 0.24814999999999998,
+      "sl": 0.2486463,
+      "tp": 0.24705737984683593,
       "rrr": 2.0,
-      "sl_pct": 0.002041764116271262,
-      "tp_pct": 0.004083528232542524,
+      "sl_pct": 0.002201531640467531,
+      "tp_pct": 0.004403063280935062,
       "sizing": {
         "risk_usd": 2.0,
-        "sl_pct": 0.2042,
-        "notional_usd": 979.55,
-        "qty": 8.181625,
+        "sl_pct": 0.2202,
+        "notional_usd": 908.46,
+        "qty": 3660.924603,
         "leverage": 50,
         "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 19.59
+        "margin_needed": 18.17
       },
       "status": "VALID",
-      "reason": "M1 SCORE 5.0/10: SWEEP(2)+BREAKER(2)+HTF(0.5)+RSI(0.5) | LIMIT SWING 119.7250 SL 0.20% | HTF NEUTRAL"
+      "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 0.2481 SL 0.22% | HTF NEUTRAL"
     }
   ],
   "valid_new_positions": [
     {
-      "symbol": "SOLUSDT",
+      "symbol": "ADAUSDT",
       "direction": "SHORT",
-      "entry": 119.725,
-      "sl": 119.96445,
-      "tp": 119.23609958235883,
+      "entry": 0.24814999999999998,
+      "sl": 0.2486463,
+      "tp": 0.24705737984683593,
       "rrr": 2.0,
-      "sl_pct": 0.002041764116271262,
-      "tp_pct": 0.004083528232542524,
-      "zone_price": 119.725,
-      "confluence_score": 5.0,
+      "sl_pct": 0.002201531640467531,
+      "tp_pct": 0.004403063280935062,
+      "zone_price": 0.24814999999999998,
+      "confluence_score": 4.5,
       "confluences": [
-        "SWEEP(2)",
-        "BREAKER(2)",
+        "CHOCH(2)",
+        "FVG(1)",
         "HTF(0.5)",
-        "RSI(0.5)"
+        "RSI(1)"
       ],
       "sizing": {
         "risk_usd": 2.0,
-        "sl_pct": 0.2042,
-        "notional_usd": 979.55,
-        "qty": 8.181625,
+        "sl_pct": 0.2202,
+        "notional_usd": 908.46,
+        "qty": 3660.924603,
         "leverage": 50,
         "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 19.59
+        "margin_needed": 18.17
       },
-      "reason": "M1 SCORE 5.0/10: SWEEP(2)+BREAKER(2)+HTF(0.5)+RSI(0.5) | LIMIT SWING 119.7250 SL 0.20% | HTF NEUTRAL",
-      "open_price": 119.72,
-      "open_time": "2026-09-30T16:16:26.682904+00:00",
+      "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 0.2481 SL 0.22% | HTF NEUTRAL",
+      "open_price": 0.2481,
+      "open_time": "2026-09-30T16:18:26.061328+00:00",
       "status": "WAITING_LIMIT",
       "order_status": "WAITING_LIMIT",
       "paper_trade": true,
@@ -723,43 +728,6 @@
       "fill_check": "10 candles 1m",
       "filled_at": "2026-09-30T13:40:30.089317+00:00",
       "filled_price": 773.3199999999999
-    },
-    {
-      "symbol": "DOGEUSDT",
-      "direction": "LONG",
-      "entry": 0.095585,
-      "sl": 0.09539383,
-      "tp": 0.09603731437774524,
-      "rrr": 2.0,
-      "sl_pct": 0.002366032210834484,
-      "tp_pct": 0.004732064421668968,
-      "zone_price": 0.095585,
-      "confluence_score": 5.5,
-      "confluences": [
-        "CHOCH(2)",
-        "BREAKER(2)",
-        "HTF(0.5)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2366,
-        "notional_usd": 845.3,
-        "qty": 8843.406703,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 16.91
-      },
-      "reason": "M1 SCORE 5.5/10: CHOCH(2)+BREAKER(2)+HTF(0.5)+RSI(1) | LIMIT SWING 0.0956 SL 0.24% | HTF NEUTRAL",
-      "open_price": 0.09562,
-      "open_time": "2026-09-30T16:04:27.215250+00:00",
-      "status": "ACTIVE",
-      "order_status": "FILLED",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m",
-      "filled_at": "2026-09-30T16:06:20.405502+00:00",
-      "filled_price": 0.095585
     },
     {
       "symbol": "XRPUSDT",
@@ -901,6 +869,43 @@
       "reason": "M1 SCORE 5.0/10: SWEEP(2)+BREAKER(2)+HTF(0.5)+RSI(0.5) | LIMIT SWING 119.7250 SL 0.20% | HTF NEUTRAL",
       "open_price": 119.72,
       "open_time": "2026-09-30T16:16:26.682904+00:00",
+      "status": "ACTIVE",
+      "order_status": "FILLED",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m",
+      "filled_at": "2026-09-30T16:18:20.214772+00:00",
+      "filled_price": 119.725
+    },
+    {
+      "symbol": "ADAUSDT",
+      "direction": "SHORT",
+      "entry": 0.24814999999999998,
+      "sl": 0.2486463,
+      "tp": 0.24705737984683593,
+      "rrr": 2.0,
+      "sl_pct": 0.002201531640467531,
+      "tp_pct": 0.004403063280935062,
+      "zone_price": 0.24814999999999998,
+      "confluence_score": 4.5,
+      "confluences": [
+        "CHOCH(2)",
+        "FVG(1)",
+        "HTF(0.5)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2202,
+        "notional_usd": 908.46,
+        "qty": 3660.924603,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 18.17
+      },
+      "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 0.2481 SL 0.22% | HTF NEUTRAL",
+      "open_price": 0.2481,
+      "open_time": "2026-09-30T16:18:26.061328+00:00",
       "status": "WAITING_LIMIT",
       "order_status": "WAITING_LIMIT",
       "paper_trade": true,
@@ -909,47 +914,6 @@
     }
   ],
   "closed_positions": [
-    {
-      "symbol": "LINKUSDT",
-      "direction": "LONG",
-      "entry": 14.229500000000002,
-      "sl": 14.201041000000002,
-      "tp": 14.397852633836608,
-      "rrr": 2.0,
-      "sl_pct": 0.005915620149569783,
-      "tp_pct": 0.011831240299139565,
-      "zone_price": 14.229500000000002,
-      "confluence_score": 4.5,
-      "confluences": [
-        "SWEEP(2)",
-        "FVG(1)",
-        "HTF(0.5)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.5916,
-        "notional_usd": 338.09,
-        "qty": 23.759652,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 6.76
-      },
-      "reason": "M1 SCORE 4.5/10: SWEEP(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 14.2295 SL 0.59% | HTF NEUTRAL",
-      "open_price": 14.174,
-      "open_time": "2026-09-30T14:36:40.152967+00:00",
-      "status": "ACTIVE",
-      "order_status": "FILLED",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m",
-      "filled_at": "2026-09-30T14:38:22.763195+00:00",
-      "filled_price": 14.229500000000002,
-      "close_status": "SL_HIT",
-      "pnl_rrr": -1.0,
-      "closed_at": "2026-09-30T14:38:28.465607+00:00",
-      "close_price": 14.143
-    },
     {
       "symbol": "OPUSDT",
       "direction": "SHORT",
@@ -2134,6 +2098,47 @@
       "close_status": "CANCELED_PRICE_RAN_AWAY",
       "closed_at": "2026-09-30T16:04:20.522503+00:00",
       "cancel_reason": "M1 Price ran away 1.60% > 1.2%"
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "direction": "LONG",
+      "entry": 0.095585,
+      "sl": 0.09539383,
+      "tp": 0.09603731437774524,
+      "rrr": 2.0,
+      "sl_pct": 0.002366032210834484,
+      "tp_pct": 0.004732064421668968,
+      "zone_price": 0.095585,
+      "confluence_score": 5.5,
+      "confluences": [
+        "CHOCH(2)",
+        "BREAKER(2)",
+        "HTF(0.5)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2366,
+        "notional_usd": 845.3,
+        "qty": 8843.406703,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 16.91
+      },
+      "reason": "M1 SCORE 5.5/10: CHOCH(2)+BREAKER(2)+HTF(0.5)+RSI(1) | LIMIT SWING 0.0956 SL 0.24% | HTF NEUTRAL",
+      "open_price": 0.09562,
+      "open_time": "2026-09-30T16:04:27.215250+00:00",
+      "status": "ACTIVE",
+      "order_status": "FILLED",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m",
+      "filled_at": "2026-09-30T16:06:20.405502+00:00",
+      "filled_price": 0.095585,
+      "close_status": "SL_HIT",
+      "pnl_rrr": -1.0,
+      "closed_at": "2026-09-30T16:18:21.129878+00:00",
+      "close_price": 0.09539
     }
   ],
   "stats": {
