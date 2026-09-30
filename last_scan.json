@@ -1,5 +1,5 @@
 {
-  "last_scan_utc": "2026-09-30T08:31:39.733980+00:00",
+  "last_scan_utc": "2026-09-30T08:32:26.041066+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "params": {
     "MIN_CONFLUENCE_SCORE": 4.0,
@@ -15,7 +15,7 @@
     "skip": 4,
     "active_positions": 8,
     "waiting_limit": 0,
-    "avg_confluence": 4.25,
+    "avg_confluence": 4.29,
     "by_filter": {
       "confluence": 4,
       "distance": 0,
@@ -73,12 +73,12 @@
     },
     {
       "symbol": "BTCUSDT",
-      "price": 83082.53,
-      "confluence_score": 2.5,
+      "price": 83072.0,
+      "confluence_score": 3,
       "confluences": [
         "FVG(1)",
         "HTF(1)",
-        "RSI(0.5)"
+        "VOL(1)"
       ],
       "sweep": {
         "sweep": false,
@@ -130,20 +130,21 @@
         "reason": "HTF bearish"
       },
       "vol": {
-        "score": 0
+        "score": 1,
+        "reason": "Volume spike"
       },
       "rsi": {
-        "score": 0.5,
-        "rsi": 34.5,
-        "reason": "RSI neutral 34.5"
+        "score": 0,
+        "rsi": 22.9,
+        "reason": "RSI extreme 22.9"
       },
       "status": "SKIP",
-      "reason": "Score 2.5 < 4.0",
+      "reason": "Score 3 < 4.0",
       "filter": "confluence"
     },
     {
       "symbol": "LINKUSDT",
-      "price": 14.253,
+      "price": 14.257,
       "confluence_score": 2.5,
       "confluences": [
         "FVG(1)",
@@ -163,20 +164,12 @@
       "zone": {
         "type": "FVG",
         "subtype": "BULLISH_FVG",
-        "price": 14.251999999999999,
+        "price": 14.256499999999999,
         "high": 14.257,
-        "low": 14.247,
+        "low": 14.256,
         "score": 1
       },
       "zones_all": [
-        {
-          "type": "BREAKER",
-          "subtype": "BULLISH_BREAKER",
-          "price": 14.25,
-          "high": 14.255,
-          "low": 14.245,
-          "score": 2
-        },
         {
           "type": "OB",
           "subtype": "BULLISH_OB",
@@ -192,6 +185,14 @@
           "high": 14.3,
           "low": 14.287,
           "score": 1.5
+        },
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 14.3015,
+          "high": 14.306,
+          "low": 14.297,
+          "score": 2
         }
       ],
       "htf": {
@@ -204,8 +205,8 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 48.0,
-        "reason": "RSI healthy 48.0"
+        "rsi": 39.5,
+        "reason": "RSI healthy 39.5"
       },
       "status": "SKIP",
       "reason": "Score 2.5 < 4.0",
@@ -273,8 +274,8 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 54.5,
-        "reason": "RSI healthy 54.5"
+        "rsi": 45.0,
+        "reason": "RSI healthy 45.0"
       },
       "status": "SKIP",
       "reason": "Score 2.5 < 4.0",
