@@ -296,41 +296,74 @@
       "filled_price": 11.126
     },
     {
-      "symbol": "OPUSDT",
-      "direction": "LONG",
-      "entry": 0.1331,
-      "sl": 0.1328338,
-      "tp": 0.1340317998499625,
+      "symbol": "DOGEUSDT",
+      "direction": "SHORT",
+      "entry": 0.09595000000000001,
+      "sl": 0.0961419,
+      "tp": 0.09554620208420177,
       "rrr": 2.0,
-      "sl_pct": 0.0035003750937734864,
-      "tp_pct": 0.007000750187546973,
-      "zone_price": 0.1331,
-      "confluence_score": 5,
+      "sl_pct": 0.002104210087536433,
+      "tp_pct": 0.004208420175072866,
+      "zone_price": 0.09595000000000001,
+      "confluence_score": 4.5,
       "confluences": [
-        "CHOCH(2)",
+        "SWEEP(2)",
         "FVG(1)",
         "HTF(1)",
-        "VOL(1)"
+        "RSI(1)"
       ],
       "sizing": {
         "risk_usd": 2.0,
-        "sl_pct": 0.35,
-        "notional_usd": 571.37,
-        "qty": 4292.767379,
-        "leverage": 20,
+        "sl_pct": 0.2104,
+        "notional_usd": 950.48,
+        "qty": 9905.945136,
+        "leverage": 50,
         "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 28.57
+        "margin_needed": 19.01
       },
-      "reason": "M1 SCORE 5/10: CHOCH(2)+FVG(1)+HTF(1)+VOL(1) | LIMIT SWING 0.1331 SL 0.35% | HTF BULLISH",
-      "open_price": 0.1333,
-      "open_time": "2026-09-30T11:44:29.019108+00:00",
-      "status": "ACTIVE",
-      "order_status": "FILLED",
+      "reason": "M1 SCORE 4.5/10: SWEEP(2)+FVG(1)+HTF(1)+RSI(1) | LIMIT SWING 0.0960 SL 0.21% | HTF BULLISH",
+      "open_price": 0.09596,
+      "open_time": "2026-09-30T11:48:26.245326+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
       "paper_trade": true,
       "limit_order": true,
-      "fill_check": "10 candles 1m",
-      "filled_at": "2026-09-30T11:46:17.118876+00:00",
-      "filled_price": 0.1331
+      "fill_check": "10 candles 1m"
+    },
+    {
+      "symbol": "OPUSDT",
+      "direction": "SHORT",
+      "entry": 0.13290000000000002,
+      "sl": 0.13316580000000003,
+      "tp": 0.13216824939759034,
+      "rrr": 2.0,
+      "sl_pct": 0.002753012048192897,
+      "tp_pct": 0.005506024096385794,
+      "zone_price": 0.13290000000000002,
+      "confluence_score": 5.0,
+      "confluences": [
+        "SWEEP(2)",
+        "OB(1.5)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2753,
+        "notional_usd": 726.48,
+        "qty": 5466.343296,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 36.32
+      },
+      "reason": "M1 SCORE 5.0/10: SWEEP(2)+OB(1.5)+HTF(1)+RSI(1) | LIMIT SWING 0.1329 SL 0.28% | HTF BULLISH",
+      "open_price": 0.1328,
+      "open_time": "2026-09-30T11:48:27.095340+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
     }
   ],
   "closed": [
@@ -2420,6 +2453,47 @@
       "pnl_rrr": 2.0,
       "closed_at": "2026-09-30T11:44:26.287213+00:00",
       "close_price": 0.09646
+    },
+    {
+      "symbol": "OPUSDT",
+      "direction": "LONG",
+      "entry": 0.1331,
+      "sl": 0.1328338,
+      "tp": 0.1340317998499625,
+      "rrr": 2.0,
+      "sl_pct": 0.0035003750937734864,
+      "tp_pct": 0.007000750187546973,
+      "zone_price": 0.1331,
+      "confluence_score": 5,
+      "confluences": [
+        "CHOCH(2)",
+        "FVG(1)",
+        "HTF(1)",
+        "VOL(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.35,
+        "notional_usd": 571.37,
+        "qty": 4292.767379,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 28.57
+      },
+      "reason": "M1 SCORE 5/10: CHOCH(2)+FVG(1)+HTF(1)+VOL(1) | LIMIT SWING 0.1331 SL 0.35% | HTF BULLISH",
+      "open_price": 0.1333,
+      "open_time": "2026-09-30T11:44:29.019108+00:00",
+      "status": "ACTIVE",
+      "order_status": "FILLED",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m",
+      "filled_at": "2026-09-30T11:46:17.118876+00:00",
+      "filled_price": 0.1331,
+      "close_status": "SL_HIT",
+      "pnl_rrr": -1.0,
+      "closed_at": "2026-09-30T11:48:24.496224+00:00",
+      "close_price": 0.1328
     }
   ],
   "stats": {
