@@ -1,5 +1,5 @@
 {
-  "last_scan_utc": "2026-09-30T03:52:28.540919+00:00",
+  "last_scan_utc": "2026-09-30T03:54:25.817780+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "params": {
     "MIN_CONFLUENCE_SCORE": 4.0,
@@ -9,13 +9,13 @@
     "TF": "M1/M5"
   },
   "summary": {
-    "total_scanned": 15,
+    "total_scanned": 12,
     "valid_new": 0,
     "valid": 0,
     "skip": 3,
     "active_positions": 9,
     "waiting_limit": 0,
-    "avg_confluence": 4.87,
+    "avg_confluence": 4.54,
     "by_filter": {
       "confluence": 3,
       "distance": 0,
@@ -23,24 +23,6 @@
     }
   },
   "results": [
-    {
-      "symbol": "DOGEUSDT",
-      "status": "FILLED",
-      "reason": "M1 LIMIT filled at 0.093475 within 10 candles",
-      "confluence_score": 6
-    },
-    {
-      "symbol": "OPUSDT",
-      "status": "FILLED",
-      "reason": "M1 LIMIT filled at 0.12940000000000002 within 10 candles",
-      "confluence_score": 5.0
-    },
-    {
-      "symbol": "ARBUSDT",
-      "status": "FILLED",
-      "reason": "M1 LIMIT filled at 0.20245000000000002 within 10 candles",
-      "confluence_score": 6
-    },
     {
       "symbol": "XRPUSDT",
       "status": "HOLD",
@@ -97,12 +79,11 @@
     },
     {
       "symbol": "BTCUSDT",
-      "price": 83293.56,
-      "confluence_score": 3.0,
+      "price": 83304.81,
+      "confluence_score": 2,
       "confluences": [
-        "OB(1.5)",
-        "HTF(1)",
-        "RSI(1)"
+        "FVG(1)",
+        "HTF(1)"
       ],
       "sweep": {
         "sweep": false,
@@ -115,12 +96,12 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "OB",
-        "subtype": "BULLISH_OB",
-        "price": 83291.705,
-        "high": 83313.41,
-        "low": 83270.0,
-        "score": 1.5
+        "type": "FVG",
+        "subtype": "BEARISH_FVG",
+        "price": 83303.20999999999,
+        "high": 83306.41,
+        "low": 83300.01,
+        "score": 1
       },
       "zones_all": [
         {
@@ -157,23 +138,22 @@
         "score": 0
       },
       "rsi": {
-        "score": 1,
-        "rsi": 37.7,
-        "reason": "RSI healthy 37.7"
+        "score": 0,
+        "rsi": 29.3,
+        "reason": "RSI extreme 29.3"
       },
       "status": "SKIP",
-      "reason": "Score 3.0 < 4.0",
+      "reason": "Score 2 < 4.0",
       "filter": "confluence"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2672.41,
-      "confluence_score": 3.0,
+      "price": 2672.0,
+      "confluence_score": 2.5,
       "confluences": [
         "FVG(1)",
-        "HTF(0.5)",
-        "VOL(0.5)",
-        "RSI(1)"
+        "HTF(1)",
+        "RSI(0.5)"
       ],
       "sweep": {
         "sweep": false,
@@ -220,20 +200,20 @@
         }
       ],
       "htf": {
-        "trend": "NEUTRAL",
-        "score": 0.5
+        "trend": "BEARISH",
+        "score": 1,
+        "reason": "HTF bearish"
       },
       "vol": {
-        "score": 0.5,
-        "reason": "Volume up"
+        "score": 0
       },
       "rsi": {
-        "score": 1,
-        "rsi": 41.1,
-        "reason": "RSI healthy 41.1"
+        "score": 0.5,
+        "rsi": 33.5,
+        "reason": "RSI neutral 33.5"
       },
       "status": "SKIP",
-      "reason": "Score 3.0 < 4.0",
+      "reason": "Score 2.5 < 4.0",
       "filter": "confluence"
     },
     {
