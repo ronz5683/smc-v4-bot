@@ -1,5 +1,5 @@
 {
-  "last_scan_utc": "2026-09-30T09:46:29.363723+00:00",
+  "last_scan_utc": "2026-09-30T09:48:27.205108+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "params": {
     "MIN_CONFLUENCE_SCORE": 4.0,
@@ -82,9 +82,8 @@
       "price": 0.1343,
       "confluence_score": 3.5,
       "confluences": [
-        "FVG(1)",
+        "OB(1.5)",
         "HTF(1)",
-        "VOL(1)",
         "RSI(1)"
       ],
       "sweep": {
@@ -98,14 +97,22 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "FVG",
-        "subtype": "BEARISH_FVG",
-        "price": 0.13405,
-        "high": 0.1342,
+        "type": "OB",
+        "subtype": "BULLISH_OB",
+        "price": 0.13415,
+        "high": 0.1344,
         "low": 0.1339,
-        "score": 1
+        "score": 1.5
       },
       "zones_all": [
+        {
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 0.13415,
+          "high": 0.1344,
+          "low": 0.1339,
+          "score": 1.5
+        },
         {
           "type": "FVG",
           "subtype": "BULLISH_FVG",
@@ -129,13 +136,12 @@
         "reason": "HTF bullish"
       },
       "vol": {
-        "score": 1,
-        "reason": "Volume spike"
+        "score": 0
       },
       "rsi": {
         "score": 1,
-        "rsi": 50.0,
-        "reason": "RSI healthy 50.0"
+        "rsi": 48.5,
+        "reason": "RSI healthy 48.5"
       },
       "status": "SKIP",
       "reason": "Score 3.5 < 4.0",
@@ -143,12 +149,12 @@
     },
     {
       "symbol": "ARBUSDT",
-      "price": 0.2046,
+      "price": 0.2047,
       "confluence_score": 2.5,
       "confluences": [
         "FVG(1)",
         "HTF(1)",
-        "VOL(0.5)"
+        "RSI(0.5)"
       ],
       "sweep": {
         "sweep": false,
@@ -170,6 +176,14 @@
       },
       "zones_all": [
         {
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 0.20450000000000002,
+          "high": 0.2046,
+          "low": 0.2044,
+          "score": 1.5
+        },
+        {
           "type": "FVG",
           "subtype": "BULLISH_FVG",
           "price": 0.20475,
@@ -184,14 +198,6 @@
           "high": 0.2058,
           "low": 0.205,
           "score": 1
-        },
-        {
-          "type": "FVG",
-          "subtype": "BEARISH_FVG",
-          "price": 0.20529999999999998,
-          "high": 0.2054,
-          "low": 0.2052,
-          "score": 1
         }
       ],
       "htf": {
@@ -200,13 +206,12 @@
         "reason": "HTF bullish"
       },
       "vol": {
-        "score": 0.5,
-        "reason": "Volume up"
+        "score": 0
       },
       "rsi": {
-        "score": 0,
-        "rsi": 24.2,
-        "reason": "RSI extreme 24.2"
+        "score": 0.5,
+        "rsi": 34.3,
+        "reason": "RSI neutral 34.3"
       },
       "status": "SKIP",
       "reason": "Score 2.5 < 4.0",
