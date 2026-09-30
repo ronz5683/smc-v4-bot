@@ -1,5 +1,5 @@
 {
-  "last_scan_utc": "2026-09-30T10:42:26.242635+00:00",
+  "last_scan_utc": "2026-09-30T10:44:35.890305+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "params": {
     "MIN_CONFLUENCE_SCORE": 4.0,
@@ -10,14 +10,14 @@
   },
   "summary": {
     "total_scanned": 12,
-    "valid_new": 0,
-    "valid": 0,
-    "skip": 6,
-    "active_positions": 6,
-    "waiting_limit": 1,
-    "avg_confluence": 3.96,
+    "valid_new": 2,
+    "valid": 2,
+    "skip": 4,
+    "active_positions": 8,
+    "waiting_limit": 3,
+    "avg_confluence": 4.33,
     "by_filter": {
-      "confluence": 6,
+      "confluence": 4,
       "distance": 0,
       "zone": 0
     }
@@ -61,10 +61,10 @@
     },
     {
       "symbol": "BNBUSDT",
-      "price": 768.82,
-      "confluence_score": 2.5,
+      "price": 769.0,
+      "confluence_score": 4,
       "confluences": [
-        "FVG(1)",
+        "BREAKER(2)",
         "HTF(1)",
         "RSI(1)"
       ],
@@ -79,12 +79,12 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "FVG",
-        "subtype": "BEARISH_FVG",
-        "price": 768.7850000000001,
-        "high": 769.09,
-        "low": 768.48,
-        "score": 1
+        "type": "BREAKER",
+        "subtype": "BULLISH_BREAKER",
+        "price": 769.185,
+        "high": 769.28,
+        "low": 769.09,
+        "score": 2
       },
       "zones_all": [
         {
@@ -122,20 +122,36 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 58.2,
-        "reason": "RSI healthy 58.2"
+        "rsi": 60.6,
+        "reason": "RSI healthy 60.6"
       },
-      "status": "SKIP",
-      "reason": "Score 2.5 < 4.0",
-      "filter": "confluence"
+      "direction": "LONG",
+      "entry": 769.185,
+      "sl": 767.64663,
+      "tp": 772.6318290117033,
+      "rrr": 2.0,
+      "sl_pct": 0.0022405721716514245,
+      "tp_pct": 0.004481144343302849,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2241,
+        "notional_usd": 892.63,
+        "qty": 1.160487,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 17.85
+      },
+      "status": "VALID",
+      "reason": "M1 SCORE 4/10: BREAKER(2)+HTF(1)+RSI(1) | LIMIT SWING 769.1850 SL 0.22% | HTF BULLISH"
     },
     {
       "symbol": "ADAUSDT",
       "price": 0.2488,
-      "confluence_score": 2.5,
+      "confluence_score": 3.5,
       "confluences": [
         "OB(1.5)",
-        "HTF(1)"
+        "HTF(1)",
+        "RSI(1)"
       ],
       "sweep": {
         "sweep": false,
@@ -190,12 +206,12 @@
         "score": 0
       },
       "rsi": {
-        "score": 0,
-        "rsi": 73.7,
-        "reason": "RSI extreme 73.7"
+        "score": 1,
+        "rsi": 62.5,
+        "reason": "RSI healthy 62.5"
       },
       "status": "SKIP",
-      "reason": "Score 2.5 < 4.0",
+      "reason": "Score 3.5 < 4.0",
       "filter": "confluence"
     },
     {
@@ -260,8 +276,8 @@
       },
       "rsi": {
         "score": 0,
-        "rsi": 77.0,
-        "reason": "RSI extreme 77.0"
+        "rsi": 73.6,
+        "reason": "RSI extreme 73.6"
       },
       "status": "SKIP",
       "reason": "Score 2 < 4.0",
@@ -269,10 +285,10 @@
     },
     {
       "symbol": "AVAXUSDT",
-      "price": 11.191,
-      "confluence_score": 3,
+      "price": 11.199,
+      "confluence_score": 4,
       "confluences": [
-        "FVG(1)",
+        "BREAKER(2)",
         "HTF(1)",
         "RSI(1)"
       ],
@@ -287,30 +303,14 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "FVG",
-        "subtype": "BULLISH_FVG",
-        "price": 11.1945,
-        "high": 11.2,
-        "low": 11.189,
-        "score": 1
+        "type": "BREAKER",
+        "subtype": "BULLISH_BREAKER",
+        "price": 11.2005,
+        "high": 11.203,
+        "low": 11.198,
+        "score": 2
       },
       "zones_all": [
-        {
-          "type": "BREAKER",
-          "subtype": "BULLISH_BREAKER",
-          "price": 11.168500000000002,
-          "high": 11.175,
-          "low": 11.162,
-          "score": 2
-        },
-        {
-          "type": "OB",
-          "subtype": "BULLISH_OB",
-          "price": 11.163,
-          "high": 11.17,
-          "low": 11.156,
-          "score": 1.5
-        },
         {
           "type": "BREAKER",
           "subtype": "BULLISH_BREAKER",
@@ -318,6 +318,22 @@
           "high": 11.183,
           "low": 11.171,
           "score": 2
+        },
+        {
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 11.166,
+          "high": 11.17,
+          "low": 11.162,
+          "score": 1.5
+        },
+        {
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 11.211500000000001,
+          "high": 11.216,
+          "low": 11.207,
+          "score": 1.5
         }
       ],
       "htf": {
@@ -330,19 +346,34 @@
       },
       "rsi": {
         "score": 1,
-        "rsi": 62.0,
-        "reason": "RSI healthy 62.0"
+        "rsi": 56.1,
+        "reason": "RSI healthy 56.1"
       },
-      "status": "SKIP",
-      "reason": "Score 3 < 4.0",
-      "filter": "confluence"
+      "direction": "LONG",
+      "entry": 11.2005,
+      "sl": 11.178099,
+      "tp": 11.248302401821592,
+      "rrr": 2.0,
+      "sl_pct": 0.0021339405304045054,
+      "tp_pct": 0.004267881060809011,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2134,
+        "notional_usd": 937.23,
+        "qty": 83.677804,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 18.74
+      },
+      "status": "VALID",
+      "reason": "M1 SCORE 4/10: BREAKER(2)+HTF(1)+RSI(1) | LIMIT SWING 11.2005 SL 0.21% | HTF BULLISH"
     },
     {
       "symbol": "OPUSDT",
-      "price": 0.1331,
-      "confluence_score": 2.5,
+      "price": 0.133,
+      "confluence_score": 3.5,
       "confluences": [
-        "FVG(1)",
+        "BREAKER(2)",
         "HTF(0.5)",
         "RSI(1)"
       ],
@@ -357,12 +388,12 @@
         "reason": "No ChoCh"
       },
       "zone": {
-        "type": "FVG",
-        "subtype": "BEARISH_FVG",
-        "price": 0.1331,
-        "high": 0.1332,
+        "type": "BREAKER",
+        "subtype": "BULLISH_BREAKER",
+        "price": 0.13305,
+        "high": 0.1331,
         "low": 0.133,
-        "score": 1
+        "score": 2
       },
       "zones_all": [
         {
@@ -403,7 +434,7 @@
         "reason": "RSI healthy 58.8"
       },
       "status": "SKIP",
-      "reason": "Score 2.5 < 4.0",
+      "reason": "Score 3.5 < 4.0",
       "filter": "confluence"
     },
     {
@@ -476,8 +507,248 @@
       "filter": "confluence"
     }
   ],
-  "valid_trades": [],
-  "valid_new_positions": [],
+  "valid_trades": [
+    {
+      "symbol": "BNBUSDT",
+      "price": 769.0,
+      "confluence_score": 4,
+      "confluences": [
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sweep": {
+        "sweep": false,
+        "score": 0,
+        "reason": "No sweep"
+      },
+      "choch": {
+        "choch": false,
+        "score": 0,
+        "reason": "No ChoCh"
+      },
+      "zone": {
+        "type": "BREAKER",
+        "subtype": "BULLISH_BREAKER",
+        "price": 769.185,
+        "high": 769.28,
+        "low": 769.09,
+        "score": 2
+      },
+      "zones_all": [
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 768.525,
+          "high": 768.66,
+          "low": 768.39,
+          "score": 2
+        },
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 768.2149999999999,
+          "high": 768.26,
+          "low": 768.17,
+          "score": 2
+        },
+        {
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 768.15,
+          "high": 768.26,
+          "low": 768.04,
+          "score": 1.5
+        }
+      ],
+      "htf": {
+        "trend": "BULLISH",
+        "score": 1,
+        "reason": "HTF bullish"
+      },
+      "vol": {
+        "score": 0
+      },
+      "rsi": {
+        "score": 1,
+        "rsi": 60.6,
+        "reason": "RSI healthy 60.6"
+      },
+      "direction": "LONG",
+      "entry": 769.185,
+      "sl": 767.64663,
+      "tp": 772.6318290117033,
+      "rrr": 2.0,
+      "sl_pct": 0.0022405721716514245,
+      "tp_pct": 0.004481144343302849,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2241,
+        "notional_usd": 892.63,
+        "qty": 1.160487,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 17.85
+      },
+      "status": "VALID",
+      "reason": "M1 SCORE 4/10: BREAKER(2)+HTF(1)+RSI(1) | LIMIT SWING 769.1850 SL 0.22% | HTF BULLISH"
+    },
+    {
+      "symbol": "AVAXUSDT",
+      "price": 11.199,
+      "confluence_score": 4,
+      "confluences": [
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sweep": {
+        "sweep": false,
+        "score": 0,
+        "reason": "No sweep"
+      },
+      "choch": {
+        "choch": false,
+        "score": 0,
+        "reason": "No ChoCh"
+      },
+      "zone": {
+        "type": "BREAKER",
+        "subtype": "BULLISH_BREAKER",
+        "price": 11.2005,
+        "high": 11.203,
+        "low": 11.198,
+        "score": 2
+      },
+      "zones_all": [
+        {
+          "type": "BREAKER",
+          "subtype": "BULLISH_BREAKER",
+          "price": 11.177,
+          "high": 11.183,
+          "low": 11.171,
+          "score": 2
+        },
+        {
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 11.166,
+          "high": 11.17,
+          "low": 11.162,
+          "score": 1.5
+        },
+        {
+          "type": "OB",
+          "subtype": "BULLISH_OB",
+          "price": 11.211500000000001,
+          "high": 11.216,
+          "low": 11.207,
+          "score": 1.5
+        }
+      ],
+      "htf": {
+        "trend": "BULLISH",
+        "score": 1,
+        "reason": "HTF bullish"
+      },
+      "vol": {
+        "score": 0
+      },
+      "rsi": {
+        "score": 1,
+        "rsi": 56.1,
+        "reason": "RSI healthy 56.1"
+      },
+      "direction": "LONG",
+      "entry": 11.2005,
+      "sl": 11.178099,
+      "tp": 11.248302401821592,
+      "rrr": 2.0,
+      "sl_pct": 0.0021339405304045054,
+      "tp_pct": 0.004267881060809011,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2134,
+        "notional_usd": 937.23,
+        "qty": 83.677804,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 18.74
+      },
+      "status": "VALID",
+      "reason": "M1 SCORE 4/10: BREAKER(2)+HTF(1)+RSI(1) | LIMIT SWING 11.2005 SL 0.21% | HTF BULLISH"
+    }
+  ],
+  "valid_new_positions": [
+    {
+      "symbol": "BNBUSDT",
+      "direction": "LONG",
+      "entry": 769.185,
+      "sl": 767.64663,
+      "tp": 772.6318290117033,
+      "rrr": 2.0,
+      "sl_pct": 0.0022405721716514245,
+      "tp_pct": 0.004481144343302849,
+      "zone_price": 769.185,
+      "confluence_score": 4,
+      "confluences": [
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2241,
+        "notional_usd": 892.63,
+        "qty": 1.160487,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 17.85
+      },
+      "reason": "M1 SCORE 4/10: BREAKER(2)+HTF(1)+RSI(1) | LIMIT SWING 769.1850 SL 0.22% | HTF BULLISH",
+      "open_price": 769.0,
+      "open_time": "2026-09-30T10:44:29.227547+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
+    },
+    {
+      "symbol": "AVAXUSDT",
+      "direction": "LONG",
+      "entry": 11.2005,
+      "sl": 11.178099,
+      "tp": 11.248302401821592,
+      "rrr": 2.0,
+      "sl_pct": 0.0021339405304045054,
+      "tp_pct": 0.004267881060809011,
+      "zone_price": 11.2005,
+      "confluence_score": 4,
+      "confluences": [
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2134,
+        "notional_usd": 937.23,
+        "qty": 83.677804,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 18.74
+      },
+      "reason": "M1 SCORE 4/10: BREAKER(2)+HTF(1)+RSI(1) | LIMIT SWING 11.2005 SL 0.21% | HTF BULLISH",
+      "open_price": 11.199,
+      "open_time": "2026-09-30T10:44:33.111735+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
+    }
+  ],
   "running_positions": [
     {
       "symbol": "SOLUSDT",
@@ -693,6 +964,74 @@
       "reason": "M1 SCORE 4.5/10: SWEEP(2)+FVG(1)+HTF(1)+RSI(1) | LIMIT SWING 83851.1300 SL 0.20% | HTF BULLISH",
       "open_price": 83854.83,
       "open_time": "2026-09-30T10:40:28.754266+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
+    },
+    {
+      "symbol": "BNBUSDT",
+      "direction": "LONG",
+      "entry": 769.185,
+      "sl": 767.64663,
+      "tp": 772.6318290117033,
+      "rrr": 2.0,
+      "sl_pct": 0.0022405721716514245,
+      "tp_pct": 0.004481144343302849,
+      "zone_price": 769.185,
+      "confluence_score": 4,
+      "confluences": [
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2241,
+        "notional_usd": 892.63,
+        "qty": 1.160487,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 17.85
+      },
+      "reason": "M1 SCORE 4/10: BREAKER(2)+HTF(1)+RSI(1) | LIMIT SWING 769.1850 SL 0.22% | HTF BULLISH",
+      "open_price": 769.0,
+      "open_time": "2026-09-30T10:44:29.227547+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
+    },
+    {
+      "symbol": "AVAXUSDT",
+      "direction": "LONG",
+      "entry": 11.2005,
+      "sl": 11.178099,
+      "tp": 11.248302401821592,
+      "rrr": 2.0,
+      "sl_pct": 0.0021339405304045054,
+      "tp_pct": 0.004267881060809011,
+      "zone_price": 11.2005,
+      "confluence_score": 4,
+      "confluences": [
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2134,
+        "notional_usd": 937.23,
+        "qty": 83.677804,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 18.74
+      },
+      "reason": "M1 SCORE 4/10: BREAKER(2)+HTF(1)+RSI(1) | LIMIT SWING 11.2005 SL 0.21% | HTF BULLISH",
+      "open_price": 11.199,
+      "open_time": "2026-09-30T10:44:33.111735+00:00",
       "status": "WAITING_LIMIT",
       "order_status": "WAITING_LIMIT",
       "paper_trade": true,
