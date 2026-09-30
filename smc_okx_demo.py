@@ -1,10 +1,8 @@
 """
-SMC OKX Demo Executor V10.2 FIX - PAPER = DEMO = REAL
-- FIX 1: Timestamp OKX harus 3 digit ms (2026-09-29T03:16:14.123Z) + auto retry 50112
-- FIX 2: Auto deteksi posMode net_mode vs long_short_mode -> akun demo & real dua2nya jalan
-- FIX 3: place_limit_order + set_leverage retry tanpa posSide kalau net_mode
-- Fokus: kalau analisa valid (score >=7.0) harus ada trade terbuka di demo/real
-- LIMIT GTC di zone (OB/Breaker/FVG), cek 2-3 candle fill atau price ran away
+SMC OKX Demo Executor V10.3 LOOSE TEST - PAPER=DEMO RISK $2 FIX
+- LOOSE MODE: MIN_CONF 5.0 biar cepat dapat setup, tujuan test paper=demo risk $2
+- FIX: auto search size sampai SL = $2, berapapun jarak SL, kalau min size aja >$2.5 SKIP
+- FIX: timestamp 3ms, posMode auto, lev max auto 100x
 """
 import os, json, time, hmac, base64, hashlib, requests
 from datetime import datetime, timezone
@@ -14,9 +12,9 @@ API_KEY = os.getenv("OKX_DEMO_API_KEY") or os.getenv("OKX_API_KEY")
 SECRET = os.getenv("OKX_DEMO_API_SECRET") or os.getenv("OKX_SECRET_KEY")
 PASSPHRASE = os.getenv("OKX_DEMO_PASSPHRASE") or os.getenv("OKX_PASSPHRASE")
 BASE_URL = "https://www.okx.com"
-MIN_CONFLUENCE_V10 = 7.0
+MIN_CONFLUENCE_V10 = 5.0  # LOOSE TEST dari 7.0 -> 5.0 biar cepat dapat trade
 RISK_USD = 2.0
-MAX_RISK_USD = 2.5  # Toleransi max biar gak jadi $10-30, kalau > ini SKIP
+MAX_RISK_USD = 2.5  # HARD LIMIT - kalau risk > ini, SKIP. Jamin gak pernah SL $5, $10
 
 RUN_AWAY_PCT = {"BTCUSDT":0.8,"ETHUSDT":0.8,"BNBUSDT":0.9,"SOLUSDT":1.0,"LINKUSDT":1.0,"ADAUSDT":1.2,"DOGEUSDT":1.2,"AVAXUSDT":1.0,"ARBUSDT":1.5,"OPUSDT":1.5,"XRPUSDT":1.0,"MATICUSDT":1.2,"DEFAULT":1.0}
 
