@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T21:12:22.610814+00:00",
+  "generated_at": "2026-09-30T21:14:30.494737+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "config": {
     "start_capital": 1000.0,
@@ -11,12 +11,12 @@
   },
   "summary": {
     "initial": 1000.0,
-    "final": 821.17,
-    "total_trades": 225,
+    "final": 818.33,
+    "total_trades": 226,
     "wins": 70,
-    "losses": 155,
-    "win_rate": 31.1,
-    "total_r": -15.0
+    "losses": 156,
+    "win_rate": 31.0,
+    "total_r": -16.0
   },
   "trades": [
     {
@@ -4968,6 +4968,28 @@
       "capital_after": 821.1668,
       "confluence_score": 4,
       "closed_at": "2026-09-30T21:04:20"
+    },
+    {
+      "symbol": "OPUSDT",
+      "direction": "LONG",
+      "entry": 0.12955,
+      "sl": 0.1292909,
+      "tp": 0.13016816141975307,
+      "close_status": "SL_HIT",
+      "pnl_r": -1.0,
+      "pnl_usd": -2.8383,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2386,
+        "notional_usd": 838.29,
+        "qty": 6470.801755,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 41.91
+      },
+      "capital_after": 818.3285,
+      "confluence_score": 5.5,
+      "closed_at": "2026-09-30T21:14:21"
     }
   ],
   "active_positions": [
@@ -5080,43 +5102,6 @@
       "fill_check": "10 candles 1m",
       "filled_at": "2026-09-30T21:00:39.062842+00:00",
       "filled_price": 117.96000000000001
-    },
-    {
-      "symbol": "OPUSDT",
-      "direction": "LONG",
-      "entry": 0.12955,
-      "sl": 0.1292909,
-      "tp": 0.13016816141975307,
-      "rrr": 2.0,
-      "sl_pct": 0.00238580246913576,
-      "tp_pct": 0.00477160493827152,
-      "zone_price": 0.12955,
-      "confluence_score": 5.5,
-      "confluences": [
-        "CHOCH(2)",
-        "BREAKER(2)",
-        "HTF(0.5)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2386,
-        "notional_usd": 838.29,
-        "qty": 6470.801755,
-        "leverage": 20,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 41.91
-      },
-      "reason": "M1 SCORE 5.5/10: CHOCH(2)+BREAKER(2)+HTF(0.5)+RSI(1) | LIMIT SWING 0.1295 SL 0.24% | HTF NEUTRAL",
-      "open_price": 0.1296,
-      "open_time": "2026-09-30T21:00:48.858328+00:00",
-      "status": "ACTIVE",
-      "order_status": "FILLED",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m",
-      "filled_at": "2026-09-30T21:02:19.821729+00:00",
-      "filled_price": 0.12955
     },
     {
       "symbol": "AVAXUSDT",
@@ -5265,7 +5250,78 @@
       "fill_check": "10 candles 1m",
       "filled_at": "2026-09-30T21:10:26.183232+00:00",
       "filled_price": 2683.45
+    },
+    {
+      "symbol": "ADAUSDT",
+      "direction": "SHORT",
+      "entry": 0.24430000000000002,
+      "sl": 0.24478860000000002,
+      "tp": 0.24312288183306058,
+      "rrr": 2.0,
+      "sl_pct": 0.002409165302782279,
+      "tp_pct": 0.004818330605564558,
+      "zone_price": 0.24430000000000002,
+      "confluence_score": 4.5,
+      "confluences": [
+        "CHOCH(2)",
+        "FVG(1)",
+        "HTF(0.5)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2409,
+        "notional_usd": 830.16,
+        "qty": 3398.129527,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 16.6
+      },
+      "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 0.2443 SL 0.24% | HTF NEUTRAL",
+      "open_price": 0.2444,
+      "open_time": "2026-09-30T21:14:25.727224+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
     }
   ],
-  "waiting_limit": []
+  "waiting_limit": [
+    {
+      "symbol": "ADAUSDT",
+      "direction": "SHORT",
+      "entry": 0.24430000000000002,
+      "sl": 0.24478860000000002,
+      "tp": 0.24312288183306058,
+      "rrr": 2.0,
+      "sl_pct": 0.002409165302782279,
+      "tp_pct": 0.004818330605564558,
+      "zone_price": 0.24430000000000002,
+      "confluence_score": 4.5,
+      "confluences": [
+        "CHOCH(2)",
+        "FVG(1)",
+        "HTF(0.5)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2409,
+        "notional_usd": 830.16,
+        "qty": 3398.129527,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 16.6
+      },
+      "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 0.2443 SL 0.24% | HTF NEUTRAL",
+      "open_price": 0.2444,
+      "open_time": "2026-09-30T21:14:25.727224+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
+    }
+  ]
 }
