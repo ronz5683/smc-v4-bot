@@ -1,19 +1,20 @@
+"""
+SMC V10 PRO LIMIT LOOSE - TEST MODE PAPER=DEMO RISK $2 FIX
+- Tujuan: cepat dapat setup, biar demo ada trade dulu
+- LOOSE: MIN_CONFLUENCE 5.0 (dari 7.0), MAX_DISTANCE 1.5% (dari 0.5%), SL 0.3%-3% (dari 0.5%-1.2%)
+- NO Blacklist jam, NO daily_stop ketat, MAX_POS 5
+- Risk $2 fix di executor yang akan auto adjust size, bukan di screener
+- Kalau min size aja risk > $2.5, executor SKIP
+"""
 import requests, json, datetime, time, os
 from datetime import timezone
 
-# === V10 PRO LIMIT - SESUAI RULES TRADING BENER ===
-# - LIMIT di zone (OB/Breaker/FVG), bukan MARKET
-# - Cek 2-3 candle kedepan apakah fill atau lari (hemat kuota)
-# - MIN_CONFLUENCE 7.0 (request: 6.5 sering SL)
-# - PAPER = DEMO 100% identik dengan logika LIMIT yang sama
-# - No 30s timeout ngawur
-
 SYMBOLS = ["BTCUSDT","ETHUSDT","SOLUSDT","XRPUSDT","BNBUSDT","ADAUSDT","DOGEUSDT","AVAXUSDT","LINKUSDT","OPUSDT","ARBUSDT","MATICUSDT"]
-MAX_DISTANCE_PCT = 0.5
-MIN_CONFLUENCE_SCORE = 7.0  # V10: hanya 7 keatas
+MAX_DISTANCE_PCT = 1.5  # LOOSE dari 0.5
+MIN_CONFLUENCE_SCORE = 5.0  # LOOSE dari 7.0 - biar cepat dapat trade
 LIMIT = 100
-MAX_POSITIONS = 3
-MAX_DAILY_SL = 3
+MAX_POSITIONS = 5  # LOOSE dari 3
+MAX_DAILY_SL = 10  # LOOSE dari 3
 POSITIONS_FILE = "positions.json"
 PAPER_FILE = "paper_trading.json"
 PAPER_START_CAPITAL = 20.0
@@ -21,10 +22,9 @@ PAPER_RISK_USD = 2.0
 MAX_LEVERAGE = {"BTCUSDT":100,"ETHUSDT":100,"SOLUSDT":50,"BNBUSDT":50,"XRPUSDT":50,"ADAUSDT":50,"DOGEUSDT":50,"AVAXUSDT":50,"LINKUSDT":50,"OPUSDT":20,"ARBUSDT":20,"MATICUSDT":20}
 DEFAULT_MAX_LEV = 50
 BUFFER_PCT = 0.002
-MIN_SL_PCT = 0.005
-MAX_SL_PCT = 0.012
+MIN_SL_PCT = 0.003  # LOOSE 0.3%
+MAX_SL_PCT = 0.03   # LOOSE 3% - biarin executor yang hitung risk $2
 
-# Threshold harga lari (kalau lari sejauh ini, cancel - gak akan balik ke zone)
 RUN_AWAY_PCT = {"BTCUSDT":0.8,"ETHUSDT":0.8,"BNBUSDT":0.9,"SOLUSDT":1.0,"LINKUSDT":1.0,"ADAUSDT":1.2,"DOGEUSDT":1.2,"AVAXUSDT":1.0,"ARBUSDT":1.5,"OPUSDT":1.5,"XRPUSDT":1.0,"MATICUSDT":1.2,"DEFAULT":1.0}
 
 def get_klines(symbol, interval, limit=100):
@@ -121,22 +121,25 @@ def detect_volume(candles):
     return {"score":0}
 
 def detect_rsi_filter(candles):
-    if len(candles) < 14: return {"score":0}
-    closes = [c['close'] for c in candles[-15:]]
-    gains = [max(0, closes[i]-closes[i-1]) for i in range(1,len(closes))]
-    losses = [max(0, closes[i-1]-closes[i]) for i in range(1,len(closes))]
-    avg_gain = sum(gains)/14
-    avg_loss = sum(losses)/14 if sum(losses)!=0 else 0.001
-    rs = avg_gain/avg_loss
-    rsi = 100 - (100/(1+rs))
-    if 35 <= rsi <= 65: return {"score":1, "rsi": round(rsi,1), "reason": f"RSI healthy {rsi:.1f}"}
-    if rsi < 30 or rsi > 70: return {"score":0, "rsi": round(rsi,1), "reason": f"RSI extreme {rsi:.1f}"}
-    return {"score":0.5, "rsi": round(rsi,1), "reason": f"RSI neutral {rsi:.1f}"}
+    if len(candles) < 20: return {"score":0}
+    gains=0; losses=0
+    for i in range(len(candles)-14, len(candles)):
+        ch = candles[i]['close']-candles[i-1]['close']
+        if ch>0: gains+=ch
+        else: losses-=ch
+    if losses==0: rsi=100
+    else:
+        rs=gains/losses if losses!=0 else 0
+        rsi=100 - (100/(1+rs))
+    if rsi < 35: return {"score":1, "reason": f"RSI oversold {rsi:.1f}"}
+    if rsi > 65: return {"score":1, "reason": f"RSI overbought {rsi:.1f}"}
+    if rsi < 45 or rsi > 55: return {"score":0.5, "reason": f"RSI {rsi:.1f}"}
+    return {"score":0, "reason": f"RSI neutral {rsi:.1f}"}
 
 def load_positions():
     try:
-        with open(POSITIONS_FILE,'r') as f: return json.load(f)
-    except: return {"active": [], "closed": [], "stats": {"wins":0,"losses":0,"total_pnl":0}}
+        with open(POSITIONS_FILE) as f: return json.load(f)
+    except: return {"active":[],"closed":[],"stats":{"wins":0,"losses":0,"total_pnl":0}}
 
 def save_positions(data):
     with open(POSITIONS_FILE,'w') as f: json.dump(data,f,indent=2)
@@ -147,11 +150,7 @@ def analyze_symbol_multi(symbol):
     if not candles_15m or not candles_1h:
         return {"symbol":symbol,"status":"SKIP","reason":"No klines","filter":"no_data","confluence_score":0,"price":0}
     price = candles_15m[-1]['close']
-    # Blacklist jam 7-9 WIB
-    import datetime
-    now_wib_hour = (datetime.datetime.now(timezone.utc).hour + 7) % 24
-    if 7 <= now_wib_hour <= 9:
-        return {"symbol":symbol,"price":price,"confluence_score":0,"status":"SKIP","reason":"Blacklist jam 8","filter":"time","sweep":{"sweep":False,"score":0},"choch":{"choch":False,"score":0},"zone":None,"zones_all":[],"htf":{"trend":"NEUTRAL","score":0},"vol":{"score":0},"rsi":{"score":0}}
+    # NO BLACKLIST JAM - LOOSE MODE
 
     sweep = detect_sweep(candles_15m)
     choch = detect_choch(candles_15m)
@@ -168,151 +167,94 @@ def analyze_symbol_multi(symbol):
     if vol['score']>0: confluences.append(f"VOL({vol['score']})"); total_score+=vol['score']
     if rsi['score']>0: confluences.append(f"RSI({rsi['score']})"); total_score+=rsi['score']
 
-    direction = None
-    if sweep.get('type') == 'BULLISH_SWEEP' or choch.get('type') == 'BULLISH_CHOCH': direction = 'LONG'
-    elif sweep.get('type') == 'BEARISH_SWEEP' or choch.get('type') == 'BEARISH_CHOCH': direction = 'SHORT'
-    else:
-        if zone_res['best']:
-            direction = 'LONG' if 'BULLISH' in zone_res['best']['subtype'] else 'SHORT'
-
-    # Penalty HTF lawan trend -2 (biar gak counter-trend kayak 9x SL kemarin)
-    if direction == 'LONG' and htf['trend'] == 'BEARISH': total_score -= 2
-    if direction == 'SHORT' and htf['trend'] == 'BULLISH': total_score -= 2
-
+    # LOOSE: score 5.0 aja udah VALID (dari 7.0)
     if total_score < MIN_CONFLUENCE_SCORE:
-        return {"symbol":symbol,"price":price,"confluence_score":total_score,"confluences":confluences,"sweep":sweep,"choch":choch,"zone":zone_res['best'],"zones_all":zone_res['zones'][:3],"htf":htf,"vol":vol,"rsi":rsi,"status":"SKIP","reason":f"Score {total_score} < {MIN_CONFLUENCE_SCORE}","filter":"confluence"}
+        return {"symbol":symbol,"price":price,"confluence_score":total_score,"status":"SKIP","reason":f"Score {total_score} < {MIN_CONFLUENCE_SCORE}","filter":"confluence","sweep":sweep,"choch":choch,"zone":zone_res['best'],"zones_all":zone_res['zones'],"htf":htf,"vol":vol,"rsi":rsi,"confluences":confluences}
 
-    best_zone = zone_res['best']
-    if not best_zone:
-        return {"symbol":symbol,"price":price,"confluence_score":total_score,"status":"SKIP","reason":"No zone","filter":"zone"}
+    if not zone_res['best']:
+        return {"symbol":symbol,"price":price,"confluence_score":total_score,"status":"SKIP","reason":"No zone","filter":"zone","sweep":sweep,"choch":choch,"zone":None,"zones_all":[],"htf":htf,"vol":vol,"rsi":rsi,"confluences":confluences}
 
-    zone_price = best_zone['price']
-    sl_dist_pct = abs(price - zone_price) / price + BUFFER_PCT
-    if sl_dist_pct < MIN_SL_PCT:
-        return {"symbol":symbol,"price":price,"confluence_score":total_score,"status":"SKIP","reason":f"SL narrow {sl_dist_pct*100:.2f}% < {MIN_SL_PCT*100}%","filter":"sl_narrow","sweep":sweep,"choch":choch,"zone":best_zone,"zones_all":zone_res['zones'][:3],"htf":htf,"vol":vol,"rsi":rsi}
-    if sl_dist_pct > MAX_SL_PCT: sl_dist_pct = MAX_SL_PCT
+    zone = zone_res['best']
+    distance_pct = abs(price - zone['price'])/price*100
+    if distance_pct > MAX_DISTANCE_PCT:
+        return {"symbol":symbol,"price":price,"confluence_score":total_score,"status":"SKIP","reason":f"Distance {distance_pct:.2f}% > {MAX_DISTANCE_PCT}%","filter":"distance","sweep":sweep,"choch":choch,"zone":zone,"zones_all":zone_res['zones'],"htf":htf,"vol":vol,"rsi":rsi,"confluences":confluences}
 
-    if direction == 'LONG':
-        sl = zone_price * (1 - BUFFER_PCT)  # SL di bawah zone, bukan di entry
-        # Entry = zone_price, bukan price sekarang (LIMIT)
-        entry = zone_price
-        tp = entry * (1 + sl_dist_pct*2)
+    # Direction dari sweep/choch/zone
+    is_bull = "BULLISH" in (zone.get('subtype','') + sweep.get('type','') + choch.get('type',''))
+    is_bear = "BEARISH" in (zone.get('subtype','') + sweep.get('type','') + choch.get('type',''))
+    direction = "LONG" if is_bull else "SHORT" if is_bear else ("LONG" if price < zone['price'] else "SHORT")
+
+    # SL/TP
+    sl_dist = abs(price - zone['price']) * 0.5 + price * 0.003
+    if direction=="LONG":
+        sl = zone['price'] - sl_dist
+        tp = price + abs(price - sl)*2
     else:
-        sl = zone_price * (1 + BUFFER_PCT)
-        entry = zone_price
-        tp = entry * (1 - sl_dist_pct*2)
+        sl = zone['price'] + sl_dist
+        tp = price - abs(price - sl)*2
 
-    dist_pct = abs(price - zone_price)/price*100
-    if dist_pct > MAX_DISTANCE_PCT:
-        return {"symbol":symbol,"price":price,"confluence_score":total_score,"status":"SKIP","reason":f"Distance {dist_pct:.2f}% > {MAX_DISTANCE_PCT}%","filter":"distance","sweep":sweep,"choch":choch,"zone":best_zone,"zones_all":zone_res['zones'][:3],"htf":htf,"vol":vol,"rsi":rsi}
+    sl_pct = abs(price - sl)/price
+    # LOOSE SL check
+    if sl_pct < MIN_SL_PCT:
+        return {"symbol":symbol,"price":price,"confluence_score":total_score,"status":"SKIP","reason":f"SL too narrow {sl_pct*100:.2f}%","filter":"sl_narrow","sweep":sweep,"choch":choch,"zone":zone,"zones_all":zone_res['zones'],"htf":htf,"vol":vol,"rsi":rsi,"confluences":confluences}
+    if sl_pct > MAX_SL_PCT:
+        return {"symbol":symbol,"price":price,"confluence_score":total_score,"status":"SKIP","reason":f"SL too wide {sl_pct*100:.2f}% > {MAX_SL_PCT*100}% but will be auto sized to $2 risk","filter":"sl_wide","sweep":sweep,"choch":choch,"zone":zone,"zones_all":zone_res['zones'],"htf":htf,"vol":vol,"rsi":rsi,"confluences":confluences}
 
     lev = MAX_LEVERAGE.get(symbol, DEFAULT_MAX_LEV)
-    notional = PAPER_RISK_USD / sl_dist_pct
-    qty = notional / entry
-    sizing = {"risk_usd": PAPER_RISK_USD, "sl_pct": round(sl_dist_pct*100,4), "notional_usd": round(notional,2), "qty": round(qty,6), "leverage": lev, "leverage_mode": "ALWAYS_MAX", "margin_needed": round(notional/lev,2)}
+    risk_usd = PAPER_RISK_USD
+    notional = risk_usd / sl_pct if sl_pct>0 else 0
+    qty = notional / price
 
-    return {"symbol":symbol,"price":price,"confluence_score":total_score,"confluences":confluences,"sweep":sweep,"choch":choch,"zone":best_zone,"zones_all":zone_res['zones'][:3],"htf":htf,"vol":vol,"rsi":rsi,"direction":direction,"entry":entry,"sl":sl,"tp":tp,"rrr":2.0,"sl_pct":sl_dist_pct,"tp_pct":sl_dist_pct*2,"sizing":sizing,"status":"VALID","reason":f"SCORE {total_score}/10: {'+'.join(confluences)} | LIMIT {entry:.4f} SL {sl_dist_pct*100:.2f}% | HTF {htf['trend']}"}
+    sizing = {"risk_usd": risk_usd, "sl_pct": round(sl_pct*100,4), "notional_usd": round(notional,2), "qty": round(qty,6), "leverage": lev, "leverage_mode": "ALWAYS_MAX", "margin_needed": round(notional/lev,2)}
 
-positions_data = load_positions()
-active_positions = positions_data.get('active',[])
-closed_positions = positions_data.get('closed',[])
-results = []
-valid_new = []
+    return {"symbol":symbol,"price":price,"confluence_score":total_score,"status":"VALID","reason":f"SCORE {total_score}/10: {'+'.join(confluences)} | LIMIT {zone['price']:.4f} SL {sl_pct*100:.2f}% | {htf.get('trend')}","direction":direction,"entry":zone['price'],"sl":sl,"tp":tp,"rrr":2.0,"sl_pct":sl_pct,"tp_pct":abs(price-tp)/price,"zone":zone,"sweep":sweep,"choch":choch,"htf":htf,"vol":vol,"rsi":rsi,"confluences":confluences,"sizing":sizing}
 
-# === 1. CEK POSISI WAITING_LIMIT: apakah fill dalam 2-3 candle? hemat kuota ===
-for pos in active_positions[:]:
-    if pos.get('order_status') == 'WAITING_LIMIT':
-        sym = pos['symbol']
-        entry = pos['entry']
-        direction = pos['direction']
-        # Ambil 3 candle terakhir 15m (45 menit terakhir)
-        klines = get_klines(sym, "15m", 5)
-        if not klines: continue
-        last_3 = klines[-3:]  # 2-3 candle kedepan dari waktu entry
-        filled = False
-        for c in last_3:
-            if c['low'] <= entry <= c['high']:
-                filled = True
-                break
-        
-        # Cek harga lari jauh?
-        curr = get_current_price(sym)
-        if curr:
-            run_away_thresh = RUN_AWAY_PCT.get(sym, RUN_AWAY_PCT["DEFAULT"])/100
-            dist_from_entry = abs(curr - entry)/entry
-            if dist_from_entry > run_away_thresh:
-                # CANCEL karena harga lari jauh, gak akan balik ke zone
-                pos['close_status'] = 'CANCELED_PRICE_RAN_AWAY'
-                pos['closed_at'] = datetime.datetime.now(timezone.utc).isoformat()
-                pos['cancel_reason'] = f"Price ran away {dist_from_entry*100:.2f}% > {run_away_thresh*100}%"
+def main():
+    print(f"=== SMC V10 LOOSE TEST MODE {datetime.datetime.now(timezone.utc)} ===")
+    print(f"MIN_CONF {MIN_CONFLUENCE_SCORE} | MAX_DIST {MAX_DISTANCE_PCT}% | SL {MIN_SL_PCT*100}%-{MAX_SL_PCT*100}% | NO BLACKLIST")
+    positions_data = load_positions()
+    active_positions = positions_data.get('active',[])
+    closed_positions = positions_data.get('closed',[])
+    results=[]; valid_new=[]
+
+    # Check existing positions for TP/SL
+    for pos in active_positions[:]:
+        try:
+            curr_price = get_current_price(pos['symbol'])
+            if not curr_price: continue
+            direction = pos['direction']
+            sl = pos['sl']; tp = pos['tp']
+            hit = None
+            if direction=="LONG":
+                if curr_price <= sl: hit="SL_HIT"
+                elif curr_price >= tp: hit="TP_HIT"
+            else:
+                if curr_price >= sl: hit="SL_HIT"
+                elif curr_price <= tp: hit="TP_HIT"
+            if hit:
+                pos['close_status']=hit
+                pos['pnl_rrr']=2.0 if hit=="TP_HIT" else -1.0
+                pos['closed_at']=datetime.datetime.now(timezone.utc).isoformat()
+                pos['close_price']=curr_price
                 closed_positions.append(pos)
                 active_positions.remove(pos)
-                results.append({"symbol":sym,"status":"CANCELED","reason":pos['cancel_reason'],"filter":"price_ran_away","confluence_score":pos.get('confluence_score',0)})
-                continue
-        
-        if filled:
-            # Fill! Jadi ACTIVE
-            pos['order_status'] = 'FILLED'
-            pos['status'] = 'ACTIVE'
-            pos['filled_at'] = datetime.datetime.now(timezone.utc).isoformat()
-            pos['filled_price'] = entry
-            results.append({"symbol":sym,"status":"FILLED","reason":f"LIMIT filled at {entry} within 3 candles","confluence_score":pos.get('confluence_score',0)})
-        else:
-            # Belum fill, tetap WAITING
-            results.append({"symbol":sym,"status":"WAITING_LIMIT","reason":f"Waiting LIMIT {entry} - 3 candle belum kena","confluence_score":pos.get('confluence_score',0)})
+                results.append({"symbol":pos['symbol'],"status":hit,"reason":hit,"confluence_score":0})
+            else:
+                results.append({"symbol":pos['symbol'],"status":"HOLD","reason":f"Holding {pos.get('direction')}","confluence_score":pos.get('confluence_score',0)})
+        except Exception as e:
+            results.append({"symbol":pos['symbol'],"status":"ERROR","reason":str(e),"confluence_score":0})
 
-# === 2. CEK POSISI ACTIVE: TP/SL ===
-for pos in active_positions[:]:
-    if pos.get('order_status') != 'FILLED': continue
-    try:
-        curr = get_current_price(pos['symbol'])
-        if not curr: continue
-        entry = pos['entry']; sl = pos['sl']; tp = pos['tp']; direction = pos['direction']
-        hit = None
-        if direction == 'LONG':
-            if curr <= sl: hit='SL_HIT'
-            elif curr >= tp: hit='TP_HIT'
-        else:
-            if curr >= sl: hit='SL_HIT'
-            elif curr <= tp: hit='TP_HIT'
-        if hit:
-            pos['close_status']=hit
-            pos['pnl_rrr']= 2.0 if 'TP' in hit else -1.0
-            pos['closed_at']=datetime.datetime.now(timezone.utc).isoformat()
-            pos['close_price']=curr
-            closed_positions.append(pos)
-            active_positions.remove(pos)
-            results.append({"symbol":pos['symbol'],"status":hit,"reason":hit,"confluence_score":0})
-        else:
-            results.append({"symbol":pos['symbol'],"status":"HOLD","reason":f"Holding {pos.get('direction')}","confluence_score":pos.get('confluence_score',0)})
-    except Exception as e:
-        results.append({"symbol":pos['symbol'],"status":"ERROR","reason":str(e),"confluence_score":0})
+    slots_left = MAX_POSITIONS - len(active_positions)
+    active_symbols = [p['symbol'] for p in active_positions]
 
-# === 3. SCAN BARU: hanya kalau slot kosong ===
-slots_left = MAX_POSITIONS - len(active_positions)
-active_symbols = [p['symbol'] for p in active_positions]
-
-if slots_left > 0:
-    daily_sl = count_sl_today(closed_positions)
-    if daily_sl >= MAX_DAILY_SL:
-        print(f"!!! DAILY STOP: {daily_sl} SL today, skip new")
-        for sym in SYMBOLS:
-            if sym not in active_symbols:
-                results.append({"symbol":sym,"status":"SKIP","filter":"daily_stop","confluence_score":0})
-    else:
+    if slots_left > 0:
         for sym in SYMBOLS:
             if len(valid_new) >= slots_left: break
             if sym in active_symbols: continue
-            # Anti-duplikat: cek apakah sudah ada WAITING_LIMIT dengan harga mirip
-            duplicate = False
-            for p in active_positions:
-                if p['symbol']==sym and abs(p['entry']-get_current_price(sym) or 0)/ (get_current_price(sym) or 1) < 0.001:
-                    duplicate=True; break
-            if duplicate: continue
             try:
                 r=analyze_symbol_multi(sym)
                 results.append(r)
-                print(f"{sym}: {r['status']} SCORE {r.get('confluence_score',0)} - {r['reason'][:120]}")
+                print(f"{sym}: {r['status']} SCORE {r.get('confluence_score',0)} - {r['reason'][:150]}")
                 if r['status']=="VALID" and len(valid_new)<slots_left:
                     new_pos = {
                         "symbol": sym, "direction": r['direction'], "entry": r['entry'], "sl": r['sl'], "tp": r['tp'], "rrr": r['rrr'], "sl_pct": r['sl_pct'], "tp_pct": r['tp_pct'],
@@ -326,43 +268,45 @@ if slots_left > 0:
                     active_positions.append(new_pos)
             except Exception as e:
                 results.append({"symbol":sym,"status":"ERROR","reason":str(e),"confluence_score":0})
-else:
-    for sym in SYMBOLS:
-        if sym not in active_symbols:
-            results.append({"symbol":sym,"status":"SKIP","reason":f"Max pos {MAX_POSITIONS}","filter":"max_pos","confluence_score":0})
+    else:
+        for sym in SYMBOLS:
+            if sym not in active_symbols:
+                results.append({"symbol":sym,"status":"SKIP","reason":f"Max pos {MAX_POSITIONS}","filter":"max_pos","confluence_score":0})
 
-positions_data['active'] = active_positions
-positions_data['closed'] = closed_positions[-200:]
-save_positions(positions_data)
+    positions_data['active'] = active_positions
+    positions_data['closed'] = closed_positions[-200:]
+    save_positions(positions_data)
 
-# Build paper trading - hanya yang FILLED yang dihitung PnL
-def build_paper_trading():
-    try:
-        capital = PAPER_START_CAPITAL
-        history = []
-        for pos in sorted(closed_positions, key=lambda x: x.get('closed_at','')):
-            if pos.get('close_status') not in ('TP_HIT','SL_HIT'): continue  # CANCELED gak dihitung
-            r = pos.get('pnl_rrr',0)
-            pnl_usd = PAPER_RISK_USD * r if r>0 else -PAPER_RISK_USD
-            notional = pos.get('sizing', {}).get('notional_usd', 200)
-            fee = notional * 0.001
-            pnl_usd -= fee
-            capital += pnl_usd
-            capital = max(capital, 0.1)
-            history.append({"symbol": pos.get('symbol'), "direction": pos.get('direction'), "entry": pos.get('entry'), "sl": pos.get('sl'), "tp": pos.get('tp'), "close_status": pos.get('close_status'), "pnl_r": r, "pnl_usd": round(pnl_usd,4), "sizing": pos.get('sizing', {}), "capital_after": round(capital,4), "confluence_score": pos.get('confluence_score',0), "closed_at": pos.get('closed_at','')[:19]})
-        wins = len([h for h in history if h['pnl_r']>0])
-        losses = len([h for h in history if h['pnl_r']<0])
-        total_r = sum(h['pnl_r'] for h in history)
-        paper_data = {"generated_at": datetime.datetime.now(timezone.utc).isoformat(), "bot_version": "V10_PRO_LIMIT_7", "config": {"start_capital": PAPER_START_CAPITAL, "risk_usd": PAPER_RISK_USD, "min_sl_pct": MIN_SL_PCT*100, "min_confluence": MIN_CONFLUENCE_SCORE, "limit_logic": "2-3 candles fill check + price ran away"}, "summary": {"initial": PAPER_START_CAPITAL, "final": round(capital,2), "total_trades": len(history), "wins": wins, "losses": losses, "win_rate": round(wins/len(history)*100,1) if history else 0, "total_r": round(total_r,2)}, "trades": history, "active_positions": active_positions, "waiting_limit": [p for p in active_positions if p.get('order_status')=='WAITING_LIMIT']}
-        with open(PAPER_FILE,'w') as f: json.dump(paper_data,f,indent=2)
-        print(f"PAPER V10: ${PAPER_START_CAPITAL} -> ${capital:.2f} | {total_r}R | WR {wins}/{len(history)} | WAITING {len([p for p in active_positions if p.get('order_status')=='WAITING_LIMIT'])}")
-    except Exception as e:
-        print(f"Paper build error: {e}")
+    def build_paper_trading():
+        try:
+            capital = PAPER_START_CAPITAL
+            history = []
+            for pos in sorted(closed_positions, key=lambda x: x.get('closed_at','')):
+                if pos.get('close_status') not in ('TP_HIT','SL_HIT'): continue
+                r = pos.get('pnl_rrr',0)
+                pnl_usd = PAPER_RISK_USD * r if r>0 else -PAPER_RISK_USD
+                notional = pos.get('sizing', {}).get('notional_usd', 200)
+                fee = notional * 0.001
+                pnl_usd -= fee
+                capital += pnl_usd
+                capital = max(capital, 0.1)
+                history.append({"symbol": pos.get('symbol'), "direction": pos.get('direction'), "entry": pos.get('entry'), "sl": pos.get('sl'), "tp": pos.get('tp'), "close_status": pos.get('close_status'), "pnl_r": r, "pnl_usd": round(pnl_usd,4), "sizing": pos.get('sizing', {}), "capital_after": round(capital,4), "confluence_score": pos.get('confluence_score',0), "closed_at": pos.get('closed_at','')[:19]})
+            wins = len([h for h in history if h['pnl_r']>0])
+            losses = len([h for h in history if h['pnl_r']<0])
+            total_r = sum(h['pnl_r'] for h in history)
+            paper_data = {"generated_at": datetime.datetime.now(timezone.utc).isoformat(), "bot_version": "V10_LOOSE_TEST_RISK2", "config": {"start_capital": PAPER_START_CAPITAL, "risk_usd": PAPER_RISK_USD, "min_sl_pct": MIN_SL_PCT*100, "min_confluence": MIN_CONFLUENCE_SCORE, "limit_logic": "LOOSE TEST MODE"}, "summary": {"initial": PAPER_START_CAPITAL, "final": round(capital,2), "total_trades": len(history), "wins": wins, "losses": losses, "win_rate": round(wins/len(history)*100,1) if history else 0, "total_r": round(total_r,2)}, "trades": history, "active_positions": active_positions, "waiting_limit": [p for p in active_positions if p.get('order_status')=='WAITING_LIMIT']}
+            with open(PAPER_FILE,'w') as f: json.dump(paper_data,f,indent=2)
+            print(f"PAPER LOOSE: ${PAPER_START_CAPITAL} -> ${capital:.2f} | {total_r}R | WR {wins}/{len(history)} | WAITING {len([p for p in active_positions if p.get('order_status')=='WAITING_LIMIT'])}")
+        except Exception as e:
+            print(f"Paper build error: {e}")
 
-build_paper_trading()
+    build_paper_trading()
 
-valid=[x for x in results if x['status']=="VALID"]
-skip=[x for x in results if x['status']=="SKIP"]
-out={"last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),"bot_version":"V10_PRO_LIMIT_7","params":{"MIN_CONFLUENCE_SCORE":MIN_CONFLUENCE_SCORE,"MAX_POSITIONS":MAX_POSITIONS,"MIN_SL_PCT":MIN_SL_PCT,"LIMIT_LOGIC":"2-3 candles + price ran away"},"summary":{"total_scanned":len(results), "valid_new":len(valid_new), "valid":len(valid), "skip":len(skip), "active_positions":len(active_positions), "waiting_limit":len([p for p in active_positions if p.get('order_status')=='WAITING_LIMIT']), "avg_confluence": round(sum(r.get('confluence_score',0) for r in results)/len(results),2) if results else 0, "by_filter":{"confluence":len([r for r in skip if r.get("filter")=="confluence"]), "distance":len([r for r in skip if r.get("filter")=="distance"]), "zone":len([r for r in skip if r.get("filter")=="zone"]), "sl_narrow":len([r for r in skip if r.get("filter")=="sl_narrow"]), "daily_stop":len([r for r in skip if r.get("filter")=="daily_stop"]), "price_ran_away":len([r for r in results if r.get("filter")=="price_ran_away"])}}, "results":results, "valid_trades":valid, "valid_new_positions":valid_new, "running_positions":active_positions, "closed_positions":closed_positions[-20:], "stats":positions_data['stats']}
-with open("last_scan.json","w") as f: json.dump(out,f,indent=2)
-print(f"\nDONE V10 PRO LIMIT: {len(valid_new)} NEW LIMIT, {len([p for p in active_positions if p.get('order_status')=='WAITING_LIMIT'])} WAITING, {len([p for p in active_positions if p.get('order_status')=='FILLED'])} FILLED")
+    valid=[x for x in results if x['status']=="VALID"]
+    skip=[x for x in results if x['status']=="SKIP"]
+    out={"last_scan_utc":datetime.datetime.now(timezone.utc).isoformat(),"bot_version":"V10_LOOSE_TEST_RISK2","params":{"MIN_CONFLUENCE_SCORE":MIN_CONFLUENCE_SCORE,"MAX_POSITIONS":MAX_POSITIONS,"MIN_SL_PCT":MIN_SL_PCT,"MAX_SL_PCT":MAX_SL_PCT,"LIMIT_LOGIC":"LOOSE TEST"},"summary":{"total_scanned":len(results), "valid_new":len(valid_new), "valid":len(valid), "skip":len(skip), "active_positions":len(active_positions), "waiting_limit":len([p for p in active_positions if p.get('order_status')=='WAITING_LIMIT']), "avg_confluence": round(sum(r.get('confluence_score',0) for r in results)/len(results),2) if results else 0, "by_filter":{"confluence":len([r for r in skip if r.get("filter")=="confluence"]), "distance":len([r for r in skip if r.get("filter")=="distance"]), "zone":len([r for r in skip if r.get("filter")=="zone"]), "sl_narrow":len([r for r in skip if r.get("filter")=="sl_narrow"]), "daily_stop":len([r for r in skip if r.get("filter")=="daily_stop"]), "price_ran_away":len([r for r in results if r.get("filter")=="price_ran_away"])}}, "results":results, "valid_trades":valid, "valid_new_positions":valid_new, "running_positions":active_positions, "closed_positions":closed_positions[-20:], "stats":positions_data['stats']}
+    with open("last_scan.json","w") as f: json.dump(out,f,indent=2)
+    print(f"\nDONE LOOSE: {len(valid_new)} NEW LIMIT, {len([p for p in active_positions if p.get('order_status')=='WAITING_LIMIT'])} WAITING")
+
+if __name__ == "__main__":
+    main()
