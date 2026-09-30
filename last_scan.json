@@ -1,5 +1,5 @@
 {
-  "last_scan_utc": "2026-09-30T10:24:26.411991+00:00",
+  "last_scan_utc": "2026-09-30T10:26:25.018324+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "params": {
     "MIN_CONFLUENCE_SCORE": 4.0,
@@ -9,13 +9,13 @@
     "TF": "M1/M5"
   },
   "summary": {
-    "total_scanned": 13,
+    "total_scanned": 12,
     "valid_new": 0,
     "valid": 0,
     "skip": 3,
     "active_positions": 9,
     "waiting_limit": 0,
-    "avg_confluence": 4.31,
+    "avg_confluence": 4.54,
     "by_filter": {
       "confluence": 3,
       "distance": 0,
@@ -34,12 +34,6 @@
       "status": "HOLD",
       "reason": "Holding LONG",
       "confluence_score": 4.5
-    },
-    {
-      "symbol": "DOGEUSDT",
-      "status": "TP_HIT",
-      "reason": "TP_HIT",
-      "confluence_score": 0
     },
     {
       "symbol": "LINKUSDT",
@@ -85,19 +79,16 @@
     },
     {
       "symbol": "DOGEUSDT",
-      "price": 0.09492,
-      "confluence_score": 3.5,
+      "price": 0.09487,
+      "confluence_score": 2,
       "confluences": [
-        "SWEEP(2)",
         "FVG(1)",
         "HTF(1)"
       ],
       "sweep": {
-        "sweep": true,
-        "type": "BEARISH_SWEEP",
-        "level": 0.09471,
-        "score": 2,
-        "reason": "Bear sweep 0.09 above 0.09"
+        "sweep": false,
+        "score": 0,
+        "reason": "No sweep"
       },
       "choch": {
         "choch": false,
@@ -107,8 +98,8 @@
       "zone": {
         "type": "FVG",
         "subtype": "BULLISH_FVG",
-        "price": 0.09479499999999999,
-        "high": 0.09483,
+        "price": 0.09478500000000001,
+        "high": 0.09481,
         "low": 0.09476,
         "score": 1
       },
@@ -148,20 +139,20 @@
       },
       "rsi": {
         "score": 0,
-        "rsi": 70.1,
-        "reason": "RSI extreme 70.1"
+        "rsi": 70.2,
+        "reason": "RSI extreme 70.2"
       },
       "status": "SKIP",
-      "reason": "Score 3.5 < 4.0",
+      "reason": "Score 2 < 4.0",
       "filter": "confluence"
     },
     {
       "symbol": "OPUSDT",
-      "price": 0.1333,
+      "price": 0.1334,
       "confluence_score": 2.5,
       "confluences": [
         "FVG(1)",
-        "HTF(0.5)",
+        "HTF(1)",
         "RSI(1)"
       ],
       "sweep": {
@@ -176,10 +167,10 @@
       },
       "zone": {
         "type": "FVG",
-        "subtype": "BULLISH_FVG",
-        "price": 0.13315,
-        "high": 0.1333,
-        "low": 0.133,
+        "subtype": "BEARISH_FVG",
+        "price": 0.1336,
+        "high": 0.1339,
+        "low": 0.1333,
         "score": 1
       },
       "zones_all": [
@@ -209,16 +200,17 @@
         }
       ],
       "htf": {
-        "trend": "NEUTRAL",
-        "score": 0.5
+        "trend": "BULLISH",
+        "score": 1,
+        "reason": "HTF bullish"
       },
       "vol": {
         "score": 0
       },
       "rsi": {
         "score": 1,
-        "rsi": 56.0,
-        "reason": "RSI healthy 56.0"
+        "rsi": 57.7,
+        "reason": "RSI healthy 57.7"
       },
       "status": "SKIP",
       "reason": "Score 2.5 < 4.0",
