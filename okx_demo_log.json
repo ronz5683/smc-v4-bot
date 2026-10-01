@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-10-01T14:44:26.599Z",
+  "generated_at": "2026-10-01T14:46:41.392Z",
   "bot_version": "V10.5_ANTI_LIQ_CLEAN_RESET",
   "reset_at": "2026-10-01 20:28 WIB",
   "reset_reason": "Hapus 191 trades bug 30 Sep - SL $5 $20 $34 - start fresh anti liquidate",
-  "total_executed": 19,
+  "total_executed": 20,
   "total_waiting": 7,
-  "total_canceled_ran_away": 3,
+  "total_canceled_ran_away": 4,
   "trades": [
     {
       "timestamp": "2026-10-01T13:36:23.997Z",
@@ -729,6 +729,38 @@
       },
       "confluence_score": 5,
       "note": "V10.5 ANTI-LIQ FILLED 0.1296 -> SLTP MARK 0.1298571/0.12898583888024884"
+    },
+    {
+      "timestamp": "2026-10-01T14:46:41.392Z",
+      "symbol": "ARBUSDT",
+      "instId": "ARB-USDT-SWAP",
+      "direction": "LONG",
+      "status": "LIMIT_CANCELED_PRICE_RAN_AWAY",
+      "order_type": "LIMIT_GTC",
+      "order_id": "3971502239893712897",
+      "signal_entry": 0.20024999999999998,
+      "signal_sl": 0.19984949999999999,
+      "signal_tp": 0.20175222561280637,
+      "real_last_price": 0.1929,
+      "distance_pct": 3.6704,
+      "threshold_pct": 1.5,
+      "cancel_reason": "PRICE_RAN_AWAY",
+      "confluence_score": 6.5,
+      "cancel_res": {
+        "code": "1",
+        "data": [
+          {
+            "clOrdId": "",
+            "ordId": "3971502239893712897",
+            "sCode": "51400",
+            "sMsg": "Order cancellation failed as the order has been filled, canceled or does not exist.",
+            "ts": "1790866001315"
+          }
+        ],
+        "inTime": "1790866001315042",
+        "msg": "All operations failed",
+        "outTime": "1790866001316925"
+      }
     }
   ],
   "total_verified": 0
