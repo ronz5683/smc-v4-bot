@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-01T13:46:30.185Z",
+  "generated_at": "2026-10-01T13:48:33.874Z",
   "bot_version": "V10.5_ANTI_LIQ_CLEAN_RESET",
   "reset_at": "2026-10-01 20:28 WIB",
   "reset_reason": "Hapus 191 trades bug 30 Sep - SL $5 $20 $34 - start fresh anti liquidate",
-  "total_executed": 3,
-  "total_waiting": 3,
+  "total_executed": 4,
+  "total_waiting": 4,
   "total_canceled_ran_away": 0,
   "trades": [
     {
@@ -172,6 +172,62 @@
         "SWEEP(2)",
         "BREAKER(2)",
         "HTF(1)",
+        "RSI(1)"
+      ]
+    },
+    {
+      "timestamp": "2026-10-01T13:48:33.874Z",
+      "symbol": "BTCUSDT",
+      "instId": "BTC-USDT-SWAP",
+      "direction": "SHORT",
+      "status": "WAITING_LIMIT",
+      "order_type": "LIMIT_GTC",
+      "verified_by_api": true,
+      "order_id": "3971506389805199361",
+      "order_res": {
+        "code": "0",
+        "data": [
+          {
+            "clOrdId": "",
+            "ordId": "3971506389805199361",
+            "sCode": "0",
+            "sMsg": "Order placed",
+            "subCode": "",
+            "tag": "",
+            "ts": "1790862513793"
+          }
+        ],
+        "inTime": "1790862513792801",
+        "msg": "",
+        "outTime": "1790862513794003"
+      },
+      "lev_res": {
+        "code": "0",
+        "data": [
+          {
+            "instId": "BTC-USDT-SWAP",
+            "lever": "20",
+            "mgnMode": "cross",
+            "posSide": ""
+          }
+        ],
+        "msg": ""
+      },
+      "leverage_used": 20,
+      "signal_entry": 83896.205,
+      "signal_sl": 84063.99741,
+      "signal_tp": 83557.01025766635,
+      "contracts": 1.19,
+      "actual_risk_usd": 1.9967,
+      "risk_note": "V10.5 ANTI-LIQ: final risk $2.00 (target $2.0) cross 20x mark trigger",
+      "lotSz": "0.01",
+      "minSz": "0.01",
+      "ctVal": "0.01",
+      "confluence_score": 5.5,
+      "confluences": [
+        "SWEEP(2)",
+        "BREAKER(2)",
+        "HTF(0.5)",
         "RSI(1)"
       ]
     }
