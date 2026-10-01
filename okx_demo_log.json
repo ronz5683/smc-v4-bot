@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-10-01T15:18:34.170Z",
+  "generated_at": "2026-10-01T15:20:39.658Z",
   "bot_version": "V10.5_ANTI_LIQ_CLEAN_RESET",
   "reset_at": "2026-10-01 20:28 WIB",
   "reset_reason": "Hapus 191 trades bug 30 Sep - SL $5 $20 $34 - start fresh anti liquidate",
-  "total_executed": 33,
+  "total_executed": 35,
   "total_waiting": 8,
-  "total_canceled_ran_away": 5,
+  "total_canceled_ran_away": 6,
   "trades": [
     {
       "timestamp": "2026-10-01T13:36:23.997Z",
@@ -1145,6 +1145,56 @@
       },
       "confluence_score": 4.5,
       "note": "V10.5 ANTI-LIQ FILLED 0.094145 -> SLTP MARK 0.09395593000000001/0.09465305067653278"
+    },
+    {
+      "timestamp": "2026-10-01T15:20:39.119Z",
+      "symbol": "SOLUSDT",
+      "instId": "SOL-USDT-SWAP",
+      "direction": "LONG",
+      "status": "LIMIT_FILLED",
+      "order_id": "3971635131248570369",
+      "real_avgPx": 117.22,
+      "real_sl": 116.98461999999999,
+      "real_tp": 118.03026958764636,
+      "algo_res": {
+        "code": "51020",
+        "data": [],
+        "msg": "Your order should meet or exceed the minimum order amount."
+      },
+      "confluence_score": 4,
+      "note": "V10.5 ANTI-LIQ FILLED 117.22 -> SLTP MARK 116.98461999999999/118.03026958764636"
+    },
+    {
+      "timestamp": "2026-10-01T15:20:39.658Z",
+      "symbol": "ARBUSDT",
+      "instId": "ARB-USDT-SWAP",
+      "direction": "LONG",
+      "status": "LIMIT_CANCELED_PRICE_RAN_AWAY",
+      "order_type": "LIMIT_GTC",
+      "order_id": "3971502239893712897",
+      "signal_entry": 0.2015,
+      "signal_sl": 0.20109700000000003,
+      "signal_tp": 0.20310441505695886,
+      "real_last_price": 0.195,
+      "distance_pct": 3.2258,
+      "threshold_pct": 1.5,
+      "cancel_reason": "PRICE_RAN_AWAY",
+      "confluence_score": 4,
+      "cancel_res": {
+        "code": "1",
+        "data": [
+          {
+            "clOrdId": "",
+            "ordId": "3971502239893712897",
+            "sCode": "51400",
+            "sMsg": "Order cancellation failed as the order has been filled, canceled or does not exist.",
+            "ts": "1790868039589"
+          }
+        ],
+        "inTime": "1790868039589435",
+        "msg": "All operations failed",
+        "outTime": "1790868039589988"
+      }
     }
   ],
   "total_verified": 0
