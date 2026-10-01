@@ -1,5 +1,5 @@
 {
-  "last_scan_utc": "2026-10-01T14:20:29.205554+00:00",
+  "last_scan_utc": "2026-10-01T14:22:26.601638+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "params": {
     "MIN_CONFLUENCE_SCORE": 4.0,
@@ -9,20 +9,26 @@
     "TF": "M1/M5"
   },
   "summary": {
-    "total_scanned": 12,
-    "valid_new": 1,
-    "valid": 1,
-    "skip": 1,
+    "total_scanned": 13,
+    "valid_new": 0,
+    "valid": 0,
+    "skip": 2,
     "active_positions": 10,
-    "waiting_limit": 1,
-    "avg_confluence": 4.12,
+    "waiting_limit": 0,
+    "avg_confluence": 3.88,
     "by_filter": {
-      "confluence": 1,
+      "confluence": 0,
       "distance": 0,
       "zone": 0
     }
   },
   "results": [
+    {
+      "symbol": "ARBUSDT",
+      "status": "FILLED",
+      "reason": "M1 LIMIT filled at 0.20085 within 10 candles",
+      "confluence_score": 4
+    },
     {
       "symbol": "SOLUSDT",
       "status": "HOLD",
@@ -78,295 +84,28 @@
       "confluence_score": 5.0
     },
     {
+      "symbol": "ARBUSDT",
+      "status": "HOLD",
+      "reason": "Holding LONG",
+      "confluence_score": 4
+    },
+    {
       "symbol": "OPUSDT",
-      "status": "SL_HIT",
-      "reason": "SL_HIT",
+      "status": "SKIP",
+      "reason": "Max pos 10",
+      "filter": "max_pos",
       "confluence_score": 0
     },
     {
-      "symbol": "OPUSDT",
-      "price": 0.1288,
-      "confluence_score": 3,
-      "confluences": [
-        "FVG(1)",
-        "HTF(1)",
-        "RSI(1)"
-      ],
-      "sweep": {
-        "sweep": false,
-        "score": 0,
-        "reason": "No sweep"
-      },
-      "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
-      },
-      "zone": {
-        "type": "FVG",
-        "subtype": "BEARISH_FVG",
-        "price": 0.12875,
-        "high": 0.129,
-        "low": 0.1285,
-        "score": 1
-      },
-      "zones_all": [
-        {
-          "type": "FVG",
-          "subtype": "BEARISH_FVG",
-          "price": 0.129,
-          "high": 0.1291,
-          "low": 0.1289,
-          "score": 1
-        },
-        {
-          "type": "FVG",
-          "subtype": "BULLISH_FVG",
-          "price": 0.129,
-          "high": 0.1291,
-          "low": 0.1289,
-          "score": 1
-        },
-        {
-          "type": "FVG",
-          "subtype": "BEARISH_FVG",
-          "price": 0.12915,
-          "high": 0.1293,
-          "low": 0.129,
-          "score": 1
-        }
-      ],
-      "htf": {
-        "trend": "BEARISH",
-        "score": 1,
-        "reason": "HTF bearish"
-      },
-      "vol": {
-        "score": 0
-      },
-      "rsi": {
-        "score": 1,
-        "rsi": 44.8,
-        "reason": "RSI healthy 44.8"
-      },
+      "symbol": "MATICUSDT",
       "status": "SKIP",
-      "reason": "Score 3 < 4.0",
-      "filter": "confluence"
-    },
-    {
-      "symbol": "ARBUSDT",
-      "price": 0.2009,
-      "confluence_score": 4,
-      "confluences": [
-        "FVG(1)",
-        "HTF(1)",
-        "VOL(1)",
-        "RSI(1)"
-      ],
-      "sweep": {
-        "sweep": false,
-        "score": 0,
-        "reason": "No sweep"
-      },
-      "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
-      },
-      "zone": {
-        "type": "FVG",
-        "subtype": "BULLISH_FVG",
-        "price": 0.20085,
-        "high": 0.201,
-        "low": 0.2007,
-        "score": 1
-      },
-      "zones_all": [
-        {
-          "type": "OB",
-          "subtype": "BULLISH_OB",
-          "price": 0.2001,
-          "high": 0.2004,
-          "low": 0.1998,
-          "score": 1.5
-        },
-        {
-          "type": "OB",
-          "subtype": "BULLISH_OB",
-          "price": 0.20035,
-          "high": 0.2005,
-          "low": 0.2002,
-          "score": 1.5
-        },
-        {
-          "type": "FVG",
-          "subtype": "BEARISH_FVG",
-          "price": 0.20095000000000002,
-          "high": 0.2011,
-          "low": 0.2008,
-          "score": 1
-        }
-      ],
-      "htf": {
-        "trend": "BULLISH",
-        "score": 1,
-        "reason": "HTF bullish"
-      },
-      "vol": {
-        "score": 1,
-        "reason": "Volume spike"
-      },
-      "rsi": {
-        "score": 1,
-        "rsi": 59.2,
-        "reason": "RSI healthy 59.2"
-      },
-      "direction": "LONG",
-      "entry": 0.20085,
-      "sl": 0.2004483,
-      "tp": 0.20175337511199604,
-      "rrr": 2.0,
-      "sl_pct": 0.002248880039820779,
-      "tp_pct": 0.004497760079641558,
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2249,
-        "notional_usd": 889.33,
-        "qty": 4427.839495,
-        "leverage": 20,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 44.47
-      },
-      "status": "VALID",
-      "reason": "M1 SCORE 4/10: FVG(1)+HTF(1)+VOL(1)+RSI(1) | LIMIT SWING 0.2009 SL 0.22% | HTF BULLISH"
+      "reason": "Max pos 10",
+      "filter": "max_pos",
+      "confluence_score": 0
     }
   ],
-  "valid_trades": [
-    {
-      "symbol": "ARBUSDT",
-      "price": 0.2009,
-      "confluence_score": 4,
-      "confluences": [
-        "FVG(1)",
-        "HTF(1)",
-        "VOL(1)",
-        "RSI(1)"
-      ],
-      "sweep": {
-        "sweep": false,
-        "score": 0,
-        "reason": "No sweep"
-      },
-      "choch": {
-        "choch": false,
-        "score": 0,
-        "reason": "No ChoCh"
-      },
-      "zone": {
-        "type": "FVG",
-        "subtype": "BULLISH_FVG",
-        "price": 0.20085,
-        "high": 0.201,
-        "low": 0.2007,
-        "score": 1
-      },
-      "zones_all": [
-        {
-          "type": "OB",
-          "subtype": "BULLISH_OB",
-          "price": 0.2001,
-          "high": 0.2004,
-          "low": 0.1998,
-          "score": 1.5
-        },
-        {
-          "type": "OB",
-          "subtype": "BULLISH_OB",
-          "price": 0.20035,
-          "high": 0.2005,
-          "low": 0.2002,
-          "score": 1.5
-        },
-        {
-          "type": "FVG",
-          "subtype": "BEARISH_FVG",
-          "price": 0.20095000000000002,
-          "high": 0.2011,
-          "low": 0.2008,
-          "score": 1
-        }
-      ],
-      "htf": {
-        "trend": "BULLISH",
-        "score": 1,
-        "reason": "HTF bullish"
-      },
-      "vol": {
-        "score": 1,
-        "reason": "Volume spike"
-      },
-      "rsi": {
-        "score": 1,
-        "rsi": 59.2,
-        "reason": "RSI healthy 59.2"
-      },
-      "direction": "LONG",
-      "entry": 0.20085,
-      "sl": 0.2004483,
-      "tp": 0.20175337511199604,
-      "rrr": 2.0,
-      "sl_pct": 0.002248880039820779,
-      "tp_pct": 0.004497760079641558,
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2249,
-        "notional_usd": 889.33,
-        "qty": 4427.839495,
-        "leverage": 20,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 44.47
-      },
-      "status": "VALID",
-      "reason": "M1 SCORE 4/10: FVG(1)+HTF(1)+VOL(1)+RSI(1) | LIMIT SWING 0.2009 SL 0.22% | HTF BULLISH"
-    }
-  ],
-  "valid_new_positions": [
-    {
-      "symbol": "ARBUSDT",
-      "direction": "LONG",
-      "entry": 0.20085,
-      "sl": 0.2004483,
-      "tp": 0.20175337511199604,
-      "rrr": 2.0,
-      "sl_pct": 0.002248880039820779,
-      "tp_pct": 0.004497760079641558,
-      "zone_price": 0.20085,
-      "confluence_score": 4,
-      "confluences": [
-        "FVG(1)",
-        "HTF(1)",
-        "VOL(1)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2249,
-        "notional_usd": 889.33,
-        "qty": 4427.839495,
-        "leverage": 20,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 44.47
-      },
-      "reason": "M1 SCORE 4/10: FVG(1)+HTF(1)+VOL(1)+RSI(1) | LIMIT SWING 0.2009 SL 0.22% | HTF BULLISH",
-      "open_price": 0.2009,
-      "open_time": "2026-10-01T14:20:29.203285+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m"
-    }
-  ],
+  "valid_trades": [],
+  "valid_new_positions": [],
   "running_positions": [
     {
       "symbol": "SOLUSDT",
@@ -730,11 +469,13 @@
       "reason": "M1 SCORE 4/10: FVG(1)+HTF(1)+VOL(1)+RSI(1) | LIMIT SWING 0.2009 SL 0.22% | HTF BULLISH",
       "open_price": 0.2009,
       "open_time": "2026-10-01T14:20:29.203285+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
+      "status": "ACTIVE",
+      "order_status": "FILLED",
       "paper_trade": true,
       "limit_order": true,
-      "fill_check": "10 candles 1m"
+      "fill_check": "10 candles 1m",
+      "filled_at": "2026-10-01T14:22:20.879074+00:00",
+      "filled_price": 0.20085
     }
   ],
   "closed_positions": [
