@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T14:08:32.228013+00:00",
+  "generated_at": "2026-10-01T14:10:31.309480+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "config": {
     "start_capital": 1000.0,
@@ -11,12 +11,12 @@
   },
   "summary": {
     "initial": 1000.0,
-    "final": 979.96,
-    "total_trades": 14,
-    "wins": 3,
+    "final": 983.3,
+    "total_trades": 15,
+    "wins": 4,
     "losses": 11,
-    "win_rate": 21.4,
-    "total_r": -5.0
+    "win_rate": 26.7,
+    "total_r": -3.0
   },
   "trades": [
     {
@@ -326,6 +326,28 @@
       "capital_after": 979.9625,
       "confluence_score": 4.5,
       "closed_at": "2026-10-01T14:08:30"
+    },
+    {
+      "symbol": "ARBUSDT",
+      "direction": "LONG",
+      "entry": 0.2001,
+      "sl": 0.1996998,
+      "tp": 0.2013000005991014,
+      "close_status": "TP_HIT",
+      "pnl_r": 2.0,
+      "pnl_usd": 3.333,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2999,
+        "notional_usd": 667.0,
+        "qty": 3333.331669,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 33.35
+      },
+      "capital_after": 983.2955,
+      "confluence_score": 5.0,
+      "closed_at": "2026-10-01T14:10:28"
     }
   ],
   "active_positions": [
@@ -625,115 +647,43 @@
       "filled_price": 10.9585
     },
     {
-      "symbol": "ARBUSDT",
+      "symbol": "DOGEUSDT",
       "direction": "LONG",
-      "entry": 0.2001,
-      "sl": 0.1996998,
-      "tp": 0.2013000005991014,
+      "entry": 0.094145,
+      "sl": 0.09395671000000001,
+      "tp": 0.09475129939316781,
       "rrr": 2.0,
-      "sl_pct": 0.0029985022466300837,
-      "tp_pct": 0.005997004493260167,
-      "zone_price": 0.2001,
+      "sl_pct": 0.0032200297050709752,
+      "tp_pct": 0.0064400594101419505,
+      "zone_price": 0.094145,
       "confluence_score": 5.0,
       "confluences": [
         "SWEEP(2)",
         "OB(1.5)",
         "HTF(1)",
+        "VOL(0.5)",
         "RSI(0.5)"
       ],
       "sizing": {
         "risk_usd": 2.0,
-        "sl_pct": 0.2999,
-        "notional_usd": 667.0,
-        "qty": 3333.331669,
-        "leverage": 20,
+        "sl_pct": 0.322,
+        "notional_usd": 621.11,
+        "qty": 6597.400633,
+        "leverage": 50,
         "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 33.35
+        "margin_needed": 12.42
       },
-      "reason": "M1 SCORE 5.0/10: SWEEP(2)+OB(1.5)+HTF(1)+RSI(0.5) | LIMIT SWING 0.2001 SL 0.30% | HTF BULLISH",
-      "open_price": 0.2003,
-      "open_time": "2026-10-01T14:06:28.004009+00:00",
+      "reason": "M1 SCORE 5.0/10: SWEEP(2)+OB(1.5)+HTF(1)+VOL(0.5)+RSI(0.5) | LIMIT SWING 0.0941 SL 0.32% | HTF BEARISH",
+      "open_price": 0.09426,
+      "open_time": "2026-10-01T14:08:32.226201+00:00",
       "status": "ACTIVE",
       "order_status": "FILLED",
       "paper_trade": true,
       "limit_order": true,
       "fill_check": "10 candles 1m",
-      "filled_at": "2026-10-01T14:08:23.856435+00:00",
-      "filled_price": 0.2001
-    },
-    {
-      "symbol": "DOGEUSDT",
-      "direction": "LONG",
-      "entry": 0.094145,
-      "sl": 0.09395671000000001,
-      "tp": 0.09475129939316781,
-      "rrr": 2.0,
-      "sl_pct": 0.0032200297050709752,
-      "tp_pct": 0.0064400594101419505,
-      "zone_price": 0.094145,
-      "confluence_score": 5.0,
-      "confluences": [
-        "SWEEP(2)",
-        "OB(1.5)",
-        "HTF(1)",
-        "VOL(0.5)",
-        "RSI(0.5)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.322,
-        "notional_usd": 621.11,
-        "qty": 6597.400633,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 12.42
-      },
-      "reason": "M1 SCORE 5.0/10: SWEEP(2)+OB(1.5)+HTF(1)+VOL(0.5)+RSI(0.5) | LIMIT SWING 0.0941 SL 0.32% | HTF BEARISH",
-      "open_price": 0.09426,
-      "open_time": "2026-10-01T14:08:32.226201+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m"
+      "filled_at": "2026-10-01T14:10:23.326901+00:00",
+      "filled_price": 0.094145
     }
   ],
-  "waiting_limit": [
-    {
-      "symbol": "DOGEUSDT",
-      "direction": "LONG",
-      "entry": 0.094145,
-      "sl": 0.09395671000000001,
-      "tp": 0.09475129939316781,
-      "rrr": 2.0,
-      "sl_pct": 0.0032200297050709752,
-      "tp_pct": 0.0064400594101419505,
-      "zone_price": 0.094145,
-      "confluence_score": 5.0,
-      "confluences": [
-        "SWEEP(2)",
-        "OB(1.5)",
-        "HTF(1)",
-        "VOL(0.5)",
-        "RSI(0.5)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.322,
-        "notional_usd": 621.11,
-        "qty": 6597.400633,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 12.42
-      },
-      "reason": "M1 SCORE 5.0/10: SWEEP(2)+OB(1.5)+HTF(1)+VOL(0.5)+RSI(0.5) | LIMIT SWING 0.0941 SL 0.32% | HTF BEARISH",
-      "open_price": 0.09426,
-      "open_time": "2026-10-01T14:08:32.226201+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m"
-    }
-  ]
+  "waiting_limit": []
 }
