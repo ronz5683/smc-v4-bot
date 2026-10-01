@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T15:20:38.319379+00:00",
+  "generated_at": "2026-10-01T15:22:36.206694+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "config": {
     "start_capital": 1000.0,
@@ -11,12 +11,12 @@
   },
   "summary": {
     "initial": 1000.0,
-    "final": 978.88,
-    "total_trades": 48,
+    "final": 976.38,
+    "total_trades": 49,
     "wins": 18,
-    "losses": 30,
-    "win_rate": 37.5,
-    "total_r": 6.0
+    "losses": 31,
+    "win_rate": 36.7,
+    "total_r": 5.0
   },
   "trades": [
     {
@@ -1074,6 +1074,28 @@
       "capital_after": 978.8835,
       "confluence_score": 4.5,
       "closed_at": "2026-10-01T15:20:30"
+    },
+    {
+      "symbol": "ARBUSDT",
+      "direction": "LONG",
+      "entry": 0.2015,
+      "sl": 0.20109700000000003,
+      "tp": 0.20310441505695886,
+      "close_status": "SL_HIT",
+      "pnl_r": -1.0,
+      "pnl_usd": -2.5024,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.3981,
+        "notional_usd": 502.36,
+        "qty": 2493.120457,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 25.12
+      },
+      "capital_after": 976.3811,
+      "confluence_score": 4,
+      "closed_at": "2026-10-01T15:22:30"
     }
   ],
   "active_positions": [
@@ -1289,11 +1311,13 @@
       "reason": "M1 SCORE 4/10: CHOCH(2)+FVG(1)+HTF(1) | LIMIT SWING 117.6900 SL 0.34% | HTF BULLISH",
       "open_price": 117.86,
       "open_time": "2026-10-01T15:20:32.689939+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
+      "status": "ACTIVE",
+      "order_status": "FILLED",
       "paper_trade": true,
       "limit_order": true,
-      "fill_check": "10 candles 1m"
+      "fill_check": "10 candles 1m",
+      "filled_at": "2026-10-01T15:22:21.744444+00:00",
+      "filled_price": 117.69
     },
     {
       "symbol": "XRPUSDT",
@@ -1324,150 +1348,14 @@
       "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+VOL(1) | LIMIT SWING 1.4893 SL 0.33% | HTF NEUTRAL",
       "open_price": 1.4912,
       "open_time": "2026-10-01T15:20:33.625792+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
+      "status": "ACTIVE",
+      "order_status": "FILLED",
       "paper_trade": true,
       "limit_order": true,
-      "fill_check": "10 candles 1m"
-    },
-    {
-      "symbol": "ARBUSDT",
-      "direction": "LONG",
-      "entry": 0.2015,
-      "sl": 0.20109700000000003,
-      "tp": 0.20310441505695886,
-      "rrr": 2.0,
-      "sl_pct": 0.0039811788013867444,
-      "tp_pct": 0.007962357602773489,
-      "zone_price": 0.2015,
-      "confluence_score": 4,
-      "confluences": [
-        "CHOCH(2)",
-        "FVG(1)",
-        "HTF(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.3981,
-        "notional_usd": 502.36,
-        "qty": 2493.120457,
-        "leverage": 20,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 25.12
-      },
-      "reason": "M1 SCORE 4/10: CHOCH(2)+FVG(1)+HTF(1) | LIMIT SWING 0.2015 SL 0.40% | HTF BULLISH",
-      "open_price": 0.2019,
-      "open_time": "2026-10-01T15:20:37.369968+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m"
+      "fill_check": "10 candles 1m",
+      "filled_at": "2026-10-01T15:22:23.194371+00:00",
+      "filled_price": 1.4892500000000002
     }
   ],
-  "waiting_limit": [
-    {
-      "symbol": "SOLUSDT",
-      "direction": "LONG",
-      "entry": 117.69,
-      "sl": 117.45461999999999,
-      "tp": 118.50026958764636,
-      "rrr": 2.0,
-      "sl_pct": 0.0034423892754115197,
-      "tp_pct": 0.006884778550823039,
-      "zone_price": 117.69,
-      "confluence_score": 4,
-      "confluences": [
-        "CHOCH(2)",
-        "FVG(1)",
-        "HTF(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.3442,
-        "notional_usd": 580.99,
-        "qty": 4.936629,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 11.62
-      },
-      "reason": "M1 SCORE 4/10: CHOCH(2)+FVG(1)+HTF(1) | LIMIT SWING 117.6900 SL 0.34% | HTF BULLISH",
-      "open_price": 117.86,
-      "open_time": "2026-10-01T15:20:32.689939+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m"
-    },
-    {
-      "symbol": "XRPUSDT",
-      "direction": "LONG",
-      "entry": 1.4892500000000002,
-      "sl": 1.4862715000000002,
-      "tp": 1.499101900080472,
-      "rrr": 2.0,
-      "sl_pct": 0.0033076716738196727,
-      "tp_pct": 0.006615343347639345,
-      "zone_price": 1.4892500000000002,
-      "confluence_score": 4.5,
-      "confluences": [
-        "CHOCH(2)",
-        "FVG(1)",
-        "HTF(0.5)",
-        "VOL(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.3308,
-        "notional_usd": 604.65,
-        "qty": 406.01305,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 12.09
-      },
-      "reason": "M1 SCORE 4.5/10: CHOCH(2)+FVG(1)+HTF(0.5)+VOL(1) | LIMIT SWING 1.4893 SL 0.33% | HTF NEUTRAL",
-      "open_price": 1.4912,
-      "open_time": "2026-10-01T15:20:33.625792+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m"
-    },
-    {
-      "symbol": "ARBUSDT",
-      "direction": "LONG",
-      "entry": 0.2015,
-      "sl": 0.20109700000000003,
-      "tp": 0.20310441505695886,
-      "rrr": 2.0,
-      "sl_pct": 0.0039811788013867444,
-      "tp_pct": 0.007962357602773489,
-      "zone_price": 0.2015,
-      "confluence_score": 4,
-      "confluences": [
-        "CHOCH(2)",
-        "FVG(1)",
-        "HTF(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.3981,
-        "notional_usd": 502.36,
-        "qty": 2493.120457,
-        "leverage": 20,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 25.12
-      },
-      "reason": "M1 SCORE 4/10: CHOCH(2)+FVG(1)+HTF(1) | LIMIT SWING 0.2015 SL 0.40% | HTF BULLISH",
-      "open_price": 0.2019,
-      "open_time": "2026-10-01T15:20:37.369968+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m"
-    }
-  ]
+  "waiting_limit": []
 }
