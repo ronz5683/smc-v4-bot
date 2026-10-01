@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-01T14:00:44.624Z",
+  "generated_at": "2026-10-01T14:02:32.832Z",
   "bot_version": "V10.5_ANTI_LIQ_CLEAN_RESET",
   "reset_at": "2026-10-01 20:28 WIB",
   "reset_reason": "Hapus 191 trades bug 30 Sep - SL $5 $20 $34 - start fresh anti liquidate",
-  "total_executed": 5,
-  "total_waiting": 5,
+  "total_executed": 9,
+  "total_waiting": 6,
   "total_canceled_ran_away": 0,
   "trades": [
     {
@@ -285,6 +285,134 @@
         "BREAKER(2)",
         "HTF(0.5)",
         "RSI(1)"
+      ]
+    },
+    {
+      "timestamp": "2026-10-01T14:02:30.873Z",
+      "symbol": "BNBUSDT",
+      "instId": "BNB-USDT-SWAP",
+      "direction": "SHORT",
+      "status": "LIMIT_FILLED",
+      "order_id": "3971481898391728129",
+      "real_avgPx": 768.1,
+      "real_sl": 769.6385,
+      "real_tp": 763.2609843044366,
+      "algo_res": {
+        "code": "51020",
+        "data": [],
+        "msg": "Your order should meet or exceed the minimum order amount."
+      },
+      "confluence_score": 4.5,
+      "note": "V10.5 ANTI-LIQ FILLED 768.1 -> SLTP MARK 769.6385/763.2609843044366"
+    },
+    {
+      "timestamp": "2026-10-01T14:02:31.442Z",
+      "symbol": "ADAUSDT",
+      "instId": "ADA-USDT-SWAP",
+      "direction": "SHORT",
+      "status": "LIMIT_FILLED",
+      "order_id": "3971502216372056065",
+      "real_avgPx": 0.2478,
+      "real_sl": 0.24829289999999998,
+      "real_tp": 0.24409932851897187,
+      "algo_res": {
+        "code": "0",
+        "data": [
+          {
+            "algoClOrdId": "",
+            "algoId": "3971534494527680513",
+            "clOrdId": "",
+            "sCode": "0",
+            "sMsg": "",
+            "tag": ""
+          }
+        ],
+        "msg": ""
+      },
+      "confluence_score": 5,
+      "note": "V10.5 ANTI-LIQ FILLED 0.2478 -> SLTP MARK 0.24829289999999998/0.24409932851897187"
+    },
+    {
+      "timestamp": "2026-10-01T14:02:31.991Z",
+      "symbol": "OPUSDT",
+      "instId": "OP-USDT-SWAP",
+      "direction": "SHORT",
+      "status": "LIMIT_FILLED",
+      "order_id": "3971518493996118017",
+      "real_avgPx": 0.1296,
+      "real_sl": 0.12985829999999998,
+      "real_tp": 0.128381497826087,
+      "algo_res": {
+        "code": "0",
+        "data": [
+          {
+            "algoClOrdId": "",
+            "algoId": "3971534512781291521",
+            "clOrdId": "",
+            "sCode": "0",
+            "sMsg": "",
+            "tag": ""
+          }
+        ],
+        "msg": ""
+      },
+      "confluence_score": 4.5,
+      "note": "V10.5 ANTI-LIQ FILLED 0.1296 -> SLTP MARK 0.12985829999999998/0.128381497826087"
+    },
+    {
+      "timestamp": "2026-10-01T14:02:32.832Z",
+      "symbol": "XRPUSDT",
+      "instId": "XRP-USDT-SWAP",
+      "direction": "SHORT",
+      "status": "WAITING_LIMIT",
+      "order_type": "LIMIT_GTC",
+      "verified_by_api": true,
+      "order_id": "3971534541168340993",
+      "order_res": {
+        "code": "0",
+        "data": [
+          {
+            "clOrdId": "",
+            "ordId": "3971534541168340993",
+            "sCode": "0",
+            "sMsg": "Order placed",
+            "subCode": "",
+            "tag": "",
+            "ts": "1790863352769"
+          }
+        ],
+        "inTime": "1790863352769608",
+        "msg": "",
+        "outTime": "1790863352770518"
+      },
+      "lev_res": {
+        "code": "0",
+        "data": [
+          {
+            "instId": "XRP-USDT-SWAP",
+            "lever": "20",
+            "mgnMode": "cross",
+            "posSide": ""
+          }
+        ],
+        "msg": ""
+      },
+      "leverage_used": 20,
+      "signal_entry": 1.4846,
+      "signal_sl": 1.4875691999999998,
+      "signal_tp": 1.470841055662862,
+      "contracts": 6.73,
+      "actual_risk_usd": 1.9983,
+      "risk_note": "V10.5 ANTI-LIQ: final risk $2.00 (target $2.0) cross 20x mark trigger",
+      "lotSz": "0.01",
+      "minSz": "0.01",
+      "ctVal": "100.0",
+      "confluence_score": 5.0,
+      "confluences": [
+        "CHOCH(2)",
+        "FVG(1)",
+        "HTF(1)",
+        "VOL(1)"
       ]
     }
   ],
