@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-01T14:06:28.921Z",
+  "generated_at": "2026-10-01T14:08:33.564Z",
   "bot_version": "V10.5_ANTI_LIQ_CLEAN_RESET",
   "reset_at": "2026-10-01 20:28 WIB",
   "reset_reason": "Hapus 191 trades bug 30 Sep - SL $5 $20 $34 - start fresh anti liquidate",
-  "total_executed": 10,
-  "total_waiting": 6,
+  "total_executed": 11,
+  "total_waiting": 7,
   "total_canceled_ran_away": 1,
   "trades": [
     {
@@ -446,6 +446,63 @@
         "msg": "",
         "outTime": "1790863588821959"
       }
+    },
+    {
+      "timestamp": "2026-10-01T14:08:33.564Z",
+      "symbol": "DOGEUSDT",
+      "instId": "DOGE-USDT-SWAP",
+      "direction": "LONG",
+      "status": "WAITING_LIMIT",
+      "order_type": "LIMIT_GTC",
+      "verified_by_api": true,
+      "order_id": "3971546643983527937",
+      "order_res": {
+        "code": "0",
+        "data": [
+          {
+            "clOrdId": "",
+            "ordId": "3971546643983527937",
+            "sCode": "0",
+            "sMsg": "Order placed",
+            "subCode": "",
+            "tag": "",
+            "ts": "1790863713461"
+          }
+        ],
+        "inTime": "1790863713461093",
+        "msg": "",
+        "outTime": "1790863713462137"
+      },
+      "lev_res": {
+        "code": "0",
+        "data": [
+          {
+            "instId": "DOGE-USDT-SWAP",
+            "lever": "20",
+            "mgnMode": "cross",
+            "posSide": ""
+          }
+        ],
+        "msg": ""
+      },
+      "leverage_used": 20,
+      "signal_entry": 0.094145,
+      "signal_sl": 0.09395671000000001,
+      "signal_tp": 0.09475129939316781,
+      "contracts": 10.62,
+      "actual_risk_usd": 1.9996,
+      "risk_note": "V10.5 ANTI-LIQ: final risk $2.00 (target $2.0) cross 20x mark trigger",
+      "lotSz": "0.01",
+      "minSz": "0.01",
+      "ctVal": "1000.0",
+      "confluence_score": 5.0,
+      "confluences": [
+        "SWEEP(2)",
+        "OB(1.5)",
+        "HTF(1)",
+        "VOL(0.5)",
+        "RSI(0.5)"
+      ]
     }
   ],
   "total_verified": 0
