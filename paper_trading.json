@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T13:48:32.684805+00:00",
+  "generated_at": "2026-10-01T13:50:32.330274+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "config": {
     "start_capital": 1000.0,
@@ -11,12 +11,12 @@
   },
   "summary": {
     "initial": 1000.0,
-    "final": 983.31,
-    "total_trades": 6,
+    "final": 980.58,
+    "total_trades": 7,
     "wins": 0,
-    "losses": 6,
+    "losses": 7,
     "win_rate": 0.0,
-    "total_r": -6.0
+    "total_r": -7.0
   },
   "trades": [
     {
@@ -150,6 +150,28 @@
       "capital_after": 983.3053,
       "confluence_score": 4.0,
       "closed_at": "2026-10-01T13:46:19"
+    },
+    {
+      "symbol": "LINKUSDT",
+      "direction": "LONG",
+      "entry": 14.39,
+      "sl": 14.361220000000001,
+      "tp": 14.469576830099454,
+      "close_status": "SL_HIT",
+      "pnl_r": -1.0,
+      "pnl_usd": -2.7233,
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2765,
+        "notional_usd": 723.33,
+        "qty": 50.265888,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 14.47
+      },
+      "capital_after": 980.582,
+      "confluence_score": 4,
+      "closed_at": "2026-10-01T13:50:26"
     }
   ],
   "active_positions": [
@@ -336,42 +358,6 @@
       "filled_price": 0.24780000000000002
     },
     {
-      "symbol": "LINKUSDT",
-      "direction": "LONG",
-      "entry": 14.39,
-      "sl": 14.361220000000001,
-      "tp": 14.469576830099454,
-      "rrr": 2.0,
-      "sl_pct": 0.0027650045204813275,
-      "tp_pct": 0.005530009040962655,
-      "zone_price": 14.39,
-      "confluence_score": 4,
-      "confluences": [
-        "BREAKER(2)",
-        "HTF(1)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2765,
-        "notional_usd": 723.33,
-        "qty": 50.265888,
-        "leverage": 50,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 14.47
-      },
-      "reason": "M1 SCORE 4/10: BREAKER(2)+HTF(1)+RSI(1) | LIMIT SWING 14.3900 SL 0.28% | HTF BULLISH",
-      "open_price": 14.379,
-      "open_time": "2026-10-01T13:46:25.772993+00:00",
-      "status": "ACTIVE",
-      "order_status": "FILLED",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m",
-      "filled_at": "2026-10-01T13:48:21.682917+00:00",
-      "filled_price": 14.39
-    },
-    {
       "symbol": "ARBUSDT",
       "direction": "SHORT",
       "entry": 0.2012,
@@ -437,48 +423,14 @@
       "reason": "M1 SCORE 5.5/10: SWEEP(2)+BREAKER(2)+HTF(0.5)+RSI(1) | LIMIT SWING 83896.2050 SL 0.20% | HTF NEUTRAL",
       "open_price": 83898.01,
       "open_time": "2026-10-01T13:48:28.078008+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
+      "status": "ACTIVE",
+      "order_status": "FILLED",
       "paper_trade": true,
       "limit_order": true,
-      "fill_check": "10 candles 1m"
+      "fill_check": "10 candles 1m",
+      "filled_at": "2026-10-01T13:50:24.199662+00:00",
+      "filled_price": 83896.205
     }
   ],
-  "waiting_limit": [
-    {
-      "symbol": "BTCUSDT",
-      "direction": "SHORT",
-      "entry": 83896.205,
-      "sl": 84063.99741,
-      "tp": 83557.01025766635,
-      "rrr": 2.0,
-      "sl_pct": 0.002021514217083254,
-      "tp_pct": 0.004043028434166508,
-      "zone_price": 83896.205,
-      "confluence_score": 5.5,
-      "confluences": [
-        "SWEEP(2)",
-        "BREAKER(2)",
-        "HTF(0.5)",
-        "RSI(1)"
-      ],
-      "sizing": {
-        "risk_usd": 2.0,
-        "sl_pct": 0.2022,
-        "notional_usd": 989.36,
-        "qty": 0.011793,
-        "leverage": 100,
-        "leverage_mode": "ALWAYS_MAX",
-        "margin_needed": 9.89
-      },
-      "reason": "M1 SCORE 5.5/10: SWEEP(2)+BREAKER(2)+HTF(0.5)+RSI(1) | LIMIT SWING 83896.2050 SL 0.20% | HTF NEUTRAL",
-      "open_price": 83898.01,
-      "open_time": "2026-10-01T13:48:28.078008+00:00",
-      "status": "WAITING_LIMIT",
-      "order_status": "WAITING_LIMIT",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m"
-    }
-  ]
+  "waiting_limit": []
 }
