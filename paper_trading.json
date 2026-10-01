@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T14:04:28.626847+00:00",
+  "generated_at": "2026-10-01T14:06:28.005622+00:00",
   "bot_version": "V10_M1_TEST_100TRADE",
   "config": {
     "start_capital": 1000.0,
@@ -11,12 +11,12 @@
   },
   "summary": {
     "initial": 1000.0,
-    "final": 979.05,
-    "total_trades": 12,
-    "wins": 2,
+    "final": 982.39,
+    "total_trades": 13,
+    "wins": 3,
     "losses": 10,
-    "win_rate": 16.7,
-    "total_r": -6.0
+    "win_rate": 23.1,
+    "total_r": -4.0
   },
   "trades": [
     {
@@ -282,25 +282,16 @@
       "capital_after": 979.0522,
       "confluence_score": 4.0,
       "closed_at": "2026-10-01T14:02:24"
-    }
-  ],
-  "active_positions": [
+    },
     {
       "symbol": "DOGEUSDT",
       "direction": "SHORT",
       "entry": 0.094715,
       "sl": 0.09490443,
       "tp": 0.09414594923694779,
-      "rrr": 2.0,
-      "sl_pct": 0.003004016064257006,
-      "tp_pct": 0.006008032128514012,
-      "zone_price": 0.094715,
-      "confluence_score": 4.5,
-      "confluences": [
-        "SWEEP(2)",
-        "BREAKER(2)",
-        "HTF(1)"
-      ],
+      "close_status": "TP_HIT",
+      "pnl_r": 2.0,
+      "pnl_usd": 3.3342,
       "sizing": {
         "risk_usd": 2.0,
         "sl_pct": 0.3004,
@@ -310,17 +301,12 @@
         "leverage_mode": "ALWAYS_MAX",
         "margin_needed": 13.32
       },
-      "reason": "M1 SCORE 4.5/10: SWEEP(2)+BREAKER(2)+HTF(1) | LIMIT SWING 0.0947 SL 0.30% | HTF BULLISH",
-      "open_price": 0.09462,
-      "open_time": "2026-10-01T13:40:29.675668+00:00",
-      "status": "ACTIVE",
-      "order_status": "FILLED",
-      "paper_trade": true,
-      "limit_order": true,
-      "fill_check": "10 candles 1m",
-      "filled_at": "2026-10-01T13:42:20.962700+00:00",
-      "filled_price": 0.094715
-    },
+      "capital_after": 982.3864,
+      "confluence_score": 4.5,
+      "closed_at": "2026-10-01T14:06:18"
+    }
+  ],
+  "active_positions": [
     {
       "symbol": "SOLUSDT",
       "direction": "SHORT",
@@ -652,7 +638,78 @@
       "fill_check": "10 candles 1m",
       "filled_at": "2026-10-01T14:04:22.524961+00:00",
       "filled_price": 0.12915
+    },
+    {
+      "symbol": "ARBUSDT",
+      "direction": "LONG",
+      "entry": 0.2001,
+      "sl": 0.1996998,
+      "tp": 0.2013000005991014,
+      "rrr": 2.0,
+      "sl_pct": 0.0029985022466300837,
+      "tp_pct": 0.005997004493260167,
+      "zone_price": 0.2001,
+      "confluence_score": 5.0,
+      "confluences": [
+        "SWEEP(2)",
+        "OB(1.5)",
+        "HTF(1)",
+        "RSI(0.5)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2999,
+        "notional_usd": 667.0,
+        "qty": 3333.331669,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 33.35
+      },
+      "reason": "M1 SCORE 5.0/10: SWEEP(2)+OB(1.5)+HTF(1)+RSI(0.5) | LIMIT SWING 0.2001 SL 0.30% | HTF BULLISH",
+      "open_price": 0.2003,
+      "open_time": "2026-10-01T14:06:28.004009+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
     }
   ],
-  "waiting_limit": []
+  "waiting_limit": [
+    {
+      "symbol": "ARBUSDT",
+      "direction": "LONG",
+      "entry": 0.2001,
+      "sl": 0.1996998,
+      "tp": 0.2013000005991014,
+      "rrr": 2.0,
+      "sl_pct": 0.0029985022466300837,
+      "tp_pct": 0.005997004493260167,
+      "zone_price": 0.2001,
+      "confluence_score": 5.0,
+      "confluences": [
+        "SWEEP(2)",
+        "OB(1.5)",
+        "HTF(1)",
+        "RSI(0.5)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2999,
+        "notional_usd": 667.0,
+        "qty": 3333.331669,
+        "leverage": 20,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 33.35
+      },
+      "reason": "M1 SCORE 5.0/10: SWEEP(2)+OB(1.5)+HTF(1)+RSI(0.5) | LIMIT SWING 0.2001 SL 0.30% | HTF BULLISH",
+      "open_price": 0.2003,
+      "open_time": "2026-10-01T14:06:28.004009+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
+    }
+  ]
 }

@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-10-01T14:04:28.777Z",
+  "generated_at": "2026-10-01T14:06:28.921Z",
   "bot_version": "V10.5_ANTI_LIQ_CLEAN_RESET",
   "reset_at": "2026-10-01 20:28 WIB",
   "reset_reason": "Hapus 191 trades bug 30 Sep - SL $5 $20 $34 - start fresh anti liquidate",
-  "total_executed": 9,
+  "total_executed": 10,
   "total_waiting": 6,
-  "total_canceled_ran_away": 0,
+  "total_canceled_ran_away": 1,
   "trades": [
     {
       "timestamp": "2026-10-01T13:36:23.997Z",
@@ -414,6 +414,38 @@
         "HTF(1)",
         "VOL(1)"
       ]
+    },
+    {
+      "timestamp": "2026-10-01T14:06:28.921Z",
+      "symbol": "ARBUSDT",
+      "instId": "ARB-USDT-SWAP",
+      "direction": "LONG",
+      "status": "LIMIT_CANCELED_PRICE_RAN_AWAY",
+      "order_type": "LIMIT_GTC",
+      "order_id": "3971502239893712897",
+      "signal_entry": 0.2001,
+      "signal_sl": 0.1996998,
+      "signal_tp": 0.2013000005991014,
+      "real_last_price": 0.1928,
+      "distance_pct": 3.6482,
+      "threshold_pct": 1.5,
+      "cancel_reason": "PRICE_RAN_AWAY",
+      "confluence_score": 5.0,
+      "cancel_res": {
+        "code": "0",
+        "data": [
+          {
+            "clOrdId": "",
+            "ordId": "3971502239893712897",
+            "sCode": "0",
+            "sMsg": "",
+            "ts": "1790863588820"
+          }
+        ],
+        "inTime": "1790863588819849",
+        "msg": "",
+        "outTime": "1790863588821959"
+      }
     }
   ],
   "total_verified": 0
