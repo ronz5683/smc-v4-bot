@@ -1,10 +1,68 @@
 {
-  "generated_at": "2026-10-01T13:28:00+00:00",
+  "generated_at": "2026-10-01T13:36:23.997Z",
   "bot_version": "V10.5_ANTI_LIQ_CLEAN_RESET",
   "reset_at": "2026-10-01 20:28 WIB",
   "reset_reason": "Hapus 191 trades bug 30 Sep - SL $5 $20 $34 - start fresh anti liquidate",
-  "total_executed": 0,
-  "total_waiting": 0,
+  "total_executed": 1,
+  "total_waiting": 1,
   "total_canceled_ran_away": 0,
-  "trades": []
+  "trades": [
+    {
+      "timestamp": "2026-10-01T13:36:23.997Z",
+      "symbol": "BNBUSDT",
+      "instId": "BNB-USDT-SWAP",
+      "direction": "SHORT",
+      "status": "WAITING_LIMIT",
+      "order_type": "LIMIT_GTC",
+      "verified_by_api": true,
+      "order_id": "3971481898391728129",
+      "order_res": {
+        "code": "0",
+        "data": [
+          {
+            "clOrdId": "",
+            "ordId": "3971481898391728129",
+            "sCode": "0",
+            "sMsg": "Order placed",
+            "subCode": "",
+            "tag": "",
+            "ts": "1790861783892"
+          }
+        ],
+        "inTime": "1790861783891851",
+        "msg": "",
+        "outTime": "1790861783892928"
+      },
+      "lev_res": {
+        "code": "0",
+        "data": [
+          {
+            "instId": "BNB-USDT-SWAP",
+            "lever": "20",
+            "mgnMode": "cross",
+            "posSide": ""
+          }
+        ],
+        "msg": ""
+      },
+      "leverage_used": 20,
+      "signal_entry": 768.005,
+      "signal_sl": 769.54101,
+      "signal_tp": 763.524273140456,
+      "contracts": 130.0,
+      "actual_risk_usd": 1.9968,
+      "risk_note": "V10.5 ANTI-LIQ: final risk $2.00 (target $2.0) cross 20x mark trigger",
+      "lotSz": "1.0",
+      "minSz": "1.0",
+      "ctVal": "0.01",
+      "confluence_score": 6.0,
+      "confluences": [
+        "SWEEP(2)",
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ]
+    }
+  ],
+  "total_verified": 0
 }

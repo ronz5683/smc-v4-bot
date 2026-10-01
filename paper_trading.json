@@ -1,12 +1,13 @@
 {
-  "generated_at": "2026-10-01T13:28:00+00:00",
-  "bot_version": "V10.5_CLEAN_RESET",
-  "reset_at": "2026-10-01 20:28 WIB",
+  "generated_at": "2026-10-01T13:36:21.019916+00:00",
+  "bot_version": "V10_M1_TEST_100TRADE",
   "config": {
     "start_capital": 1000.0,
     "risk_usd": 2.0,
+    "min_sl_pct": 0.1,
     "min_confluence": 4.0,
-    "tf": "M1/M5"
+    "tf": "M1/M5",
+    "limit_logic": "M1 10 candles"
   },
   "summary": {
     "initial": 1000.0,
@@ -18,6 +19,148 @@
     "total_r": 0
   },
   "trades": [],
-  "active_positions": [],
-  "waiting_limit": []
+  "active_positions": [
+    {
+      "symbol": "ETHUSDT",
+      "direction": "SHORT",
+      "entry": 2687.915,
+      "sl": 2693.29083,
+      "tp": 2671.7587789137074,
+      "rrr": 2.0,
+      "sl_pct": 0.003005344493090785,
+      "tp_pct": 0.00601068898618157,
+      "zone_price": 2687.915,
+      "confluence_score": 4.5,
+      "confluences": [
+        "SWEEP(2)",
+        "FVG(1)",
+        "HTF(0.5)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.3005,
+        "notional_usd": 665.48,
+        "qty": 0.247583,
+        "leverage": 100,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 6.65
+      },
+      "reason": "M1 SCORE 4.5/10: SWEEP(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 2687.9150 SL 0.30% | HTF NEUTRAL",
+      "open_price": 2690.62,
+      "open_time": "2026-10-01T13:36:07.210215+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
+    },
+    {
+      "symbol": "BNBUSDT",
+      "direction": "SHORT",
+      "entry": 768.005,
+      "sl": 769.54101,
+      "tp": 763.524273140456,
+      "rrr": 2.0,
+      "sl_pct": 0.002917120890843154,
+      "tp_pct": 0.005834241781686308,
+      "zone_price": 768.005,
+      "confluence_score": 6,
+      "confluences": [
+        "SWEEP(2)",
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2917,
+        "notional_usd": 685.61,
+        "qty": 0.892712,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 13.71
+      },
+      "reason": "M1 SCORE 6/10: SWEEP(2)+BREAKER(2)+HTF(1)+RSI(1) | LIMIT SWING 768.0050 SL 0.29% | HTF BEARISH",
+      "open_price": 768.71,
+      "open_time": "2026-10-01T13:36:11.330365+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
+    }
+  ],
+  "waiting_limit": [
+    {
+      "symbol": "ETHUSDT",
+      "direction": "SHORT",
+      "entry": 2687.915,
+      "sl": 2693.29083,
+      "tp": 2671.7587789137074,
+      "rrr": 2.0,
+      "sl_pct": 0.003005344493090785,
+      "tp_pct": 0.00601068898618157,
+      "zone_price": 2687.915,
+      "confluence_score": 4.5,
+      "confluences": [
+        "SWEEP(2)",
+        "FVG(1)",
+        "HTF(0.5)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.3005,
+        "notional_usd": 665.48,
+        "qty": 0.247583,
+        "leverage": 100,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 6.65
+      },
+      "reason": "M1 SCORE 4.5/10: SWEEP(2)+FVG(1)+HTF(0.5)+RSI(1) | LIMIT SWING 2687.9150 SL 0.30% | HTF NEUTRAL",
+      "open_price": 2690.62,
+      "open_time": "2026-10-01T13:36:07.210215+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
+    },
+    {
+      "symbol": "BNBUSDT",
+      "direction": "SHORT",
+      "entry": 768.005,
+      "sl": 769.54101,
+      "tp": 763.524273140456,
+      "rrr": 2.0,
+      "sl_pct": 0.002917120890843154,
+      "tp_pct": 0.005834241781686308,
+      "zone_price": 768.005,
+      "confluence_score": 6,
+      "confluences": [
+        "SWEEP(2)",
+        "BREAKER(2)",
+        "HTF(1)",
+        "RSI(1)"
+      ],
+      "sizing": {
+        "risk_usd": 2.0,
+        "sl_pct": 0.2917,
+        "notional_usd": 685.61,
+        "qty": 0.892712,
+        "leverage": 50,
+        "leverage_mode": "ALWAYS_MAX",
+        "margin_needed": 13.71
+      },
+      "reason": "M1 SCORE 6/10: SWEEP(2)+BREAKER(2)+HTF(1)+RSI(1) | LIMIT SWING 768.0050 SL 0.29% | HTF BEARISH",
+      "open_price": 768.71,
+      "open_time": "2026-10-01T13:36:11.330365+00:00",
+      "status": "WAITING_LIMIT",
+      "order_status": "WAITING_LIMIT",
+      "paper_trade": true,
+      "limit_order": true,
+      "fill_check": "10 candles 1m"
+    }
+  ]
 }
