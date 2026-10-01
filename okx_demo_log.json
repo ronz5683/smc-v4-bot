@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-10-01T14:50:41.558Z",
+  "generated_at": "2026-10-01T14:52:30.648Z",
   "bot_version": "V10.5_ANTI_LIQ_CLEAN_RESET",
   "reset_at": "2026-10-01 20:28 WIB",
   "reset_reason": "Hapus 191 trades bug 30 Sep - SL $5 $20 $34 - start fresh anti liquidate",
-  "total_executed": 20,
-  "total_waiting": 7,
-  "total_canceled_ran_away": 4,
+  "total_executed": 23,
+  "total_waiting": 8,
+  "total_canceled_ran_away": 5,
   "trades": [
     {
       "timestamp": "2026-10-01T13:36:23.997Z",
@@ -761,6 +761,120 @@
         "msg": "All operations failed",
         "outTime": "1790866001316925"
       }
+    },
+    {
+      "timestamp": "2026-10-01T14:52:29.335Z",
+      "symbol": "BTCUSDT",
+      "instId": "BTC-USDT-SWAP",
+      "direction": "LONG",
+      "status": "LIMIT_FILLED",
+      "order_id": "3971506389805199361",
+      "real_avgPx": 83896.21,
+      "real_sl": 83728.46998000001,
+      "real_tp": 84355.8018030799,
+      "algo_res": {
+        "code": "0",
+        "data": [
+          {
+            "algoClOrdId": "",
+            "algoId": "3971635086956720129",
+            "clOrdId": "",
+            "sCode": "0",
+            "sMsg": "",
+            "tag": ""
+          }
+        ],
+        "msg": ""
+      },
+      "confluence_score": 4.0,
+      "note": "V10.5 ANTI-LIQ FILLED 83896.21 -> SLTP MARK 83728.46998000001/84355.8018030799"
+    },
+    {
+      "timestamp": "2026-10-01T14:52:29.865Z",
+      "symbol": "ARBUSDT",
+      "instId": "ARB-USDT-SWAP",
+      "direction": "SHORT",
+      "status": "LIMIT_CANCELED_PRICE_RAN_AWAY",
+      "order_type": "LIMIT_GTC",
+      "order_id": "3971502239893712897",
+      "signal_entry": 0.19905,
+      "signal_sl": 0.19944810000000002,
+      "signal_tp": 0.1965465093844601,
+      "real_last_price": 0.1945,
+      "distance_pct": 2.2859,
+      "threshold_pct": 1.5,
+      "cancel_reason": "PRICE_RAN_AWAY",
+      "confluence_score": 4.5,
+      "cancel_res": {
+        "code": "1",
+        "data": [
+          {
+            "clOrdId": "",
+            "ordId": "3971502239893712897",
+            "sCode": "51400",
+            "sMsg": "Order cancellation failed as the order has been filled, canceled or does not exist.",
+            "ts": "1790866349798"
+          }
+        ],
+        "inTime": "1790866349798559",
+        "msg": "All operations failed",
+        "outTime": "1790866349799006"
+      }
+    },
+    {
+      "timestamp": "2026-10-01T14:52:30.648Z",
+      "symbol": "SOLUSDT",
+      "instId": "SOL-USDT-SWAP",
+      "direction": "SHORT",
+      "status": "WAITING_LIMIT",
+      "order_type": "LIMIT_GTC",
+      "verified_by_api": true,
+      "order_id": "3971635131248570369",
+      "order_res": {
+        "code": "0",
+        "data": [
+          {
+            "clOrdId": "",
+            "ordId": "3971635131248570369",
+            "sCode": "0",
+            "sMsg": "Order placed",
+            "subCode": "",
+            "tag": "",
+            "ts": "1790866350587"
+          }
+        ],
+        "inTime": "1790866350587401",
+        "msg": "",
+        "outTime": "1790866350588621"
+      },
+      "lev_res": {
+        "code": "0",
+        "data": [
+          {
+            "instId": "SOL-USDT-SWAP",
+            "lever": "20",
+            "mgnMode": "cross",
+            "posSide": ""
+          }
+        ],
+        "msg": ""
+      },
+      "leverage_used": 20,
+      "signal_entry": 117.215,
+      "signal_sl": 117.44943,
+      "signal_tp": 116.31534982905983,
+      "contracts": 8.53,
+      "actual_risk_usd": 1.9997,
+      "risk_note": "V10.5 ANTI-LIQ: final risk $2.00 (target $2.0) cross 20x mark trigger",
+      "lotSz": "0.01",
+      "minSz": "0.01",
+      "ctVal": "1.0",
+      "confluence_score": 5.0,
+      "confluences": [
+        "CHOCH(2)",
+        "BREAKER(2)",
+        "HTF(1)"
+      ]
     }
   ],
   "total_verified": 0
