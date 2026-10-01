@@ -296,9 +296,22 @@ def main():
             if pos_api.get("code")=="0" and pos_api["data"]:
                 for p in pos_api["data"]:
                     if p.get("instId")==instId:
-                        avgPx = float(p.get("avgPx", entry))
-                        sz_from_pos = p.get("pos") or p.get("availPos")
+                        raw_avg = p.get("avgPx")
+                        try:
+                            avgPx = float(raw_avg) if raw_avg not in (None, '', '0') else float(p.get("lastPx") or last_px or entry)
+                        except:
+                            avgPx = float(last_px or entry)
+                        # fallback kalau masih 0 atau ''
+                        if not avgPx or avgPx == 0:
+                            avgPx = float(last_px or entry)
+                        sz_from_pos = p.get("pos") or p.get("availPos") or p.get("availPos") 
+                        # sz_from_pos bisa '' juga
+                        if sz_from_pos == '' or sz_from_pos is None:
+                            sz_from_pos = pos.get("contracts")
                         break
+            # final safety
+            if not avgPx or isinstance(avgPx, str) and avgPx == '':
+                avgPx = float(last_px or entry)
             sl = float(pos["sl"]); tp = float(pos["tp"])
             dist_sl = abs(entry - sl)
             real_sl = avgPx - dist_sl if pos["direction"]=="LONG" else avgPx + dist_sl
