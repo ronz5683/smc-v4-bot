@@ -2,7 +2,7 @@ name: scan
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/15 * * * *'  # DEBUG: 15 menit dulu, setelah fix SL $2 stable ganti ke */30
   workflow_dispatch:
 
 permissions:
@@ -30,10 +30,7 @@ jobs:
       - name: Install requests
         run: pip install requests
 
-      - name: Run SMC Bot V10 M1 TEST 100 trades
-        run: python smc_v4_github.py
-
-      - name: Run OKX Demo Executor V10.7 DEBUG $2 SL
+      - name: Run SMC Bot V10 M1 TEST 100 trades + OKX DEBUG
         env:
           OKX_API_KEY: ${{ secrets.OKX_API_KEY }}
           OKX_SECRET_KEY: ${{ secrets.OKX_SECRET_KEY }}
@@ -41,51 +38,23 @@ jobs:
           OKX_DEMO_API_KEY: ${{ secrets.OKX_DEMO_API_KEY }}
           OKX_DEMO_API_SECRET: ${{ secrets.OKX_DEMO_API_SECRET }}
           OKX_DEMO_PASSPHRASE: ${{ secrets.OKX_DEMO_PASSPHRASE }}
-        run: python smc_okx_demo.py
+        run: |
+          python smc_v4_github.py
+          python smc_okx_demo.py
 
-      - name: Commit results - FIX CONFLICT ADA SL vs 4 kosong
+      - name: Commit only if changed - QUOTA SAVER
         run: |
           git config --global user.name "smc-bot"
           git config --global user.email "bot@smc.com"
-          git config --global pull.rebase true
           
+          # Hanya add file yang berubah, skip kalau sama
           git add last_scan.json positions.json paper_trading.json okx_demo_log.json okx_debug_report.json 2>/dev/null || true
           
           if git diff --staged --quiet; then
-            echo "no changes"
+            echo "No changes - skip push, save quota"
             exit 0
           fi
           
-          git commit -m "bot V10.7 DEBUG: $2 SL fix 5 pos ADA SL case - $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          
-          for i in 1 2 3 4 5; do
-            echo "Push attempt $i"
-            git fetch origin main
-            if git rebase origin/main -X ours; then
-              echo "Rebase OK"
-            else
-              echo "Rebase conflict, keeping local (V10.7)"
-              git rebase --abort || true
-              cp last_scan.json /tmp/last_scan.json 2>/dev/null || true
-              cp positions.json /tmp/positions.json 2>/dev/null || true
-              cp paper_trading.json /tmp/paper_trading.json 2>/dev/null || true
-              cp okx_demo_log.json /tmp/okx_demo_log.json 2>/dev/null || true
-              cp okx_debug_report.json /tmp/okx_debug_report.json 2>/dev/null || true
-              git reset --hard origin/main
-              cp /tmp/last_scan.json last_scan.json 2>/dev/null || true
-              cp /tmp/positions.json positions.json 2>/dev/null || true
-              cp /tmp/paper_trading.json paper_trading.json 2>/dev/null || true
-              cp /tmp/okx_demo_log.json okx_demo_log.json 2>/dev/null || true
-              cp /tmp/okx_debug_report.json okx_debug_report.json 2>/dev/null || true
-              git add last_scan.json positions.json paper_trading.json okx_demo_log.json okx_debug_report.json 2>/dev/null || true
-              git commit -m "bot V10.7 retry $i - $(date -u +'%Y-%m-%dT%H:%M:%SZ')" || true
-            fi
-            if git push origin main; then
-              echo "Push success"
-              break
-            fi
-            sleep 5
-            if [ $i -eq 5 ]; then
-              git push --force-with-lease origin main || git push origin main
-            fi
-          done
+          git commit -m "bot V10.7 DEBUG fix ADA SL case - $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          git pull --rebase origin main || (git rebase --abort; git reset --hard origin/main; git add last_scan.json positions.json paper_trading.json okx_demo_log.json okx_debug_report.json 2>/dev/null || true; git commit -m "retry - $(date -u +'%Y-%m-%dT%H:%M:%SZ')" || true)
+          git push
