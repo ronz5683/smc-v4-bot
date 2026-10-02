@@ -1,53 +1,37 @@
 name: scan
-
 on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
-
 permissions:
   contents: write
-
 concurrency:
   group: scan
   cancel-in-progress: true
-
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 1
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-
-      - name: Install requests
-        run: pip install requests
-
-      - name: Run SMC Bot V10 M1 + OKX V11 SIMPLE 2.5 MAX
+      - run: pip install requests
+      - name: Run Scanner + OKX V11
         env:
-          OKX_API_KEY: ${{ secrets.OKX_API_KEY }}
-          OKX_SECRET_KEY: ${{ secrets.OKX_SECRET_KEY }}
-          OKX_PASSPHRASE: ${{ secrets.OKX_PASSPHRASE }}
           OKX_DEMO_API_KEY: ${{ secrets.OKX_DEMO_API_KEY }}
           OKX_DEMO_API_SECRET: ${{ secrets.OKX_DEMO_API_SECRET }}
           OKX_DEMO_PASSPHRASE: ${{ secrets.OKX_DEMO_PASSPHRASE }}
         run: |
           python smc_v4_github.py
           python smc_okx_demo.py
-
-      - name: Commit results
-        run: |
+      - run: |
           git config --global user.name "smc-bot"
           git config --global user.email "bot@smc.com"
-          git add last_scan.json positions.json paper_trading.json okx_demo_log.json okx_debug_report.json 2>/dev/null || true
-          if git diff --staged --quiet; then echo "no changes"; exit 0; fi
-          git commit -m "bot V11 SIMPLE 2.5 MAX - $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          git push || (git pull --rebase origin main && git push) || true
+          git add last_scan.json okx_demo_log.json okx_debug_report.json
+          git commit -m "V12 NO-PAPER $2.5 MAX - $(date -u +%FT%TZ)" || exit 0
+          git pull --rebase origin main && git push || true
