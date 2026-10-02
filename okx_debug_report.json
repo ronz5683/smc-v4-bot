@@ -1,352 +1,29 @@
 {
-  "generated_at": "2026-10-02T13:57:47.076839Z",
+  "generated_at": "2026-10-02T14:31:36.603431Z",
   "bot_version": "V11_SIMPLE_2.5_MAX",
   "steps": [
     {
-      "time": "2026-10-02T13:57:34.125885Z",
+      "time": "2026-10-02T14:31:35.181201Z",
       "step": "START_V11_SIMPLE",
       "data": {
         "valid_new_count": 2,
-        "waiting_from_log": 10,
+        "waiting_from_log": 0,
         "LEVERAGE": "20x Cross FIX",
         "RISK_MAX": 2.5
       }
     },
     {
-      "time": "2026-10-02T13:57:34.539947Z",
-      "step": "CHECK_WAITING",
-      "data": {
-        "symbol": "BNBUSDT",
-        "ordId": "3971481898391728129",
-        "state": "filled",
-        "lastPx": "768.2"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:35.223583Z",
-      "step": "SL_INVALID_MARK",
-      "data": {
-        "sl": 769.5,
-        "mark": 779.9,
-        "fix": "sl + tick"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:35.418426Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order-algo",
-        "body": {
-          "instId": "BNB-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "conditional",
-          "sz": "130",
-          "slTriggerPx": "780.6",
-          "slOrdPx": "-1",
-          "tpTriggerPx": "763.5",
-          "tpOrdPx": "-1"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "algoClOrdId": "",
-              "algoId": "",
-              "clOrdId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "tag": ""
-            }
-          ],
-          "msg": ""
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:35.609389Z",
+      "time": "2026-10-02T14:31:35.950749Z",
       "step": "REQ_FAIL",
       "data": {
         "path": "/api/v5/trade/order",
         "body": {
-          "instId": "BNB-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "market",
-          "sz": "130"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "subCode": "",
-              "tag": "",
-              "ts": "1790949455536"
-            }
-          ],
-          "inTime": "1790949455535007",
-          "msg": "All operations failed",
-          "outTime": "1790949455537264"
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:35.819485Z",
-      "step": "CHECK_WAITING",
-      "data": {
-        "symbol": "ADAUSDT",
-        "ordId": "3971502216372056065",
-        "state": "filled",
-        "lastPx": "0.2478"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:36.405547Z",
-      "step": "SL_INVALID_MARK",
-      "data": {
-        "sl": 0.2482,
-        "mark": 0.255,
-        "fix": "sl + tick"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:36.610989Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order-algo",
-        "body": {
-          "instId": "ADA-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "conditional",
-          "sz": "40.35",
-          "slTriggerPx": "0.2552",
-          "slOrdPx": "-1",
-          "tpTriggerPx": "0.2462",
-          "tpOrdPx": "-1"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "algoClOrdId": "",
-              "algoId": "",
-              "clOrdId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "tag": ""
-            }
-          ],
-          "msg": ""
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:36.807985Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order",
-        "body": {
-          "instId": "ADA-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "market",
-          "sz": "40.35"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "subCode": "",
-              "tag": "",
-              "ts": "1790949456730"
-            }
-          ],
-          "inTime": "1790949456729604",
-          "msg": "All operations failed",
-          "outTime": "1790949456731793"
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:37.011729Z",
-      "step": "CHECK_WAITING",
-      "data": {
-        "symbol": "ARBUSDT",
-        "ordId": "3971502239893712897",
-        "state": "canceled",
-        "lastPx": ""
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:37.410773Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/cancel-order",
-        "body": {
-          "instId": "ARB-USDT-SWAP",
-          "ordId": "3971502239893712897"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "3971502239893712897",
-              "sCode": "51400",
-              "sMsg": "Order cancellation failed as the order has been filled, canceled or does not exist.",
-              "ts": "1790949457337"
-            }
-          ],
-          "inTime": "1790949457337077",
-          "msg": "All operations failed",
-          "outTime": "1790949457337545"
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:37.609206Z",
-      "step": "CHECK_WAITING",
-      "data": {
-        "symbol": "BTCUSDT",
-        "ordId": "3971506389805199361",
-        "state": "filled",
-        "lastPx": "83896.21"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:38.190360Z",
-      "step": "SL_INVALID_MARK",
-      "data": {
-        "sl": 84063.99,
-        "mark": 86529.66,
-        "fix": "sl + tick"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:38.393774Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order-algo",
-        "body": {
-          "instId": "BTC-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "conditional",
-          "sz": "1.19",
-          "slTriggerPx": "86616.18",
-          "slOrdPx": "-1",
-          "tpTriggerPx": "83557.01",
-          "tpOrdPx": "-1"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "algoClOrdId": "",
-              "algoId": "",
-              "clOrdId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "tag": ""
-            }
-          ],
-          "msg": ""
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:38.606509Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order",
-        "body": {
-          "instId": "BTC-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "market",
-          "sz": "1.19"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "subCode": "",
-              "tag": "",
-              "ts": "1790949458524"
-            }
-          ],
-          "inTime": "1790949458524020",
-          "msg": "All operations failed",
-          "outTime": "1790949458524594"
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:38.803016Z",
-      "step": "CHECK_WAITING",
-      "data": {
-        "symbol": "OPUSDT",
-        "ordId": "3971518493996118017",
-        "state": "filled",
-        "lastPx": "0.1296"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:39.609912Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order-algo",
-        "body": {
-          "instId": "OP-USDT-SWAP",
+          "instId": "XRP-USDT-SWAP",
           "tdMode": "cross",
           "side": "sell",
-          "ordType": "conditional",
-          "sz": "7716",
-          "slTriggerPx": "0.13",
-          "slOrdPx": "-1",
-          "tpTriggerPx": "0.13",
-          "tpOrdPx": "-1"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "algoClOrdId": "",
-              "algoId": "",
-              "clOrdId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "tag": ""
-            }
-          ],
-          "msg": ""
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:39.797398Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order",
-        "body": {
-          "instId": "OP-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "sell",
-          "ordType": "market",
-          "sz": "7716"
+          "ordType": "limit",
+          "sz": "6.54",
+          "px": "1.52675"
         },
         "resp": {
           "code": "1",
@@ -358,78 +35,20 @@
               "sMsg": "Parameter posSide error ",
               "subCode": "",
               "tag": "",
-              "ts": "1790949459723"
+              "ts": "1790951495860"
             }
           ],
-          "inTime": "1790949459723553",
+          "inTime": "1790951495860491",
           "msg": "All operations failed",
-          "outTime": "1790949459724314"
+          "outTime": "1790951495861285"
         }
       }
     },
     {
-      "time": "2026-10-02T13:57:39.999735Z",
-      "step": "CHECK_WAITING",
+      "time": "2026-10-02T14:31:35.951559Z",
+      "step": "FAILED_ORDER",
       "data": {
         "symbol": "XRPUSDT",
-        "ordId": "3971534541168340993",
-        "state": "filled",
-        "lastPx": "1.4846"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:40.628979Z",
-      "step": "SL_INVALID_MARK",
-      "data": {
-        "sl": 1.4875,
-        "mark": 1.5305,
-        "fix": "sl + tick"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:40.826601Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order-algo",
-        "body": {
-          "instId": "XRP-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "conditional",
-          "sz": "6.73",
-          "slTriggerPx": "1.532",
-          "slOrdPx": "-1",
-          "tpTriggerPx": "1.4708",
-          "tpOrdPx": "-1"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "algoClOrdId": "",
-              "algoId": "",
-              "clOrdId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "tag": ""
-            }
-          ],
-          "msg": ""
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:41.014103Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order",
-        "body": {
-          "instId": "XRP-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "market",
-          "sz": "6.73"
-        },
         "resp": {
           "code": "1",
           "data": [
@@ -440,346 +59,27 @@
               "sMsg": "Parameter posSide error ",
               "subCode": "",
               "tag": "",
-              "ts": "1790949460939"
+              "ts": "1790951495860"
             }
           ],
-          "inTime": "1790949460939536",
+          "inTime": "1790951495860491",
           "msg": "All operations failed",
-          "outTime": "1790949460940327"
+          "outTime": "1790951495861285"
         }
       }
     },
     {
-      "time": "2026-10-02T13:57:41.227490Z",
-      "step": "CHECK_WAITING",
-      "data": {
-        "symbol": "DOGEUSDT",
-        "ordId": "3971546643983527937",
-        "state": "filled",
-        "lastPx": "0.094145"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:42.018875Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order-algo",
-        "body": {
-          "instId": "DOGE-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "sell",
-          "ordType": "conditional",
-          "sz": "10.62",
-          "slTriggerPx": "0.09",
-          "slOrdPx": "-1",
-          "tpTriggerPx": "0.09",
-          "tpOrdPx": "-1"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "algoClOrdId": "",
-              "algoId": "",
-              "clOrdId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "tag": ""
-            }
-          ],
-          "msg": ""
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:42.210559Z",
+      "time": "2026-10-02T14:31:36.601701Z",
       "step": "REQ_FAIL",
       "data": {
         "path": "/api/v5/trade/order",
         "body": {
-          "instId": "DOGE-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "sell",
-          "ordType": "market",
-          "sz": "10.62"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "subCode": "",
-              "tag": "",
-              "ts": "1790949462133"
-            }
-          ],
-          "inTime": "1790949462133502",
-          "msg": "All operations failed",
-          "outTime": "1790949462134275"
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:42.422498Z",
-      "step": "CHECK_WAITING",
-      "data": {
-        "symbol": "SOLUSDT",
-        "ordId": "3971635131248570369",
-        "state": "filled",
-        "lastPx": "117.22"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:43.009804Z",
-      "step": "SL_INVALID_MARK",
-      "data": {
-        "sl": 117.44,
-        "mark": 122.03,
-        "fix": "sl + tick"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:43.202106Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order-algo",
-        "body": {
-          "instId": "SOL-USDT-SWAP",
+          "instId": "ADA-USDT-SWAP",
           "tdMode": "cross",
           "side": "buy",
-          "ordType": "conditional",
-          "sz": "8.53",
-          "slTriggerPx": "122.15",
-          "slOrdPx": "-1",
-          "tpTriggerPx": "116.31",
-          "tpOrdPx": "-1"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "algoClOrdId": "",
-              "algoId": "",
-              "clOrdId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "tag": ""
-            }
-          ],
-          "msg": ""
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:43.400734Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order",
-        "body": {
-          "instId": "SOL-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "market",
-          "sz": "8.53"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "subCode": "",
-              "tag": "",
-              "ts": "1790949463324"
-            }
-          ],
-          "inTime": "1790949463324419",
-          "msg": "All operations failed",
-          "outTime": "1790949463325116"
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:43.620445Z",
-      "step": "CHECK_WAITING",
-      "data": {
-        "symbol": "AVAXUSDT",
-        "ordId": "3971712680473423873",
-        "state": "filled",
-        "lastPx": "10.897"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:44.209490Z",
-      "step": "SL_INVALID_MARK",
-      "data": {
-        "sl": 10.918,
-        "mark": 11.09,
-        "fix": "sl + tick"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:44.402953Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order-algo",
-        "body": {
-          "instId": "AVAX-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "conditional",
-          "sz": "91.7",
-          "slTriggerPx": "11.101",
-          "slOrdPx": "-1",
-          "tpTriggerPx": "10.853",
-          "tpOrdPx": "-1"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "algoClOrdId": "",
-              "algoId": "",
-              "clOrdId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "tag": ""
-            }
-          ],
-          "msg": ""
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:44.592485Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order",
-        "body": {
-          "instId": "AVAX-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "market",
-          "sz": "91.7"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "subCode": "",
-              "tag": "",
-              "ts": "1790949464517"
-            }
-          ],
-          "inTime": "1790949464516722",
-          "msg": "All operations failed",
-          "outTime": "1790949464518875"
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:44.802181Z",
-      "step": "CHECK_WAITING",
-      "data": {
-        "symbol": "LINKUSDT",
-        "ordId": "3971712705437921281",
-        "state": "filled",
-        "lastPx": "14.303"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:45.404482Z",
-      "step": "SL_INVALID_MARK",
-      "data": {
-        "sl": 14.331,
-        "mark": 14.36,
-        "fix": "sl + tick"
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:45.613781Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order-algo",
-        "body": {
-          "instId": "LINK-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "conditional",
-          "sz": "69.91",
-          "slTriggerPx": "14.374",
-          "slOrdPx": "-1",
-          "tpTriggerPx": "14.242",
-          "tpOrdPx": "-1"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "algoClOrdId": "",
-              "algoId": "",
-              "clOrdId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "tag": ""
-            }
-          ],
-          "msg": ""
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:45.810495Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order",
-        "body": {
-          "instId": "LINK-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "buy",
-          "ordType": "market",
-          "sz": "69.91"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "subCode": "",
-              "tag": "",
-              "ts": "1790949465732"
-            }
-          ],
-          "inTime": "1790949465731201",
-          "msg": "All operations failed",
-          "outTime": "1790949465733360"
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:46.438298Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order",
-        "body": {
-          "instId": "AVAX-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "sell",
           "ordType": "limit",
-          "sz": "89.8",
-          "px": "11.124"
+          "sz": "39.33",
+          "px": "0.2542"
         },
         "resp": {
           "code": "1",
@@ -791,20 +91,20 @@
               "sMsg": "Parameter posSide error ",
               "subCode": "",
               "tag": "",
-              "ts": "1790949466358"
+              "ts": "1790951496507"
             }
           ],
-          "inTime": "1790949466358156",
+          "inTime": "1790951496506400",
           "msg": "All operations failed",
-          "outTime": "1790949466359126"
+          "outTime": "1790951496508555"
         }
       }
     },
     {
-      "time": "2026-10-02T13:57:46.439134Z",
+      "time": "2026-10-02T14:31:36.602500Z",
       "step": "FAILED_ORDER",
       "data": {
-        "symbol": "AVAXUSDT",
+        "symbol": "ADAUSDT",
         "resp": {
           "code": "1",
           "data": [
@@ -815,68 +115,12 @@
               "sMsg": "Parameter posSide error ",
               "subCode": "",
               "tag": "",
-              "ts": "1790949466358"
+              "ts": "1790951496507"
             }
           ],
-          "inTime": "1790949466358156",
+          "inTime": "1790951496506400",
           "msg": "All operations failed",
-          "outTime": "1790949466359126"
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:47.074839Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order",
-        "body": {
-          "instId": "OP-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "sell",
-          "ordType": "limit",
-          "sz": "7476",
-          "px": "0.13375"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "subCode": "",
-              "tag": "",
-              "ts": "1790949466986"
-            }
-          ],
-          "inTime": "1790949466985371",
-          "msg": "All operations failed",
-          "outTime": "1790949466987474"
-        }
-      }
-    },
-    {
-      "time": "2026-10-02T13:57:47.075710Z",
-      "step": "FAILED_ORDER",
-      "data": {
-        "symbol": "OPUSDT",
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "subCode": "",
-              "tag": "",
-              "ts": "1790949466986"
-            }
-          ],
-          "inTime": "1790949466985371",
-          "msg": "All operations failed",
-          "outTime": "1790949466987474"
+          "outTime": "1790951496508555"
         }
       }
     }
