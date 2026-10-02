@@ -2,7 +2,7 @@ name: scan
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # DEBUG: 15 menit dulu, setelah fix SL $2 stable ganti ke */30
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -30,7 +30,7 @@ jobs:
       - name: Install requests
         run: pip install requests
 
-      - name: Run SMC Bot V10 M1 TEST 100 trades + OKX DEBUG
+      - name: Run SMC Bot V10 M1 + OKX V11 SIMPLE 2.5 MAX
         env:
           OKX_API_KEY: ${{ secrets.OKX_API_KEY }}
           OKX_SECRET_KEY: ${{ secrets.OKX_SECRET_KEY }}
@@ -40,21 +40,14 @@ jobs:
           OKX_DEMO_PASSPHRASE: ${{ secrets.OKX_DEMO_PASSPHRASE }}
         run: |
           python smc_v4_github.py
-          python smc_okx_demo.py
+          python smc_okx_demo_V11_SIMPLE.py
 
-      - name: Commit only if changed - QUOTA SAVER
+      - name: Commit results
         run: |
           git config --global user.name "smc-bot"
           git config --global user.email "bot@smc.com"
-          
-          # Hanya add file yang berubah, skip kalau sama
           git add last_scan.json positions.json paper_trading.json okx_demo_log.json okx_debug_report.json 2>/dev/null || true
-          
-          if git diff --staged --quiet; then
-            echo "No changes - skip push, save quota"
-            exit 0
-          fi
-          
-          git commit -m "bot V10.7 DEBUG fix ADA SL case - $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          if git diff --staged --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "bot V11 SIMPLE 2.5 MAX cross 20x - $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           git pull --rebase origin main || (git rebase --abort; git reset --hard origin/main; git add last_scan.json positions.json paper_trading.json okx_demo_log.json okx_debug_report.json 2>/dev/null || true; git commit -m "retry - $(date -u +'%Y-%m-%dT%H:%M:%SZ')" || true)
           git push
