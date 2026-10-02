@@ -1,15 +1,127 @@
 {
-  "generated_at": "2026-10-02T19:32:27.631300Z",
+  "generated_at": "2026-10-02T23:16:51.582392Z",
   "bot_version": "V11_SIMPLE_2.5_MAX",
   "steps": [
     {
-      "time": "2026-10-02T19:32:27.630535Z",
+      "time": "2026-10-02T23:16:50.323958Z",
       "step": "START_V11_SIMPLE",
       "data": {
-        "valid_new_count": 0,
+        "valid_new_count": 2,
         "waiting_from_log": 0,
         "LEVERAGE": "20x Cross FIX",
         "RISK_MAX": 2.5
+      }
+    },
+    {
+      "time": "2026-10-02T23:16:51.068174Z",
+      "step": "REQ_FAIL",
+      "data": {
+        "path": "/api/v5/trade/order",
+        "body": {
+          "instId": "LINK-USDT-SWAP",
+          "tdMode": "cross",
+          "side": "buy",
+          "ordType": "limit",
+          "sz": "72.79",
+          "px": "13.7365"
+        },
+        "resp": {
+          "code": "1",
+          "data": [
+            {
+              "clOrdId": "",
+              "ordId": "",
+              "sCode": "51000",
+              "sMsg": "Parameter posSide error ",
+              "subCode": "",
+              "tag": "",
+              "ts": "1790983011002"
+            }
+          ],
+          "inTime": "1790983011002336",
+          "msg": "All operations failed",
+          "outTime": "1790983011003022"
+        }
+      }
+    },
+    {
+      "time": "2026-10-02T23:16:51.068910Z",
+      "step": "FAILED_ORDER",
+      "data": {
+        "symbol": "LINKUSDT",
+        "resp": {
+          "code": "1",
+          "data": [
+            {
+              "clOrdId": "",
+              "ordId": "",
+              "sCode": "51000",
+              "sMsg": "Parameter posSide error ",
+              "subCode": "",
+              "tag": "",
+              "ts": "1790983011002"
+            }
+          ],
+          "inTime": "1790983011002336",
+          "msg": "All operations failed",
+          "outTime": "1790983011003022"
+        }
+      }
+    },
+    {
+      "time": "2026-10-02T23:16:51.581038Z",
+      "step": "REQ_FAIL",
+      "data": {
+        "path": "/api/v5/trade/order",
+        "body": {
+          "instId": "ARB-USDT-SWAP",
+          "tdMode": "cross",
+          "side": "buy",
+          "ordType": "limit",
+          "sz": "516.1",
+          "px": "0.19375"
+        },
+        "resp": {
+          "code": "1",
+          "data": [
+            {
+              "clOrdId": "",
+              "ordId": "",
+              "sCode": "51000",
+              "sMsg": "Parameter posSide error ",
+              "subCode": "",
+              "tag": "",
+              "ts": "1790983011523"
+            }
+          ],
+          "inTime": "1790983011522628",
+          "msg": "All operations failed",
+          "outTime": "1790983011524831"
+        }
+      }
+    },
+    {
+      "time": "2026-10-02T23:16:51.581756Z",
+      "step": "FAILED_ORDER",
+      "data": {
+        "symbol": "ARBUSDT",
+        "resp": {
+          "code": "1",
+          "data": [
+            {
+              "clOrdId": "",
+              "ordId": "",
+              "sCode": "51000",
+              "sMsg": "Parameter posSide error ",
+              "subCode": "",
+              "tag": "",
+              "ts": "1790983011523"
+            }
+          ],
+          "inTime": "1790983011522628",
+          "msg": "All operations failed",
+          "outTime": "1790983011524831"
+        }
       }
     }
   ]
