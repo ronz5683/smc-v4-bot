@@ -1,71 +1,15 @@
 {
-  "generated_at": "2026-10-03T02:14:03.665184Z",
+  "generated_at": "2026-10-03T08:14:28.211536Z",
   "bot_version": "V11_SIMPLE_2.5_MAX",
   "steps": [
     {
-      "time": "2026-10-03T02:14:02.911706Z",
+      "time": "2026-10-03T08:14:28.211103Z",
       "step": "START_V11_SIMPLE",
       "data": {
-        "valid_new_count": 1,
+        "valid_new_count": 0,
         "waiting_from_log": 0,
         "LEVERAGE": "20x Cross FIX",
         "RISK_MAX": 2.5
-      }
-    },
-    {
-      "time": "2026-10-03T02:14:03.663438Z",
-      "step": "REQ_FAIL",
-      "data": {
-        "path": "/api/v5/trade/order",
-        "body": {
-          "instId": "ARB-USDT-SWAP",
-          "tdMode": "cross",
-          "side": "sell",
-          "ordType": "limit",
-          "sz": "506.3",
-          "px": "0.1975"
-        },
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "subCode": "",
-              "tag": "",
-              "ts": "1790993643606"
-            }
-          ],
-          "inTime": "1790993643605942",
-          "msg": "All operations failed",
-          "outTime": "1790993643606759"
-        }
-      }
-    },
-    {
-      "time": "2026-10-03T02:14:03.664226Z",
-      "step": "FAILED_ORDER",
-      "data": {
-        "symbol": "ARBUSDT",
-        "resp": {
-          "code": "1",
-          "data": [
-            {
-              "clOrdId": "",
-              "ordId": "",
-              "sCode": "51000",
-              "sMsg": "Parameter posSide error ",
-              "subCode": "",
-              "tag": "",
-              "ts": "1790993643606"
-            }
-          ],
-          "inTime": "1790993643605942",
-          "msg": "All operations failed",
-          "outTime": "1790993643606759"
-        }
       }
     }
   ]
